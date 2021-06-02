@@ -10,7 +10,7 @@ extern crate diesel_migrations;
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use dotenv::dotenv;
+//use dotenv::dotenv;
 use std::env;
 
 diesel_migrations::embed_migrations!();
@@ -21,7 +21,7 @@ fn hello() -> &'static str {
 }
 
 fn main() {
-    dotenv().ok();
+    //dotenv().ok();
     let connection = establish_connection();
     embedded_migrations::run(&connection);
 

@@ -1,12 +1,5 @@
 version: "3.9"
 services:
-  backend:
-    build: ./backend
-    image: old-stars-backend
-    ports:
-      - 8000:8000
-    depends_on:
-      - db
 
   db:
     image: postgres:latest
@@ -16,6 +9,19 @@ services:
       - POSTGRES_USER=${PG_USER}
       - POSTGRES_PASSWORD=${PG_PWD}
       - POSTGRES_DB=old_stars_db
+
+  backend:
+    build: ./backend
+    image: old-stars-backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://${PG_USER}:${PG_PWD}@db/old_stars_db
+    #command: bash -c "bash echo next is ls"
+    #command: bash -c "bash ls -la"
+    command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
 
 
 
