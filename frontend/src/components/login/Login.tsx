@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AuthService from '../../services/auth-service';
 
 type LoginProps = {
   login: (loginGranted: boolean) => void;
@@ -9,8 +10,9 @@ function Login(props: LoginProps) {
 
   const handleLogin = (e: React.MouseEvent) => {
     e.preventDefault();
-    const passwordOk = PasswordService.checkPassword(password);
-    props.login(passwordOk);
+    AuthService.checkPassword(password).then((passwordOk) =>
+      props.login(passwordOk)
+    );
   };
 
   return (
@@ -27,9 +29,3 @@ function Login(props: LoginProps) {
 }
 
 export default Login;
-
-class PasswordService {
-  static checkPassword(pwd: String) {
-    return pwd == 'geheim';
-  }
-}
