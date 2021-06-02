@@ -11,13 +11,20 @@ extern crate diesel_migrations;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 //use dotenv::dotenv;
+use rocket::http::{hyper::header::AccessControlAllowOrigin, ContentType};
+use rocket::Response;
 use std::env;
 
 diesel_migrations::embed_migrations!();
 
 #[get("/")]
-fn hello() -> &'static str {
-    "Hello World from Rocket"
+fn hello() -> Response<'static> {
+    Response::build()
+        .header(ContentType::Plain)
+        .header(AccessControlAllowOrigin::Value(
+            "http://localhost:3000".to_string(),
+        ))
+        .finalize()
 }
 
 fn main() {
