@@ -8,31 +8,77 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-//use dotenv::dotenv;
-use rocket::http::{hyper::header::AccessControlAllowOrigin, ContentType};
-use rocket::Response;
-use std::env;
+use backend::model::login_data::LoginData;
+use diesel::{pg::PgConnection, prelude::*};
+use rocket::{
+    http::{hyper::header::AccessControlAllowOrigin, ContentType},
+    response::Redirect,
+    Response,
+};
+use rocket_contrib::json::Json;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
+use std::ops::Deref;
+use std::{env, str::FromStr};
 
 diesel_migrations::embed_migrations!();
 
+const FRONT_END_URL: &'static str = "http://localhost:3000/";
+
+#[derive(Responder)]
+struct BaseResponder {
+    inner: String,
+    header: AccessControlAllowOrigin,
+}
+impl BaseResponder {
+    fn new<'a, T: Deref<Target = str>>(inner: T) -> Self {
+        BaseResponder {
+            inner: inner.to_string(),
+            header: AccessControlAllowOrigin::Value(FRONT_END_URL.to_string()),
+        }
+    }
+}
+
 #[get("/")]
-fn hello() -> Response<'static> {
-    Response::build()
-        .header(ContentType::Plain)
-        .header(AccessControlAllowOrigin::Value(
-            "http://localhost:3000".to_string(),
-        ))
-        .finalize()
+fn hello() -> BaseResponder {
+    BaseResponder::new("Hello from the backend-api")
+}
+
+#[head("/")]
+fn head() -> BaseResponder {
+    BaseResponder::new("Head Response")
+}
+
+// Apparently used for preflight requests (checking if cors is working)
+#[options("/")]
+fn options() -> BaseResponder {
+    BaseResponder::new("Options Response")
+}
+
+#[post("/", format = "json", data = "<login_data>")]
+fn login(login_data: Json<LoginData>) -> BaseResponder {
+    BaseResponder::new(format!(
+        "got login data: user: {}, pwd: {}",
+        login_data.user_name, login_data.pwd
+    ))
 }
 
 fn main() {
-    //dotenv().ok();
     let connection = establish_connection();
     embedded_migrations::run(&connection);
 
-    rocket::ignite().mount("/", routes![hello]).launch();
+    let mut cors_options = CorsOptions::default();
+    cors_options.allowed_origins = AllowedOrigins::some_exact(&[FRONT_END_URL]);
+    cors_options.allowed_headers = AllowedHeaders::some(&["Accept", "Content-Type"]);
+    cors_options.allowed_methods = ["Get", "Post", "Head", "Options", "Delete"]
+        .iter()
+        .map(|m| FromStr::from_str(m).unwrap())
+        .collect();
+
+    rocket::ignite()
+        .mount("/", routes![hello, head, options])
+        .mount("/login", routes![options_login, login])
+        .attach(cors_options.to_cors().unwrap())
+        .launch();
 }
 
 fn establish_connection() -> PgConnection {
