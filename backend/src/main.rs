@@ -48,13 +48,12 @@ fn head() -> BaseResponder {
     BaseResponder::new("Head Response")
 }
 
-// Apparently used for preflight requests (checking if cors is working)
 #[options("/")]
 fn options() -> BaseResponder {
     BaseResponder::new("Options Response")
 }
 
-#[post("/", format = "json", data = "<login_data>")]
+#[post("/login", format = "json", data = "<login_data>")]
 fn login(login_data: Json<LoginData>) -> BaseResponder {
     BaseResponder::new(format!(
         "got login data: user: {}, pwd: {}",
@@ -75,8 +74,8 @@ fn main() {
         .collect();
 
     rocket::ignite()
-        .mount("/", routes![hello, head, options])
-        .mount("/login", routes![options_login, login])
+        .mount("/", routes![hello, head, options, login])
+        .mount("/login", routes![login])
         .attach(cors_options.to_cors().unwrap())
         .launch();
 }
