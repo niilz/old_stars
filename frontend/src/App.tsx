@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Login from './components/login/Login';
+import Login, { LoginState } from './components/login/Login';
 import Playground from './components/playground/Playground';
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {isLoggedIn ? <Playground /> : <Login login={setLoggedIn} />}
+        {getMain(loginState, setLoginState)}
       </header>
     </div>
   );
 }
 
 export default App;
+
+function getMain(
+  loginState: LoginState,
+  setLoginState: (lg: LoginState) => void
+): JSX.Element {
+  switch (loginState) {
+    case LoginState.LoggedIn:
+      return <Playground />;
+    case LoginState.LoggedOut:
+      return <Login login={setLoginState} />;
+    case LoginState.LoginError:
+      return <div>Das war total falsch!</div>;
+    default:
+      throw `Unreachabale state: ${loginState}`;
+  }
+}

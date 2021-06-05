@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import AuthService from '../../services/auth-service';
 
 type LoginProps = {
-  login: (loginGranted: boolean) => void;
+  login: (loginGranted: LoginState) => void;
 };
+
+export enum LoginState {
+  LoggedIn,
+  LoggedOut,
+  LoginError,
+}
 
 function Login(props: LoginProps) {
   const [password, setPassword] = useState('');
@@ -11,7 +17,7 @@ function Login(props: LoginProps) {
   const handleLogin = (e: React.MouseEvent) => {
     e.preventDefault();
     AuthService.checkPassword(password).then((passwordOk) =>
-      props.login(passwordOk)
+      props.login(passwordOk ? LoginState.LoggedIn : LoginState.LoginError)
     );
   };
 
