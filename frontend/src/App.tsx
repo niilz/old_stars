@@ -8,10 +8,9 @@ function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        {getMain(loginState, setLoginState)}
-      </header>
+      <header className="App-header">Old-Stars App</header>
+      <img src={logo} className="App-logo" alt="logo" />
+      {getMain(loginState, setLoginState)}
     </div>
   );
 }

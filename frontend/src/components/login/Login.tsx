@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AuthService from '../../services/auth-service';
+import './Login.css';
 
 type LoginProps = {
   login: (loginGranted: LoginState) => void;
@@ -22,7 +23,7 @@ function Login(props: LoginProps) {
   };
 
   return (
-    <form>
+    <form className="Login">
       <input
         //type="password"
         type="text"
