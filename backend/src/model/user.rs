@@ -1,6 +1,7 @@
+use diesel::Queryable;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Queryable)]
 pub struct User {
     pub id: u32,
     pub name: String,

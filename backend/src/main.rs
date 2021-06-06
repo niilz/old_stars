@@ -17,6 +17,7 @@ use rocket::{
 };
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
+use std::collections::HashMap;
 use std::ops::Deref;
 use std::{env, str::FromStr};
 
