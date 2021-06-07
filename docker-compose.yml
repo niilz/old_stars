@@ -19,6 +19,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://${PG_USER}:${PG_PWD}@db/old_stars_db
+      - ROCKET_DATABASES={db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}
     command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
 
 
