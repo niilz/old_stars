@@ -1,7 +1,7 @@
-CREATE TABLE user {
+CREATE TABLE user (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	salt VARCHAR NOT NULL,
 	pwd VARCHAR NOT NULL,
   fk_icon_id INT
-};
+);
