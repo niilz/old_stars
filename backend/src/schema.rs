@@ -1,5 +1,3 @@
-use diesel::table;
-
 table! {
     user {
         id -> Integer,

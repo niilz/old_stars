@@ -8,14 +8,11 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
+use backend::db::auth_service::*;
 use backend::model::login_data::LoginData;
 use diesel::{pg::PgConnection, prelude::*};
-use rocket::{
-    http::{hyper::header::AccessControlAllowOrigin, ContentType},
-    response::Redirect,
-    Response,
-};
-use rocket_contrib::json::Json;
+use rocket::http::{hyper::header::AccessControlAllowOrigin, ContentType};
+use rocket_contrib::{database, json::Json};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
 use std::collections::HashMap;
 use std::ops::Deref;
@@ -24,6 +21,9 @@ use std::{env, str::FromStr};
 diesel_migrations::embed_migrations!();
 
 const FRONT_END_URL: &'static str = "http://localhost:3000/";
+
+#[database("db")]
+struct Db(diesel::PgConnection);
 
 #[derive(Responder)]
 struct BaseResponder {
@@ -55,11 +55,9 @@ fn options() -> BaseResponder {
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>) -> BaseResponder {
-    BaseResponder::new(format!(
-        "got login data: user: {}, pwd: {}",
-        login_data.user_name, login_data.pwd
-    ))
+fn login(conn: Db, login_data: Json<LoginData>) -> BaseResponder {
+    let secret_pwd = check_pwd(&*conn, login_data.into_inner());
+    BaseResponder::new(format!("from db! pwd: {}", secret_pwd))
 }
 
 fn main() {
@@ -78,6 +76,7 @@ fn main() {
         .mount("/", routes![hello, head, options, login])
         .mount("/login", routes![login])
         .attach(cors_options.to_cors().unwrap())
+        .attach(Db::fairing())
         .launch();
 }
 
