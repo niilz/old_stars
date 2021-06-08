@@ -54,8 +54,13 @@ fn options() -> BaseResponder {
     BaseResponder::new("Options Response")
 }
 
+#[options("/login")]
+fn options_login() -> BaseResponder {
+    BaseResponder::new("Options Response")
+}
+
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(conn: Db, login_data: Json<LoginData>) -> BaseResponder {
+fn login(login_data: Json<LoginData>, conn: Db) -> BaseResponder {
     let secret_pwd = check_pwd(&*conn, login_data.into_inner());
     BaseResponder::new(format!("from db! pwd: {}", secret_pwd))
 }
@@ -67,14 +72,13 @@ fn main() {
     let mut cors_options = CorsOptions::default();
     cors_options.allowed_origins = AllowedOrigins::some_exact(&[FRONT_END_URL]);
     cors_options.allowed_headers = AllowedHeaders::some(&["Accept", "Content-Type"]);
-    cors_options.allowed_methods = ["Get", "Post", "Head", "Options", "Delete"]
+    cors_options.allowed_methods = ["GET", "POST", "HEAD", "OPTIONS", "DELETE"]
         .iter()
         .map(|m| FromStr::from_str(m).unwrap())
         .collect();
 
     rocket::ignite()
-        .mount("/", routes![hello, head, options, login])
-        .mount("/login", routes![login])
+        .mount("/", routes![hello, head, options, options_login, login])
         .attach(cors_options.to_cors().unwrap())
         .attach(Db::fairing())
         .launch();
