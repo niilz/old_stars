@@ -62,6 +62,7 @@ fn options_login() -> BaseResponder {
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(login_data: Json<LoginData>, conn: Db) -> BaseResponder {
     let secret_pwd = check_pwd(&*conn, login_data.into_inner());
+    // TODO: if Login Successfull add "Set-Cooky" header
     BaseResponder::new(format!("from db! pwd: {}", secret_pwd))
 }
 

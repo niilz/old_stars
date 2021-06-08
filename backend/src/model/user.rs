@@ -1,7 +1,9 @@
-use diesel::Queryable;
+use crate::schema::old_users;
+use diesel::{Identifiable, Queryable};
 use serde::Deserialize;
 
-#[derive(Deserialize, Queryable)]
+#[derive(Deserialize, Queryable, Identifiable)]
+#[table_name = "old_users"]
 pub struct User {
     pub id: i32,
     pub name: String,
