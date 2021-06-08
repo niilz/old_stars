@@ -1,5 +1,5 @@
 table! {
-    user {
+    old_user {
         id -> Integer,
         name -> VarChar,
         salt -> VarChar,
