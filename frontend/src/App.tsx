@@ -3,14 +3,17 @@ import logo from './logo.svg';
 import './App.css';
 import Login, { LoginState } from './components/login/Login';
 import Playground from './components/playground/Playground';
+import { RegistrationForm } from './components/registration-form/RegistrationForm';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
+  const [showAdmin, setShowAdmin] = useState(false);
   return (
     <div className="App">
       <header className="App-header">Old-Stars App</header>
       <img src={logo} className="App-logo" alt="logo" />
-      {getMain(loginState, setLoginState)}
+      {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
+      <button onClick={() => setShowAdmin(true)}></button>
     </div>
   );
 }
@@ -19,8 +22,14 @@ export default App;
 
 function getMain(
   loginState: LoginState,
-  setLoginState: (lg: LoginState) => void
+  setLoginState: (lg: LoginState) => void,
+  showAdmin: boolean,
+  setShowAdmin: (ssa: boolean) => void
 ): JSX.Element {
+  if (showAdmin) {
+    return <RegistrationForm navToHome={() => setShowAdmin(false)} />;
+  }
+
   switch (loginState) {
     case LoginState.LoggedIn:
       return <Playground />;

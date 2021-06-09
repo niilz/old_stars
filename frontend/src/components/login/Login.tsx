@@ -17,7 +17,10 @@ function Login(props: LoginProps) {
 
   const handleLogin = (e: React.MouseEvent) => {
     e.preventDefault();
-    AuthService.checkPassword(password).then((passwordOk) =>
+    AuthService.checkPassword({
+      user_name: 'master',
+      pwd: password,
+    }).then((passwordOk) =>
       props.login(passwordOk ? LoginState.LoggedIn : LoginState.LoginError)
     );
   };
