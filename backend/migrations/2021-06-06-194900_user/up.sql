@@ -1,4 +1,4 @@
-CREATE TABLE old_user (
+CREATE TABLE old_users (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL,
 	salt VARCHAR NOT NULL,
