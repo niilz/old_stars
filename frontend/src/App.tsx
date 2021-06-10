@@ -13,7 +13,7 @@ function App() {
       <header className="App-header">Old-Stars App</header>
       <img src={logo} className="App-logo" alt="logo" />
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
-      <button onClick={() => setShowAdmin(true)}></button>
+      <button onClick={() => setShowAdmin(true)}>admin</button>
     </div>
   );
 }

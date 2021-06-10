@@ -24,7 +24,8 @@ export function RegistrationForm(props: RegistrationFormProps) {
           onChange={(e) => setUserName(e.target.value)}
         />
         <input
-          type="password"
+          //type="password"
+          type="text"
           placeholder="password"
           onChange={(e) => setPwd(e.target.value)}
         />

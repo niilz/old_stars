@@ -9,6 +9,7 @@ extern crate diesel;
 extern crate diesel_migrations;
 
 use backend::db::auth_service::*;
+use backend::db::user_service::*;
 use backend::model::login_data::LoginData;
 use diesel::{pg::PgConnection, prelude::*};
 use rocket::http::{hyper::header::AccessControlAllowOrigin, ContentType};
@@ -66,6 +67,14 @@ fn login(login_data: Json<LoginData>, conn: Db) -> BaseResponder {
     BaseResponder::new(format!("from db! pwd: {}", secret_pwd))
 }
 
+#[post("/register", format = "json", data = "<user>")]
+fn register(user: Json<LoginData>, conn: Db) -> BaseResponder {
+    match insert_user(&conn, user.into_inner()) {
+        Ok(amount) => BaseResponder::new(format!("inserted {} user", amount)),
+        Err(e) => BaseResponder::new(format!("Did not insert user! Error: {}", e)),
+    }
+}
+
 fn main() {
     let connection = establish_connection();
     embedded_migrations::run(&connection);
@@ -79,7 +88,10 @@ fn main() {
         .collect();
 
     rocket::ignite()
-        .mount("/", routes![hello, head, options, options_login, login])
+        .mount(
+            "/",
+            routes![hello, head, options, options_login, login, register],
+        )
         .attach(cors_options.to_cors().unwrap())
         .attach(Db::fairing())
         .launch();
