@@ -1,5 +1,5 @@
 * {
-  border: 2px solid grey;
+  /*border: 2px solid grey;*/
   box-sizing: border-box;
 }
 
@@ -17,9 +17,26 @@ body,
 .App {
   width: 100vw;
   height: 100vh;
-  background-color: tan;
+  background: linear-gradient(
+    125deg,
+    #007 20%,
+    #05a 20% 40%,
+    #0aa 40% 60%,
+    #fa2 60% 80%,
+    #f00 80% 100%
+  );
 }
 
 .App-logo {
-  height: 100vw;
+  font-size: 50vw;
+  animation: starotate 5s linear infinite forwards;
+}
+
+@keyframes starotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
