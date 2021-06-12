@@ -3,9 +3,16 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: goldsmith;
+  src: url(fonts/The\ Goldsmith_Vintage.ttf);
+}
+
 html,
 body,
 .App {
+  font-family: goldsmith;
+  font-size: 10px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -18,13 +25,19 @@ body,
   width: 100vw;
   height: 100vh;
   background: linear-gradient(
-    125deg,
-    #007 20%,
-    #05a 20% 40%,
-    #0aa 40% 60%,
-    #fa2 60% 80%,
-    #f00 80% 100%
+    160deg,
+    #f3c693 20%,
+    #f00 20% 25%,
+    #f72 25% 30%,
+    #fb0 30% 35%,
+    #0bb 35% 40%,
+    #f3c693 40%
   );
+}
+
+.App-header {
+  font-size: 7rem;
+  transform: rotate(-20deg);
 }
 
 .App-logo {

@@ -27,15 +27,18 @@ function Login(props: LoginProps) {
   };
 
   return (
-    <form className="Login">
-      <input
-        //type="password"
-        type="text"
-        placeholder="Master Passwort"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleLogin}>Login</button>
-    </form>
+    <>
+      <div className="App-logo">⭐</div>
+      <form className="Login">
+        <input
+          //type="password"
+          type="text"
+          placeholder="Master Passwort"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Login</button>
+      </form>
+    </>
   );
 }
 

@@ -12,7 +12,6 @@ function App() {
     <div className="App">
       <header className="App-header">Old-Stars App</header>
       {/*<img src={logo} className="App-logo" alt="logo" />*/}
-      <div className="App-logo">⭐</div>
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
       <button onClick={() => setShowAdmin(true)}>admin</button>
     </div>
