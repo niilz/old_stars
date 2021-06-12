@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
 import { insertUser } from '../../services/user-service';
 
-type RegistrationFormProps = {
-  navToHome: () => void;
-};
-
-export function RegistrationForm(props: RegistrationFormProps) {
+export function RegistrationForm() {
   const [userName, setUserName] = useState('');
   const [pwd, setPwd] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Admin submission happenend');
     insertUser({ user_name: userName, pwd });
-    props.navToHome();
+    setUserName('');
+    setPwd('');
   };
   return (
     <>
@@ -31,7 +27,6 @@ export function RegistrationForm(props: RegistrationFormProps) {
         />
         <button>register</button>
       </form>
-      <button onClick={props.navToHome}>back</button>
     </>
   );
 }

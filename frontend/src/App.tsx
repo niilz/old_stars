@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Login, { LoginState } from './components/login/Login';
 import Playground from './components/playground/Playground';
-import { RegistrationForm } from './components/registration-form/RegistrationForm';
+import { AdminConsole } from './components/admin/AdminConsole';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
@@ -28,7 +28,7 @@ function getMain(
   setShowAdmin: (ssa: boolean) => void
 ): JSX.Element {
   if (showAdmin) {
-    return <RegistrationForm navToHome={() => setShowAdmin(false)} />;
+    return <AdminConsole navToHome={() => setShowAdmin(false)} />;
   }
 
   switch (loginState) {
