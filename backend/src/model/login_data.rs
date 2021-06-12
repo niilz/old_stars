@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct LoginData {
-    pub user_name: String,
+    pub name: String,
     pub pwd: String,
 }

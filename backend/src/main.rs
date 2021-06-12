@@ -54,26 +54,26 @@ fn login(login_data: Json<LoginData>, conn: Db) -> Json<String> {
 }
 
 #[post("/register", format = "json", data = "<user>")]
-fn register(user: Json<LoginData>, conn: Db) -> Json<String> {
+fn register(user: Json<LoginData>, conn: Db) -> Result<Json<User>, String> {
     match insert_user(&conn, user.into_inner()) {
-        Ok(amount) => Json(format!("inserted {} user", amount)),
-        Err(e) => Json(format!("Did not insert user! Error: {}", e)),
+        Ok(user) => Ok(Json(user)),
+        Err(e) => Err(format!("Could not reigster user. Error: {}", e)),
     }
 }
 
 #[get("/all", format = "json")]
-fn all_users(conn: Db) -> Result<Json<Vec<User>>, Error> {
+fn all_users(conn: Db) -> Result<Json<Vec<User>>, String> {
     match get_users(&conn) {
         Ok(user) => Ok(Json(user)),
-        Err(e) => Err(e),
+        Err(e) => Err(format!("Could not get all users. Error: {}", e)),
     }
 }
 
 #[delete("/delete/<id>")]
-fn delete_user(conn: Db, id: i32) -> Json<String> {
+fn delete_user(conn: Db, id: i32) -> Result<Json<User>, String> {
     match delete_user_from_db(&conn, id) {
-        Ok(amount) => Json(format!("Deleted {} user. ID was: {}", amount, id)),
-        Err(e) => Json(format!("Did NOT delete user with id {}! Error: {}", id, e)),
+        Ok(user) => Ok(Json(user)),
+        Err(e) => Err(format!("Did NOT delete user with id {}! Error: {}", id, e)),
     }
 }
 

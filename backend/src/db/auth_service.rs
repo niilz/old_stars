@@ -4,13 +4,10 @@ use diesel::{prelude::*, PgConnection};
 
 pub fn check_pwd(conn: &PgConnection, login_data: LoginData) -> String {
     let users: Vec<User> = old_users
-        .filter(name.eq(&login_data.user_name))
+        .filter(name.eq(&login_data.name))
         .limit(1)
         .load(conn)
-        .expect(&format!(
-            "Error checking pwd for user: {}",
-            login_data.user_name
-        ));
+        .expect(&format!("Error checking pwd for user: {}", login_data.name));
     users.get(0).unwrap().pwd.to_string()
 }
 
