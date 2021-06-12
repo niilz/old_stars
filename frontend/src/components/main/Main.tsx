@@ -12,7 +12,7 @@ export function Main(props: MainProps) {
   }
   return (
     <div className="Main">
-      <Header text="Old-Stars App" />
+      <Header />
       <Login login={props.setLoginState} />
     </div>
   );

@@ -1,5 +1,9 @@
 import './Logo.css';
 
-export function AppLogo() {
-  return <div className="App-logo">⭐</div>;
+interface LogoProps {
+  addClass: string;
+}
+
+export function AppLogo(props: LogoProps) {
+  return <div className={`App-Logo ${props.addClass}`}>⭐</div>;
 }

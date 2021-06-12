@@ -1,12 +1,9 @@
 import './Header.css';
 
-interface HeaderProps {
-  text: string;
-}
-export function Header(props: HeaderProps) {
+export function Header() {
   return (
     <header className="App-header">
-      <h1 className="title">{props.text}</h1>
+      <h1 className="title">Old-Stars App</h1>
     </header>
   );
 }

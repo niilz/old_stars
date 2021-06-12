@@ -1,0 +1,10 @@
+.admin-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.small-logo {
+  font-size: 5rem;
+}

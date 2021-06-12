@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User } from '../../model/User';
 import { deleteUser, getAllUsers } from '../../services/user-service';
+import { Header } from '../header/Header';
 import { AppLogo } from '../logo/Logo';
 import { RegistrationForm } from '../registration-form/RegistrationForm';
 import { UserList } from '../user-list/UserList';
+import './AdminConsole.css';
 
 type AdminConsoleProps = {
   navToHome: () => void;
@@ -28,7 +30,10 @@ export function AdminConsole(props: AdminConsoleProps) {
 
   return (
     <>
-      <AppLogo />
+      <div className="admin-header">
+        <AppLogo addClass="small-logo" />
+        <Header />
+      </div>
       <UserList users={users} onDelete={deleteUserFromList} />
       <RegistrationForm
         onNewUser={(newUser: User) => setUsers([...users, newUser])}
