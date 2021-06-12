@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import './App.css';
 import { LoginState } from './components/login/Login';
 import Playground from './components/playground/Playground';
 import { AdminConsole } from './components/admin/AdminConsole';
 import { Main } from './components/main/Main';
+import styles from './App.module.css';
+import './global.css';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   const [showAdmin, setShowAdmin] = useState(false);
   return (
-    <div className="App">
+    <>
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
       <button onClick={() => setShowAdmin(true)}>admin</button>
-    </div>
+    </>
   );
 }
 
@@ -32,7 +33,7 @@ function getMain(
     case LoginState.LoggedIn:
       return <Playground />;
     case LoginState.LoggedOut:
-      return <Main setLoginState={setLoginState} />;
+      return <Main styles={styles.AppLogo} setLoginState={setLoginState} />;
     case LoginState.LoginError:
       return <div>Das war total falsch!</div>;
     default:

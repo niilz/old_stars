@@ -1,13 +1,4 @@
-:root {
-  --primary: #f3c693;
-  --secondary: #732;
-  --accent: #0bb;
-  --highlight: #f00;
-  --min-width: 90px;
-  --min-height: 40px;
-  --border-weight: 5px;
-  --border-radius: 8px;
-}
+@import './vars.css';
 
 @font-face {
   font-family: goldsmith;
@@ -15,7 +6,9 @@
 }
 
 * {
-  /*border: 2px solid grey;*/
+  /*
+  border: 2px solid grey;
+  */
   box-sizing: border-box;
   margin: 0px;
   font-family: goldsmith;
@@ -23,24 +16,19 @@
 
 html,
 body,
-.App {
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#root {
   font-size: 10px;
   background-color: var(--primary);
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.App {
-  width: 100vw;
-  height: 100vh;
-}
-
-.App-Logo {
-  font-size: 50vw;
 }
 
 button {
@@ -51,7 +39,7 @@ button {
   font-weight: bold;
   color: var(--secondary);
   letter-spacing: 0.3rem;
-  font-size: 3rem;
+  font-size: 2rem;
   background: none;
   border: var(--border-weight) solid var(--secondary);
   border-radius: var(--border-radius);
@@ -66,12 +54,12 @@ button:active {
 }
 
 input {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--secondary);
   padding: 1px 6px;
   border: var(--border-weight) solid var(--accent);
   border-radius: var(--border-radius);
   min-height: var(--min-height);
-  min-width: calc(var(--min-width) * 2);
+  min-width: calc(var(--min-width));
   background-color: transparent;
 }

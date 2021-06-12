@@ -1,9 +1,8 @@
-import './Logo.css';
+import styles from './Logo.module.css';
 
 interface LogoProps {
-  addClass: string;
+  styles: string;
 }
-
 export function AppLogo(props: LogoProps) {
-  return <div className={`App-Logo ${props.addClass}`}>⭐</div>;
+  return <div className={`${styles.AppLogo} ${props.styles}`}>⭐</div>;
 }

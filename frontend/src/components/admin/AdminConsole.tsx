@@ -5,7 +5,7 @@ import { Header } from '../header/Header';
 import { AppLogo } from '../logo/Logo';
 import { RegistrationForm } from '../registration-form/RegistrationForm';
 import { UserList } from '../user-list/UserList';
-import './AdminConsole.css';
+import styles from './AdminConsole.module.css';
 
 type AdminConsoleProps = {
   navToHome: () => void;
@@ -30,8 +30,8 @@ export function AdminConsole(props: AdminConsoleProps) {
 
   return (
     <>
-      <div className="admin-header">
-        <AppLogo addClass="small-logo" />
+      <div className={styles.adminHeader}>
+        <AppLogo styles={styles.AppLogo} />
         <Header />
       </div>
       <UserList users={users} onDelete={deleteUserFromList} />

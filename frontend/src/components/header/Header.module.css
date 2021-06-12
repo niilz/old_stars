@@ -1,4 +1,6 @@
-.App-header {
+@import '../../vars.css';
+
+.AppHeader {
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -14,7 +16,7 @@
 }
 
 .title {
-  font-size: 7rem;
+  font-size: 4.3rem;
   color: var(--primary);
   text-shadow: 0px 0px 10px var(--secondary);
   background-clip: text;

@@ -1,0 +1,10 @@
+:root {
+  --primary: #f3c693;
+  --secondary: #732;
+  --accent: #0bb;
+  --highlight: #f00;
+  --min-width: 90px;
+  --min-height: 40px;
+  --border-weight: 5px;
+  --border-radius: 8px;
+}

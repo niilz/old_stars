@@ -1,9 +1,9 @@
-import './Header.css';
+import styles from './Header.module.css';
 
 export function Header() {
   return (
-    <header className="App-header">
-      <h1 className="title">Old-Stars App</h1>
+    <header className={styles.AppHeader}>
+      <h1 className={styles.title}>Old-Stars App</h1>
     </header>
   );
 }
