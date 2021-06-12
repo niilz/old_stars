@@ -1,17 +1,22 @@
-import React from 'react';
 import { User } from '../../model/User';
 import { DeletableListItem } from '../deletable/Deletable';
 
 type UserListProps = {
   users: User[];
+  onDelete: (id: number) => void;
 };
 
 export function UserList(props: UserListProps) {
   return (
-    <div>
+    <ul>
       {props.users.map((user) => (
-        <DeletableListItem id={user['id']} text={user['user_name']} />
+        <DeletableListItem
+          key={user['id']}
+          id={user['id']}
+          text={user['name']}
+          deleteGotClicked={() => props.onDelete(user['id'])}
+        />
       ))}
-    </div>
+    </ul>
   );
 }

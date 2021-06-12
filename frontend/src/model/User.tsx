@@ -1,10 +1,10 @@
 export interface User {
-  id: Number;
-  user_name: String;
-  pwd: String;
+  id: number;
+  name: string;
+  pwd: string;
 }
 
 export interface UserCredentials {
-  user_name: String;
-  pwd: String;
+  name: string;
+  pwd: string;
 }

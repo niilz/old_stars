@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { User } from '../../model/User';
 import { insertUser } from '../../services/user-service';
 
-export function RegistrationForm() {
+interface RegistrationFormProps {
+  onNewUser: (user: User) => void;
+}
+
+export function RegistrationForm(props: RegistrationFormProps) {
   const [userName, setUserName] = useState('');
   const [pwd, setPwd] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    insertUser({ user_name: userName, pwd });
+    const newUser = await insertUser({ name: userName, pwd });
+    console.log('registerd The User:', newUser);
+    props.onNewUser(newUser);
     setUserName('');
     setPwd('');
   };

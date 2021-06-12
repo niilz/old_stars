@@ -7,9 +7,9 @@ export function insertUser(user: UserCredentials) {
 }
 
 export function deleteUser(id: Number) {
-  return fetchWrapper(METHOD.POST, `delete${id}`, '');
+  return fetchWrapper(METHOD.DELETE, `delete/${id}`, '');
 }
 
-export function getAllUsers() {
+export async function getAllUsers() {
   return fetchWrapper(METHOD.GET, 'all', '');
 }

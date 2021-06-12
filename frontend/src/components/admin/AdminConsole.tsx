@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAllUsers } from '../../services/user-service';
+import { User } from '../../model/User';
+import { deleteUser, getAllUsers } from '../../services/user-service';
 import { RegistrationForm } from '../registration-form/RegistrationForm';
 import { UserList } from '../user-list/UserList';
 
@@ -8,18 +9,28 @@ type AdminConsoleProps = {
 };
 
 export function AdminConsole(props: AdminConsoleProps) {
-  const [users, setUsers] = useState([]);
-
+  const [users, setUsers] = useState(new Array<User>());
   useEffect(() => {
     const fetchUsers = async () => {
       const fetchedUsers = await getAllUsers();
+      console.log('fetchedUsers:', fetchedUsers);
+      setUsers(fetchedUsers);
     };
     fetchUsers();
-  }, [users]);
+  }, []);
+
+  const deleteUserFromList = (id: number) => {
+    deleteUser(id);
+    const updatedUsers = users.filter((user) => user['id'] !== id);
+    setUsers(updatedUsers);
+  };
+
   return (
     <>
-      <UserList users={users} />
-      <RegistrationForm />
+      <UserList users={users} onDelete={deleteUserFromList} />
+      <RegistrationForm
+        onNewUser={(newUser: User) => setUsers([...users, newUser])}
+      />
       <button onClick={props.navToHome}>Home</button>
     </>
   );
