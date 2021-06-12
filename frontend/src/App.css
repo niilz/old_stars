@@ -70,9 +70,20 @@ button {
   width: 20vw;
   height: 4vh;
   */
+  font-family: goldsmith;
+  font-weight: bold;
+  color: var(--secondary);
+  letter-spacing: 0.3rem;
+  font-size: 3rem;
   background: none;
   border: 5px solid var(--secondary);
   border-radius: 8px;
   min-width: 90px;
   min-height: 40px;
+}
+
+button:active {
+  background: var(--secondary);
+  background-color: var(--secondary);
+  color: var(--primary);
 }
