@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { User } from '../../model/User';
 import { deleteUser, getAllUsers } from '../../services/user-service';
+import { AppLogo } from '../logo/Logo';
 import { RegistrationForm } from '../registration-form/RegistrationForm';
 import { UserList } from '../user-list/UserList';
 
@@ -27,6 +28,7 @@ export function AdminConsole(props: AdminConsoleProps) {
 
   return (
     <>
+      <AppLogo />
       <UserList users={users} onDelete={deleteUserFromList} />
       <RegistrationForm
         onNewUser={(newUser: User) => setUsers([...users, newUser])}

@@ -1,11 +1,12 @@
 :root {
   --primary: #f3c693;
   --secondary: #732;
-}
-* {
-  /*border: 2px solid grey;*/
-  box-sizing: border-box;
-  margin: 0px;
+  --accent: #0bb;
+  --highlight: #f00;
+  --min-width: 90px;
+  --min-height: 40px;
+  --border-weight: 5px;
+  --border-radius: 8px;
 }
 
 @font-face {
@@ -13,10 +14,16 @@
   src: url(fonts/The\ Goldsmith_Vintage.ttf);
 }
 
+* {
+  /*border: 2px solid grey;*/
+  box-sizing: border-box;
+  margin: 0px;
+  font-family: goldsmith;
+}
+
 html,
 body,
 .App {
-  font-family: goldsmith;
   font-size: 10px;
   background-color: var(--primary);
   width: 100%;
@@ -32,58 +39,35 @@ body,
   height: 100vh;
 }
 
-.App-header {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  width: 120vw;
-  height: 15%;
-  background: linear-gradient(#f00 25%, #f72 25% 50%, #fb0 50% 75%, #0bb 75%);
-  transform: rotate(-20deg);
-}
-
-.title {
-  font-size: 7rem;
-  margin-bottom: 2%;
-  color: var(--primary);
-  text-shadow: 0px 0px 10px var(--secondary);
-  background-clip: text;
-}
-
-.App-logo {
-  font-size: 50vw;
-  animation: starotate 5s linear infinite forwards;
-}
-
-@keyframes starotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 button {
   /*
   width: 20vw;
   height: 4vh;
   */
-  font-family: goldsmith;
   font-weight: bold;
   color: var(--secondary);
   letter-spacing: 0.3rem;
   font-size: 3rem;
   background: none;
-  border: 5px solid var(--secondary);
-  border-radius: 8px;
-  min-width: 90px;
-  min-height: 40px;
+  border: var(--border-weight) solid var(--secondary);
+  border-radius: var(--border-radius);
+  min-width: var(--min-width);
+  min-height: var(--min-height);
 }
 
 button:active {
   background: var(--secondary);
   background-color: var(--secondary);
   color: var(--primary);
+}
+
+input {
+  font-size: 2.5rem;
+  color: var(--secondary);
+  padding: 1px 6px;
+  border: var(--border-weight) solid var(--accent);
+  border-radius: var(--border-radius);
+  min-height: var(--min-height);
+  min-width: calc(var(--min-width) * 2);
+  background-color: transparent;
 }

@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
-import Login, { LoginState } from './components/login/Login';
+import { LoginState } from './components/login/Login';
 import Playground from './components/playground/Playground';
 import { AdminConsole } from './components/admin/AdminConsole';
+import { Main } from './components/main/Main';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   const [showAdmin, setShowAdmin] = useState(false);
   return (
     <div className="App">
-      <header className="App-header">
-        <h1 className="title">Old-Stars App</h1>
-      </header>
-      {/*<img src={logo} className="App-logo" alt="logo" />*/}
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
       <button onClick={() => setShowAdmin(true)}>admin</button>
     </div>
@@ -36,7 +32,7 @@ function getMain(
     case LoginState.LoggedIn:
       return <Playground />;
     case LoginState.LoggedOut:
-      return <Login login={setLoginState} />;
+      return <Main setLoginState={setLoginState} />;
     case LoginState.LoginError:
       return <div>Das war total falsch!</div>;
     default:

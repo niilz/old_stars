@@ -1,0 +1,17 @@
+.App-Logo {
+  font-size: 1rem;
+}
+
+.App-logo {
+  font-size: 50vw;
+  animation: starotate 5s linear infinite forwards;
+}
+
+@keyframes starotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

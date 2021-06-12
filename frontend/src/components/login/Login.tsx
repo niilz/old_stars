@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AuthService from '../../services/auth-service';
+import { AppLogo } from '../logo/Logo';
 import './Login.css';
 
 type LoginProps = {
@@ -28,7 +29,7 @@ function Login(props: LoginProps) {
 
   return (
     <>
-      <div className="App-logo">⭐</div>
+      <AppLogo />
       <form className="Login">
         <input
           //type="password"
