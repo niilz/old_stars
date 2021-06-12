@@ -1,6 +1,11 @@
+:root {
+  --primary: #f3c693;
+  --secondary: #732;
+}
 * {
   /*border: 2px solid grey;*/
   box-sizing: border-box;
+  margin: 0px;
 }
 
 @font-face {
@@ -13,6 +18,7 @@ body,
 .App {
   font-family: goldsmith;
   font-size: 10px;
+  background-color: var(--primary);
   width: 100%;
   height: 100%;
   display: flex;
@@ -24,20 +30,25 @@ body,
 .App {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(
-    160deg,
-    #f3c693 20%,
-    #f00 20% 25%,
-    #f72 25% 30%,
-    #fb0 30% 35%,
-    #0bb 35% 40%,
-    #f3c693 40%
-  );
 }
 
 .App-header {
-  font-size: 7rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 120vw;
+  height: 15%;
+  background: linear-gradient(#f00 25%, #f72 25% 50%, #fb0 50% 75%, #0bb 75%);
   transform: rotate(-20deg);
+}
+
+.title {
+  font-size: 7rem;
+  margin-bottom: 2%;
+  color: var(--primary);
+  text-shadow: 0px 0px 10px var(--secondary);
+  background-clip: text;
 }
 
 .App-logo {
@@ -52,4 +63,16 @@ body,
   to {
     transform: rotate(360deg);
   }
+}
+
+button {
+  /*
+  width: 20vw;
+  height: 4vh;
+  */
+  background: none;
+  border: 5px solid var(--secondary);
+  border-radius: 8px;
+  min-width: 90px;
+  min-height: 40px;
 }

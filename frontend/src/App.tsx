@@ -10,7 +10,9 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false);
   return (
     <div className="App">
-      <header className="App-header">Old-Stars App</header>
+      <header className="App-header">
+        <h1 className="title">Old-Stars App</h1>
+      </header>
       {/*<img src={logo} className="App-logo" alt="logo" />*/}
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
       <button onClick={() => setShowAdmin(true)}>admin</button>
