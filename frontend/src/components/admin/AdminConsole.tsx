@@ -29,7 +29,7 @@ export function AdminConsole(props: AdminConsoleProps) {
   };
 
   return (
-    <>
+    <div className={styles.AdminConsole}>
       <div className={styles.adminHeader}>
         <AppLogo styles={styles.AppLogo} />
         <Header />
@@ -39,6 +39,6 @@ export function AdminConsole(props: AdminConsoleProps) {
         onNewUser={(newUser: User) => setUsers([...users, newUser])}
       />
       <button onClick={props.navToHome}>Home</button>
-    </>
+    </div>
   );
 }
