@@ -11,6 +11,7 @@ extern crate diesel_migrations;
 use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::login_data::LoginData;
+use backend::model::user::User;
 use diesel::{pg::PgConnection, prelude::*};
 use rocket::http::{hyper::header::AccessControlAllowOrigin, ContentType};
 use rocket_contrib::{database, json::Json};
@@ -26,52 +27,89 @@ const FRONT_END_URL: &'static str = "http://localhost:3000/";
 #[database("db")]
 struct Db(diesel::PgConnection);
 
-#[derive(Responder)]
-struct BaseResponder {
-    inner: String,
+#[derive(Responder, Debug)]
+enum Body {
+    Plain(String),
+    Error(String),
+    Json(Json<Vec<User>>),
+}
+#[derive(Responder, Debug)]
+struct ApiResponse {
+    body: Body,
     header: AccessControlAllowOrigin,
 }
-impl BaseResponder {
+impl ApiResponse {
     fn new<'a, T: Deref<Target = str>>(inner: T) -> Self {
-        BaseResponder {
-            inner: inner.to_string(),
+        ApiResponse {
+            body: Body::Plain(inner.to_string()),
+            header: AccessControlAllowOrigin::Value(FRONT_END_URL.to_string()),
+        }
+    }
+
+    fn new_with_error<'a, T: Deref<Target = str>>(error_msg: T) -> Self {
+        ApiResponse {
+            body: Body::Error(error_msg.to_string()),
+            header: AccessControlAllowOrigin::Value(FRONT_END_URL.to_string()),
+        }
+    }
+    fn new_with_json(json: Json<Vec<User>>) -> Self {
+        ApiResponse {
+            body: Body::Json(json),
             header: AccessControlAllowOrigin::Value(FRONT_END_URL.to_string()),
         }
     }
 }
 
 #[get("/")]
-fn hello() -> BaseResponder {
-    BaseResponder::new("Hello from the backend-api")
+fn hello() -> ApiResponse {
+    ApiResponse::new("Hello from the backend-api")
 }
 
 #[head("/")]
-fn head() -> BaseResponder {
-    BaseResponder::new("Head Response")
+fn head() -> ApiResponse {
+    ApiResponse::new("Head Response")
 }
 
 #[options("/")]
-fn options() -> BaseResponder {
-    BaseResponder::new("Options Response")
+fn options() -> ApiResponse {
+    ApiResponse::new("Options Response")
 }
 
 #[options("/login")]
-fn options_login() -> BaseResponder {
-    BaseResponder::new("Options Response")
+fn options_login() -> ApiResponse {
+    ApiResponse::new("Options Response")
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>, conn: Db) -> BaseResponder {
+fn login(login_data: Json<LoginData>, conn: Db) -> ApiResponse {
     let secret_pwd = check_pwd(&*conn, login_data.into_inner());
     // TODO: if Login Successfull add "Set-Cooky" header
-    BaseResponder::new(format!("from db! pwd: {}", secret_pwd))
+    ApiResponse::new(format!("from db! pwd: {}", secret_pwd))
 }
 
 #[post("/register", format = "json", data = "<user>")]
-fn register(user: Json<LoginData>, conn: Db) -> BaseResponder {
+fn register(user: Json<LoginData>, conn: Db) -> ApiResponse {
     match insert_user(&conn, user.into_inner()) {
-        Ok(amount) => BaseResponder::new(format!("inserted {} user", amount)),
-        Err(e) => BaseResponder::new(format!("Did not insert user! Error: {}", e)),
+        Ok(amount) => ApiResponse::new(format!("inserted {} user", amount)),
+        Err(e) => ApiResponse::new(format!("Did not insert user! Error: {}", e)),
+    }
+}
+
+#[get("/all", format = "json")]
+fn all_users(conn: Db) -> ApiResponse {
+    match get_users(&conn) {
+        Ok(users) => ApiResponse::new_with_json(Json(users)),
+        Err(e) => ApiResponse::new_with_error(format!("Did not insert user! Error: {}", e)),
+    }
+}
+
+#[get("/delete/<id>")]
+fn delete_user(conn: Db, id: i32) -> ApiResponse {
+    match delete_user_from_db(&conn, id) {
+        Ok(amount) => ApiResponse::new(format!("Deleted {} user. ID was: {}", amount, id)),
+        Err(e) => {
+            ApiResponse::new_with_error(format!("Did NOT delete user with id {}! Error: {}", id, e))
+        }
     }
 }
 
@@ -90,7 +128,15 @@ fn main() {
     rocket::ignite()
         .mount(
             "/",
-            routes![hello, head, options, options_login, login, register],
+            routes![
+                hello,
+                head,
+                options,
+                options_login,
+                login,
+                register,
+                all_users
+            ],
         )
         .attach(cors_options.to_cors().unwrap())
         .attach(Db::fairing())
