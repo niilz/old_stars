@@ -1,8 +1,8 @@
 import { METHOD } from '../Constants';
-import { User } from '../model/User';
+import { UserCredentials } from '../model/User';
 import { fetchWrapper } from './fetch-service';
 
-export function insertUser(user: User) {
+export function insertUser(user: UserCredentials) {
   return fetchWrapper(METHOD.POST, 'register', JSON.stringify(user));
 }
 

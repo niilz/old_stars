@@ -11,11 +11,14 @@ export function AdminConsole(props: AdminConsoleProps) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    getAllUsers().then((users) => setUsers(users));
+    const fetchUsers = async () => {
+      const fetchedUsers = await getAllUsers();
+    };
+    fetchUsers();
   }, [users]);
   return (
     <>
-      <UserList />
+      <UserList users={users} />
       <RegistrationForm />
       <button onClick={props.navToHome}>Home</button>
     </>

@@ -20,9 +20,10 @@ function Login(props: LoginProps) {
     AuthService.checkPassword({
       user_name: 'master',
       pwd: password,
-    }).then((passwordOk) =>
-      props.login(passwordOk ? LoginState.LoggedIn : LoginState.LoginError)
-    );
+    }).then((loginResponse) => {
+      console.log(loginResponse);
+      props.login(loginResponse ? LoginState.LoggedIn : LoginState.LoginError);
+    });
   };
 
   return (

@@ -1,7 +1,17 @@
 import React from 'react';
 import { User } from '../../model/User';
-import {DeletableListItem} from '../deletable/Deletable';
+import { DeletableListItem } from '../deletable/Deletable';
 
-export function UserList(list: [User]) {
-	return <div>{list.map((user) => <DeletableListItem id={user["id"]} text={user["user_name"]})}</div>;
+type UserListProps = {
+  users: User[];
+};
+
+export function UserList(props: UserListProps) {
+  return (
+    <div>
+      {props.users.map((user) => (
+        <DeletableListItem id={user['id']} text={user['user_name']} />
+      ))}
+    </div>
+  );
 }
