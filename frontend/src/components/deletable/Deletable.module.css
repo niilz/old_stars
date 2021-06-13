@@ -1,0 +1,20 @@
+.itemContent {
+  display: flex;
+  font-size: 2rem;
+  align-items: center;
+}
+
+li {
+  list-style: none;
+}
+
+.userData {
+  margin-right: 1rem;
+}
+
+.delBtn {
+  padding: 0 0 0 0.5rem;
+  font-size: 1rem;
+  min-width: 2rem;
+  min-height: 2rem;
+}

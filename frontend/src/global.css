@@ -9,6 +9,7 @@
   /*
   border: 2px solid grey;
   */
+  color: var(--secondary);
   box-sizing: border-box;
   margin: 0px;
   font-family: goldsmith;
@@ -23,7 +24,6 @@ body,
 }
 
 #root {
-  font-size: 10px;
   background-color: var(--primary);
   display: flex;
   flex-direction: column;
@@ -37,7 +37,6 @@ button {
   height: 4vh;
   */
   font-weight: bold;
-  color: var(--secondary);
   letter-spacing: 0.3rem;
   font-size: 2rem;
   background: none;
@@ -54,8 +53,8 @@ button:active {
 }
 
 input {
+  text-align: center;
   font-size: 2rem;
-  color: var(--secondary);
   padding: 1px 6px;
   border: var(--border-weight) solid var(--accent);
   border-radius: var(--border-radius);

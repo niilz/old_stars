@@ -13,6 +13,7 @@
     var(--accent) 75%
   );
   transform: rotate(-20deg);
+  transition: all 1s;
 }
 
 .title {

@@ -15,10 +15,18 @@
   margin-bottom: auto;
 }
 
+.adminHeader > header {
+  height: 3rem;
+  transform: rotate(-10deg) translateY(3vh);
+}
+.adminHeader h1 {
+  font-size: 2.8rem;
+}
+
 .AppLogo {
   position: relative;
   align-self: flex-start;
   left: 13vw;
   top: 6vh;
-  font-size: 5rem;
+  font-size: 3rem;
 }

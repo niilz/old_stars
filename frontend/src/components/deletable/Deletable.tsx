@@ -1,3 +1,5 @@
+import styles from './Deletable.module.css';
+
 type DeletableProps = {
   id: number;
   text: string;
@@ -7,9 +9,11 @@ type DeletableProps = {
 export function DeletableListItem(props: DeletableProps) {
   return (
     <li>
-      <div className="deletable-wrapper">
-        <div>{props.text}</div>
-        <button onClick={props.deleteGotClicked}>❌</button>
+      <div className={styles.itemContent}>
+        <div className={styles.userData}>{props.text}</div>
+        <button className={styles.delBtn} onClick={props.deleteGotClicked}>
+          ❌
+        </button>
       </div>
     </li>
   );
