@@ -46,7 +46,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       <form
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
-          !props.isAdminView ? props.styles : ''
+          props.isUserLogin ? props.styles : ''
         }`}
       >
         {props.isUserLogin ? (
@@ -71,7 +71,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
             callback={handleLogin}
           />
         ) : null}
-        {props.isUserLogin ? (
+        {props.isUserLogin || props.isAdminView ? (
           <Button
             text="Register"
             styles={styles.registerBtn}
