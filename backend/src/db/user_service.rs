@@ -1,6 +1,7 @@
 use crate::model::login_data::LoginData;
 use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
+use diesel::dsl::not;
 use diesel::{insert_into, prelude::*, PgConnection};
 
 pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
@@ -18,7 +19,7 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
 }
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
-    old_users.load::<User>(conn)
+    old_users.filter(not(name.eq("master"))).load::<User>(conn)
 }
 
 pub fn delete_user_from_db(conn: &PgConnection, del_id: i32) -> QueryResult<User> {
