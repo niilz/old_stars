@@ -12,6 +12,10 @@ pub fn check_pwd(conn: &PgConnection, login_data: LoginData) -> bool {
     let stored_hash = &db_user.pwd;
     let stored_salt = &db_user.salt;
     let hash_to_check = hash(login_data.pwd, stored_salt);
+    println!(
+        "stored_salt: {}, stored_hash: {}, hash_to_check: {}",
+        stored_salt, stored_hash, hash_to_check
+    );
     stored_hash == &hash_to_check
 }
 
