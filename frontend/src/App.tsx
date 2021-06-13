@@ -12,7 +12,9 @@ function App() {
   return (
     <>
       {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
-      <button onClick={() => setShowAdmin(true)}>admin</button>
+      {!showAdmin ? (
+        <button onClick={() => setShowAdmin(true)}>admin</button>
+      ) : null}
     </>
   );
 }
