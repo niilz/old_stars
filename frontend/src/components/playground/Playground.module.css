@@ -1,0 +1,27 @@
+.Playground {
+  border: 2px dotted grey;
+}
+
+.playgroundHeader {
+  transform: translateY(-6vh);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.playgroundHeader > header {
+  height: 3rem;
+  transform: rotate(-10deg) translateY(3vh);
+}
+.playgroundHeader h1 {
+  font-size: 2.8rem;
+}
+
+.AppLogo {
+  position: relative;
+  align-self: flex-start;
+  left: 13vw;
+  top: 6vh;
+  font-size: 3rem;
+}

@@ -1,7 +1,21 @@
-import React from 'react';
+import { Header } from '../header/Header';
+import styles from './Playground.module.css';
+import { AppLogo } from '../logo/Logo';
+import { User } from '../../model/User';
+import { UserList } from '../user-list/UserList';
 
-function Playground() {
-  return <p>Ich bin die Playground-Komponent</p>;
+interface PlaygroundProps {
+  users: User[];
+}
+
+export function Playground(props: PlaygroundProps) {
+  return (
+    <div className={styles.Playground}>
+      <AppLogo styles={styles.playgroundHeader} />
+      <Header />
+      <UserList users={props.users} onDelete={(id) => null} />
+    </div>
+  );
 }
 
 export default Playground;
