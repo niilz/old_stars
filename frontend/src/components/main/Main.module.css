@@ -6,3 +6,7 @@
   justify-content: space-around;
   align-items: center;
 }
+
+.logo {
+  font-size: 15rem;
+}

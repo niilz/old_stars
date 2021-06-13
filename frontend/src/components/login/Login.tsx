@@ -5,7 +5,6 @@ import styles from './Login.module.css';
 
 type LoginProps = {
   login: (loginGranted: LoginState) => void;
-  styles: string;
 };
 
 export enum LoginState {
@@ -30,7 +29,6 @@ function Login(props: LoginProps) {
 
   return (
     <>
-      <AppLogo styles={`${styles.AppLogo} ${props.styles}`} />
       <form className={styles.Login}>
         <input
           //type="password"

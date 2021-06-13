@@ -11,8 +11,7 @@ interface PlaygroundProps {
 export function Playground(props: PlaygroundProps) {
   return (
     <div className={styles.Playground}>
-      <AppLogo styles={styles.playgroundHeader} />
-      <Header />
+      <Header showLogo={true} />
       <UserList users={props.users} onDelete={(id) => null} />
     </div>
   );

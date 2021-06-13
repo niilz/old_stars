@@ -58,7 +58,6 @@ function getMain(
     case LoginState.LoggedOut:
       return (
         <Main
-          styles={styles.AppLogo}
           setLoginState={setLoginState}
           showAdmin={showAdmin}
           setShowAdmin={setShowAdmin}

@@ -1,9 +1,17 @@
+import { AppLogo } from '../logo/Logo';
 import styles from './Header.module.css';
 
-export function Header() {
+interface HeaderProps {
+  showLogo: boolean;
+}
+
+export function Header(props: HeaderProps) {
   return (
-    <header className={styles.AppHeader}>
-      <h1 className={styles.title}>Old-Stars App</h1>
+    <header className={styles.Header}>
+      {props.showLogo ? <AppLogo styles={styles.logo} /> : null}
+      <div className={styles.headerStripes}>
+        <h1 className={styles.title}>Old-Stars App</h1>
+      </div>
     </header>
   );
 }

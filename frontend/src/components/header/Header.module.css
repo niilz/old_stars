@@ -1,24 +1,35 @@
 @import '../../vars.css';
 
-.AppHeader {
+.Header {
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  flex-direction: column;
+}
+
+.logo {
+  position: absolute;
+  left: 5vw;
+  font-size: 2.5rem;
+  align-self: start;
+}
+
+.headerStripes {
+  text-align: center;
   width: 120vw;
   height: 11vh;
+  margin-top: 1vh;
   background: linear-gradient(
     var(--highlight) 25%,
     #f72 25% 50%,
     #fb0 50% 75%,
     var(--accent) 75%
   );
-  transform: translateY(5vh) rotate(-20deg);
   transition: all 1s;
+  height: 3rem;
+  transform: rotate(-10deg) translateY(3vh);
 }
 
 .title {
-  font-size: 4.3rem;
+  font-size: 2.8rem;
   color: var(--primary);
   text-shadow: 0px 0px 10px var(--secondary);
-  background-clip: text;
 }
