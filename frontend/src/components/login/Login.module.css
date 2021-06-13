@@ -1,3 +1,12 @@
 .Login {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 14vh;
+  width: 80%;
+}
+
+input {
   width: 100%;
 }

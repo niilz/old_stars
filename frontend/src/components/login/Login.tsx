@@ -31,7 +31,7 @@ function Login(props: LoginProps) {
   return (
     <>
       <AppLogo styles={`${styles.AppLogo} ${props.styles}`} />
-      <form className="Login">
+      <form className={styles.Login}>
         <input
           //type="password"
           type="text"

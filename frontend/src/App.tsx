@@ -32,10 +32,10 @@ function getMain(
   }
 
   switch (loginState) {
-    case LoginState.LoggedIn:
-      return <Playground />;
     case LoginState.LoggedOut:
       return <Main styles={styles.AppLogo} setLoginState={setLoginState} />;
+    case LoginState.LoggedIn:
+      return <Playground />;
     case LoginState.LoginError:
       return <div>Das war total falsch!</div>;
     default:

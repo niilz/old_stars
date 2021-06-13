@@ -16,7 +16,6 @@ export function AdminConsole(props: AdminConsoleProps) {
   useEffect(() => {
     const fetchUsers = async () => {
       const fetchedUsers = await getAllUsers();
-      console.log('fetchedUsers:', fetchedUsers);
       setUsers(fetchedUsers);
     };
     fetchUsers();
