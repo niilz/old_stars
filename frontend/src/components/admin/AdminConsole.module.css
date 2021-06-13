@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-around;
 }
 .adminHeader {
   transform: translateY(-6vh);
@@ -12,7 +13,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: auto;
 }
 
 .adminHeader > header {
@@ -29,4 +29,9 @@
   left: 13vw;
   top: 6vh;
   font-size: 3rem;
+}
+
+ul {
+  padding-left: 0;
+  width: 80vw;
 }
