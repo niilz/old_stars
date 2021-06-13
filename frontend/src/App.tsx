@@ -75,7 +75,7 @@ function getMain(
         <Main
           isAdminView={isAdminView}
           setAdminView={setAdminView}
-          isMasterLogin={true}
+          isUserLogin={false}
           onRegister={addUser}
           onLogin={setLoginState}
         />
@@ -85,7 +85,7 @@ function getMain(
         <Main
           isAdminView={isAdminView}
           setAdminView={setAdminView}
-          isMasterLogin={false}
+          isUserLogin={true}
           onRegister={addUser}
           onLogin={setLoginState}
         />

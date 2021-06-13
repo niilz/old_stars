@@ -9,7 +9,7 @@ interface MainProps {
   onLogin: (state: LoginState) => void;
   isAdminView: boolean;
   setAdminView: (flag: boolean) => void;
-  isMasterLogin: boolean;
+  isUserLogin: boolean;
   onRegister: (user: User) => void;
 }
 
@@ -25,7 +25,7 @@ export function Main(props: MainProps) {
       />
       <AppLogo styles={styles.logo} />
       <Login
-        isMasterLogin={props.isMasterLogin}
+        isUserLogin={props.isUserLogin}
         onRegister={props.onRegister}
         onLogin={props.onLogin}
         isAdminView={props.isAdminView}

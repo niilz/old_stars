@@ -28,7 +28,7 @@ export function AdminConsole(props: AdminConsoleProps) {
         onDelete={deleteUserFromList}
       />
       <RegisterLoginForm
-        isMasterLogin={false}
+        isUserLogin={false}
         onRegister={props.onRegister}
         isAdminView={props.isAdminView}
       />

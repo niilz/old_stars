@@ -9,7 +9,7 @@ import styles from './RegisterLoginForm.module.css';
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void;
   onLogin?: (loginGranted: LoginState) => void;
-  isMasterLogin: boolean;
+  isUserLogin: boolean;
   btnCallback?: () => void;
   isAdminView: boolean;
   styles?: string;
@@ -29,17 +29,15 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
 
   const handleLogin = () => {
     AuthService.checkPassword({
-      name: props.isMasterLogin ? 'master' : userName,
+      name: !props.isUserLogin ? 'master' : userName,
       pwd: pwd,
     }).then((wasLoginSuccessful) => {
       if (props.onLogin == undefined) {
         throw 'Trying to login without having a login callback defined';
       }
-      console.log('THE LOGIN-STATE (wasLoginSuccessful): ', wasLoginSuccessful);
-      const loginState = evalLoginState(
-        wasLoginSuccessful,
-        props.isMasterLogin
-      );
+      const loginState = evalLoginState(wasLoginSuccessful, props.isUserLogin);
+      setUserName('');
+      setPwd('');
       props.onLogin(loginState);
     });
   };
@@ -51,7 +49,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           !props.isAdminView ? props.styles : ''
         }`}
       >
-        {!props.isMasterLogin ? (
+        {props.isUserLogin ? (
           <input
             type="text"
             placeholder="user-name"
@@ -73,7 +71,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
             callback={handleLogin}
           />
         ) : null}
-        {!props.isMasterLogin ? (
+        {props.isUserLogin ? (
           <Button
             text="Register"
             styles={styles.registerBtn}
@@ -89,12 +87,12 @@ function preventFormSubmission(e: React.FormEvent) {
   e.preventDefault();
 }
 
-function evalLoginState(wasLoginSuccessful: boolean, isMasterLogin: boolean) {
+function evalLoginState(wasLoginSuccessful: boolean, isUserLogin: boolean) {
   if (wasLoginSuccessful) {
-    if (isMasterLogin) {
-      return LoginState.LoggedInMaster;
-    } else {
+    if (isUserLogin) {
       return LoginState.LoggedInUser;
+    } else {
+      return LoginState.LoggedInMaster;
     }
   } else {
     return LoginState.LoginError;
