@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User } from '../../model/User';
 import { insertUser } from '../../services/user-service';
+import styles from './RegistrationForm.module.css';
 
 interface RegistrationFormProps {
   onNewUser: (user: User) => void;
@@ -20,7 +21,7 @@ export function RegistrationForm(props: RegistrationFormProps) {
   };
   return (
     <>
-      <form onSubmit={handleSubmit} className="RegistrationForm">
+      <form onSubmit={handleSubmit} className={styles.RegistrationForm}>
         <input
           type="text"
           placeholder="user-name"
@@ -32,7 +33,7 @@ export function RegistrationForm(props: RegistrationFormProps) {
           placeholder="password"
           onChange={(e) => setPwd(e.target.value)}
         />
-        <button>register</button>
+        <button className={styles.registerBtn}>register</button>
       </form>
     </>
   );
