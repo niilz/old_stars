@@ -1,6 +1,7 @@
 import { User } from '../../model/User';
 import { deleteUser } from '../../services/user-service';
 import { Header } from '../header/Header';
+import { HomeButton } from '../home-button/HomeButton';
 import { RegistrationForm } from '../registration-form/RegistrationForm';
 import { UserList } from '../user-list/UserList';
 import styles from './AdminConsole.module.css';
@@ -24,9 +25,7 @@ export function AdminConsole(props: AdminConsoleProps) {
       <RegistrationForm
         onNewUser={(newUser: User) => props.onUsers([...props.users, newUser])}
       />
-      <button className={styles.homeBtn} onClick={props.navToHome}>
-        Home
-      </button>
+      <HomeButton callback={props.navToHome} />
     </div>
   );
 }

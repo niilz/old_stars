@@ -64,7 +64,12 @@ function getMain(
         />
       );
     case LoginState.LoggedIn:
-      return <Playground users={users} />;
+      return (
+        <Playground
+          users={users}
+          logout={() => setLoginState(LoginState.LoggedOut)}
+        />
+      );
     case LoginState.LoginError:
       return <div>Das war total falsch!</div>;
     default:
