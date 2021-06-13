@@ -3,17 +3,20 @@ import styles from './Deletable.module.css';
 type DeletableProps = {
   id: number;
   text: string;
-  deleteGotClicked: () => void;
+  isEditable: boolean;
+  deleteGotClicked?: () => void;
 };
 
-export function DeletableListItem(props: DeletableProps) {
+export function ListItem(props: DeletableProps) {
   return (
     <li>
       <div className={styles.itemContent}>
         <div className={styles.userData}>{props.text}</div>
-        <button className={styles.delBtn} onClick={props.deleteGotClicked}>
-          ❌
-        </button>
+        {props.isEditable ? (
+          <button className={styles.delBtn} onClick={props.deleteGotClicked}>
+            ❌
+          </button>
+        ) : null}
       </div>
     </li>
   );

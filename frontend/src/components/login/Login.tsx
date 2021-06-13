@@ -1,44 +1,27 @@
-import React, { useState } from 'react';
-import AuthService from '../../services/auth-service';
-import styles from './Login.module.css';
+import { User } from '../../model/User';
+import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 
 type LoginProps = {
-  login: (loginGranted: LoginState) => void;
+  isMasterLogin: boolean;
+  onRegister: (user: User) => void;
+  onLogin: (loginState: LoginState) => void;
+  isAdminView: boolean;
 };
 
 export enum LoginState {
-  LoggedIn,
+  LoggedInMaster,
+  LoggedInUser,
   LoggedOut,
   LoginError,
 }
 
-function Login(props: LoginProps) {
-  const [password, setPassword] = useState('');
-
-  const handleLogin = (e: React.MouseEvent) => {
-    e.preventDefault();
-    AuthService.checkPassword({
-      name: 'master',
-      pwd: password,
-    }).then((loginResponse) => {
-      console.log(loginResponse);
-      props.login(loginResponse ? LoginState.LoggedIn : LoginState.LoginError);
-    });
-  };
-
+export function Login(props: LoginProps) {
   return (
-    <>
-      <form className={styles.Login}>
-        <input
-          //type="password"
-          type="text"
-          placeholder="Master Passwort"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={handleLogin}>Login</button>
-      </form>
-    </>
+    <RegisterLoginForm
+      isMasterLogin={props.isMasterLogin}
+      onRegister={props.onRegister}
+      onLogin={props.onLogin}
+      isAdminView={props.isAdminView}
+    />
   );
 }
-
-export default Login;

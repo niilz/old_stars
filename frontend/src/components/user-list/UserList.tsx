@@ -1,20 +1,24 @@
 import { User } from '../../model/User';
-import { DeletableListItem } from '../deletable/Deletable';
+import { ListItem } from '../deletable/Deletable';
 
 type UserListProps = {
   users: User[];
-  onDelete: (id: number) => void;
+  isEditable: boolean;
+  onDelete?: (id: number) => void;
 };
 
 export function UserList(props: UserListProps) {
   return (
     <ul>
       {props.users.map((user) => (
-        <DeletableListItem
+        <ListItem
           key={user['id']}
           id={user['id']}
           text={user['name']}
-          deleteGotClicked={() => props.onDelete(user['id'])}
+          isEditable={props.isEditable}
+          deleteGotClicked={() =>
+            props.onDelete ? props.onDelete(user['id']) : null
+          }
         />
       ))}
     </ul>

@@ -1,31 +1,38 @@
 import { User } from '../../model/User';
 import { deleteUser } from '../../services/user-service';
+import { Button } from '../button/Button';
 import { Header } from '../header/Header';
-import { HomeButton } from '../home-button/HomeButton';
-import { RegistrationForm } from '../registration-form/RegistrationForm';
+import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import { UserList } from '../user-list/UserList';
 import styles from './AdminConsole.module.css';
 
 interface AdminConsoleProps {
   navToHome: () => void;
   users: User[];
-  onUsers: (users: User[]) => void;
+  onRegister: (users: User) => void;
+  onDelete: (id: Number) => void;
+  isAdminView: boolean;
 }
 
 export function AdminConsole(props: AdminConsoleProps) {
   const deleteUserFromList = (id: number) => {
     deleteUser(id);
-    const updatedUsers = props.users.filter((user) => user['id'] !== id);
-    props.onUsers(updatedUsers);
+    props.onDelete(id);
   };
   return (
     <div className={styles.AdminConsole}>
       <Header showLogo={true} />
-      <UserList users={props.users} onDelete={deleteUserFromList} />
-      <RegistrationForm
-        onNewUser={(newUser: User) => props.onUsers([...props.users, newUser])}
+      <UserList
+        users={props.users}
+        isEditable={true}
+        onDelete={deleteUserFromList}
       />
-      <HomeButton callback={props.navToHome} />
+      <RegisterLoginForm
+        isMasterLogin={false}
+        onRegister={props.onRegister}
+        isAdminView={props.isAdminView}
+      />
+      <Button text="Home" styles={styles.Btn} callback={props.navToHome} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LoginState } from './components/login/Login';
-import Playground from './components/playground/Playground';
+import { Playground } from './components/playground/Playground';
 import { AdminConsole } from './components/admin/AdminConsole';
 import { Main } from './components/main/Main';
 import styles from './App.module.css';
@@ -10,8 +10,10 @@ import { deleteUser, getAllUsers } from './services/user-service';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
-  const [showAdmin, setShowAdmin] = useState(false);
+  const [isAdminView, setAdminView] = useState(false);
   const [users, setUsers] = useState(new Array<User>());
+  const [loggedInUser, setLoggedInUser] = useState(LoginState.LoggedOut);
+
   useEffect(() => {
     const fetchUsers = async () => {
       const fetchedUsers = await getAllUsers();
@@ -20,15 +22,25 @@ function App() {
     fetchUsers();
   }, []);
 
+  const addUser = (user: User) => {
+    const updatedUsers = [...users, user];
+    setUsers(updatedUsers);
+  };
+  const deleteUser = (id: Number) => {
+    const updatedUsers = users.filter((user) => user['id'] !== id);
+    setUsers(updatedUsers);
+  };
+
   return (
     <>
       {getMain(
         loginState,
         setLoginState,
-        showAdmin,
-        setShowAdmin,
+        isAdminView,
+        setAdminView,
         users,
-        setUsers
+        addUser,
+        deleteUser
       )}
     </>
   );
@@ -39,17 +51,20 @@ export default App;
 function getMain(
   loginState: LoginState,
   setLoginState: (lg: LoginState) => void,
-  showAdmin: boolean,
-  setShowAdmin: (ssa: boolean) => void,
+  isAdminView: boolean,
+  setAdminView: (ssa: boolean) => void,
   users: User[],
-  setUsers: (u: User[]) => void
+  addUser: (u: User) => void,
+  deleteUser: (id: Number) => void
 ): JSX.Element {
-  if (showAdmin) {
+  if (isAdminView) {
     return (
       <AdminConsole
-        navToHome={() => setShowAdmin(false)}
+        navToHome={() => setAdminView(false)}
         users={users}
-        onUsers={(users) => setUsers(users)}
+        onRegister={addUser}
+        onDelete={deleteUser}
+        isAdminView={isAdminView}
       />
     );
   }
@@ -58,12 +73,24 @@ function getMain(
     case LoginState.LoggedOut:
       return (
         <Main
-          setLoginState={setLoginState}
-          showAdmin={showAdmin}
-          setShowAdmin={setShowAdmin}
+          isAdminView={isAdminView}
+          setAdminView={setAdminView}
+          isMasterLogin={true}
+          onRegister={addUser}
+          onLogin={setLoginState}
         />
       );
-    case LoginState.LoggedIn:
+    case LoginState.LoggedInMaster:
+      return (
+        <Main
+          isAdminView={isAdminView}
+          setAdminView={setAdminView}
+          isMasterLogin={false}
+          onRegister={addUser}
+          onLogin={setLoginState}
+        />
+      );
+    case LoginState.LoggedInUser:
       return (
         <Playground
           users={users}
