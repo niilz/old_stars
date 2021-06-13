@@ -47,10 +47,10 @@ fn options_login() -> Json<&'static str> {
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>, conn: Db) -> Json<String> {
-    let secret_pwd = check_pwd(&*conn, login_data.into_inner());
+fn login(login_data: Json<LoginData>, conn: Db) -> Json<bool> {
+    let is_pwd_correct = check_pwd(&*conn, login_data.into_inner());
     // TODO: if Login Successfull add "Set-Cooky" header
-    Json(format!("from db! pwd: {}", secret_pwd))
+    Json(is_pwd_correct)
 }
 
 #[post("/register", format = "json", data = "<user>")]
