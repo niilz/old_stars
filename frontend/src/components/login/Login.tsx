@@ -1,5 +1,6 @@
 import { User } from '../../model/User';
 import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
+import styles from './Login.module.css';
 
 type LoginProps = {
   isMasterLogin: boolean;
@@ -22,6 +23,7 @@ export function Login(props: LoginProps) {
       onRegister={props.onRegister}
       onLogin={props.onLogin}
       isAdminView={props.isAdminView}
+      styles={styles.LoginForm}
     />
   );
 }

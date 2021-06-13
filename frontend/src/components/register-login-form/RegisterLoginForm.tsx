@@ -12,6 +12,7 @@ interface RegisterLoginFormProps {
   isMasterLogin: boolean;
   btnCallback?: () => void;
   isAdminView: boolean;
+  styles?: string;
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
@@ -46,7 +47,9 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
     <>
       <form
         onSubmit={preventFormSubmission}
-        className={styles.RegisterLoginForm}
+        className={`${styles.RegisterLoginForm} ${
+          !props.isAdminView ? props.styles : ''
+        }`}
       >
         {!props.isMasterLogin ? (
           <input
