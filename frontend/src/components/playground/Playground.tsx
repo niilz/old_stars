@@ -1,6 +1,5 @@
 import { Header } from '../header/Header';
 import styles from './Playground.module.css';
-import { AppLogo } from '../logo/Logo';
 import { User } from '../../model/User';
 import { UserList } from '../user-list/UserList';
 

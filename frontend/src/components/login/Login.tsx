@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import AuthService from '../../services/auth-service';
-import { AppLogo } from '../logo/Logo';
 import styles from './Login.module.css';
 
 type LoginProps = {

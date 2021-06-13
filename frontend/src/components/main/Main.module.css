@@ -7,6 +7,17 @@
   align-items: center;
 }
 
+.headerStripes {
+  height: 15vh;
+  margin-top: 5vh;
+  transform: rotate(-20deg);
+}
+
+.title {
+  font-size: 5rem;
+  margin-top: 2%;
+}
+
 .logo {
   font-size: 15rem;
 }

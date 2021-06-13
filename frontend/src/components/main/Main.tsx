@@ -15,7 +15,10 @@ export function Main(props: MainProps) {
   }
   return (
     <div className={styles.Main}>
-      <Header showLogo={false} />
+      <Header
+        showLogo={false}
+        styles={{ headerStripes: styles.headerStripes, title: styles.title }}
+      />
       <AppLogo styles={styles.logo} />
       <Login login={props.setLoginState} />
       {!props.showAdmin ? (
