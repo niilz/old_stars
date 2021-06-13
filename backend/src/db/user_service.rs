@@ -1,3 +1,4 @@
+use crate::db::auth_service::{get_salt, hash};
 use crate::model::login_data::LoginData;
 use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
@@ -5,9 +6,8 @@ use diesel::dsl::not;
 use diesel::{insert_into, prelude::*, PgConnection};
 
 pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
-    let new_salt = "rnd_salt_";
-    let salted_pwd = format!("{}{}", new_salt, user.pwd);
-    let hashed_pwd = format!("hashed_{}", salted_pwd);
+    let new_salt = get_salt();
+    let hashed_pwd = hash(user.pwd, &new_salt);
     insert_into(old_users)
         .values((
             name.eq(user.name),
