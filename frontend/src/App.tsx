@@ -9,14 +9,7 @@ import './global.css';
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   const [showAdmin, setShowAdmin] = useState(false);
-  return (
-    <>
-      {getMain(loginState, setLoginState, showAdmin, setShowAdmin)}
-      {!showAdmin ? (
-        <button onClick={() => setShowAdmin(true)}>admin</button>
-      ) : null}
-    </>
-  );
+  return <>{getMain(loginState, setLoginState, showAdmin, setShowAdmin)}</>;
 }
 
 export default App;
@@ -33,7 +26,14 @@ function getMain(
 
   switch (loginState) {
     case LoginState.LoggedOut:
-      return <Main styles={styles.AppLogo} setLoginState={setLoginState} />;
+      return (
+        <Main
+          styles={styles.AppLogo}
+          setLoginState={setLoginState}
+          showAdmin={showAdmin}
+          setShowAdmin={setShowAdmin}
+        />
+      );
     case LoginState.LoggedIn:
       return <Playground />;
     case LoginState.LoginError:

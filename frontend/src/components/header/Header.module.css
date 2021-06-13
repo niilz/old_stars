@@ -12,7 +12,7 @@
     #fb0 50% 75%,
     var(--accent) 75%
   );
-  transform: rotate(-20deg);
+  transform: translateY(5vh) rotate(-20deg);
   transition: all 1s;
 }
 

@@ -5,6 +5,8 @@ import styles from './Main.module.css';
 interface MainProps {
   setLoginState: (state: LoginState) => void;
   styles: string;
+  showAdmin: boolean;
+  setShowAdmin: (flag: boolean) => void;
 }
 
 export function Main(props: MainProps) {
@@ -15,6 +17,9 @@ export function Main(props: MainProps) {
     <div className={styles.Main}>
       <Header />
       <Login styles={props.styles} login={props.setLoginState} />
+      {!props.showAdmin ? (
+        <button onClick={() => props.setShowAdmin(true)}>admin</button>
+      ) : null}
     </div>
   );
 }
