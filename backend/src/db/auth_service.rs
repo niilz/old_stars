@@ -9,15 +9,19 @@ pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser>
         .load(conn)
         .expect(&format!("Error checking pwd for user: {}", login_data.name));
 
-    let db_user = users.get(0).unwrap();
-    let stored_hash = &db_user.pwd;
-    let stored_salt = &db_user.salt;
-    let hash_to_check = hash(login_data.pwd, stored_salt);
+    match users.get(0) {
+        Some(db_user) => {
+            let stored_hash = &db_user.pwd;
+            let stored_salt = &db_user.salt;
+            let hash_to_check = hash(login_data.pwd, stored_salt);
 
-    if stored_hash == &hash_to_check {
-        Some(AppUser::from_user(db_user))
-    } else {
-        None
+            if stored_hash == &hash_to_check {
+                Some(AppUser::from_user(db_user))
+            } else {
+                None
+            }
+        }
+        None => None,
     }
 }
 
