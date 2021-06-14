@@ -12,7 +12,7 @@ extern crate diesel_migrations;
 use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::login_data::LoginData;
-use backend::model::user::User;
+use backend::model::{app_user::AppUser, user::User};
 use diesel::{pg::PgConnection, prelude::*, result::Error};
 use rocket_contrib::{database, json::Json};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
@@ -47,10 +47,12 @@ fn options_login() -> Json<&'static str> {
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>, conn: Db) -> Json<bool> {
-    let is_pwd_correct = check_pwd(&*conn, login_data.into_inner());
-    // TODO: if Login Successfull add "Set-Cooky" header
-    Json(is_pwd_correct)
+fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
+    match login_user(&*conn, login_data.into_inner()) {
+        // TODO: if Login Successfull add "Set-Cooky" header
+        Some(User) => Json(Ok(User)),
+        None => Json(Err("Login failed")),
+    }
 }
 
 #[post("/register", format = "json", data = "<user>")]

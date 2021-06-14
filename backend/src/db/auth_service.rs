@@ -1,22 +1,24 @@
-use crate::model::{login_data::LoginData, session::Session, user::User};
+use crate::model::{app_user::AppUser, login_data::LoginData, session::Session, user::User};
 use crate::schema::old_users::dsl::*;
 use diesel::{prelude::*, PgConnection};
 
-pub fn check_pwd(conn: &PgConnection, login_data: LoginData) -> bool {
+pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser> {
     let users: Vec<User> = old_users
         .filter(name.eq(&login_data.name))
         .limit(1)
         .load(conn)
         .expect(&format!("Error checking pwd for user: {}", login_data.name));
+
     let db_user = users.get(0).unwrap();
     let stored_hash = &db_user.pwd;
     let stored_salt = &db_user.salt;
     let hash_to_check = hash(login_data.pwd, stored_salt);
-    println!(
-        "stored_salt: {}, stored_hash: {}, hash_to_check: {}",
-        stored_salt, stored_hash, hash_to_check
-    );
-    stored_hash == &hash_to_check
+
+    if stored_hash == &hash_to_check {
+        Some(AppUser::from_user(db_user))
+    } else {
+        None
+    }
 }
 
 pub fn insert_session(conn: &PgConnection, user_id: i32) {
