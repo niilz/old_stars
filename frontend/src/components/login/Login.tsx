@@ -6,6 +6,7 @@ type LoginProps = {
   isUserLogin: boolean;
   onRegister: (user: User) => void;
   onLogin: (loginState: LoginState) => void;
+  setSessionUser: (user: User) => void;
   isAdminView: boolean;
 };
 
@@ -22,6 +23,7 @@ export function Login(props: LoginProps) {
       isUserLogin={props.isUserLogin}
       onRegister={props.onRegister}
       onLogin={props.onLogin}
+      setSessionUser={props.setSessionUser}
       isAdminView={props.isAdminView}
       styles={styles.LoginForm}
     />

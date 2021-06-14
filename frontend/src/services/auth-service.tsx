@@ -3,13 +3,21 @@ import { fetchWrapper } from './fetch-service';
 import { UserCredentials } from '../model/User';
 
 class AuthService {
-  static async checkPassword(user: UserCredentials) {
-    const isLoginSuccess = await fetchWrapper(
+  static async loginUser(user: UserCredentials) {
+    const loginResponse = await fetchWrapper(
       METHOD.POST,
       'login',
       JSON.stringify(user)
     );
-    return isLoginSuccess;
+
+    const { Ok } = loginResponse;
+    const { Err } = loginResponse;
+    if (Ok) {
+      const user = Ok;
+      return user;
+    }
+    const errMessage = Err;
+    throw `Ooops... ${errMessage}`;
   }
 }
 

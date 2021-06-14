@@ -12,7 +12,7 @@ function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   const [isAdminView, setAdminView] = useState(false);
   const [users, setUsers] = useState(new Array<User>());
-  const [loggedInUser, setLoggedInUser] = useState(LoginState.LoggedOut);
+  const [loggedInUser, setLoggedInUser] = useState<User | undefined>();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -40,7 +40,9 @@ function App() {
         setAdminView,
         users,
         addUser,
-        deleteUser
+        deleteUser,
+        loggedInUser,
+        setLoggedInUser
       )}
     </>
   );
@@ -55,7 +57,9 @@ function getMain(
   setAdminView: (ssa: boolean) => void,
   users: User[],
   addUser: (u: User) => void,
-  deleteUser: (id: Number) => void
+  deleteUser: (id: Number) => void,
+  loggedInUser: User | undefined,
+  setLoggedInUser: (u: User) => void
 ): JSX.Element {
   if (isAdminView) {
     return (
@@ -78,6 +82,7 @@ function getMain(
           isUserLogin={false}
           onRegister={addUser}
           onLogin={setLoginState}
+          setSessionUser={setLoggedInUser}
         />
       );
     case LoginState.LoggedInMaster:
@@ -88,11 +93,16 @@ function getMain(
           isUserLogin={true}
           onRegister={addUser}
           onLogin={setLoginState}
+          setSessionUser={setLoggedInUser}
         />
       );
     case LoginState.LoggedInUser:
+      if (!loggedInUser) {
+        throw 'Tried to open Playground without a loggedInUser';
+      }
       return (
         <Playground
+          user={loggedInUser}
           users={users}
           logout={() => setLoginState(LoginState.LoggedOut)}
         />

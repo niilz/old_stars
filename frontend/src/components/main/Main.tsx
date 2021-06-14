@@ -10,6 +10,7 @@ interface MainProps {
   isAdminView: boolean;
   setAdminView: (flag: boolean) => void;
   isUserLogin: boolean;
+  setSessionUser: (user: User) => void;
   onRegister: (user: User) => void;
 }
 
@@ -29,6 +30,7 @@ export function Main(props: MainProps) {
         onRegister={props.onRegister}
         onLogin={props.onLogin}
         isAdminView={props.isAdminView}
+        setSessionUser={props.setSessionUser}
       />
       {!props.isAdminView ? (
         <Button

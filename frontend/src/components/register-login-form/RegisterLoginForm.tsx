@@ -10,6 +10,7 @@ interface RegisterLoginFormProps {
   onRegister: (user: User) => void;
   onLogin?: (loginGranted: LoginState) => void;
   isUserLogin: boolean;
+  setSessionUser?: (user: User) => void;
   btnCallback?: () => void;
   isAdminView: boolean;
   styles?: string;
@@ -28,18 +29,20 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
   };
 
   const handleLogin = () => {
-    AuthService.checkPassword({
+    AuthService.loginUser({
       name: !props.isUserLogin ? 'master' : userName,
       pwd: pwd,
-    }).then((wasLoginSuccessful) => {
-      if (props.onLogin == undefined) {
-        throw 'Trying to login without having a login callback defined';
-      }
-      const loginState = evalLoginState(wasLoginSuccessful, props.isUserLogin);
-      setUserName('');
-      setPwd('');
-      props.onLogin(loginState);
-    });
+    })
+      .then((loggedInUser) => {
+        if (!props.onLogin || !props.setSessionUser)
+          throw 'login- and setSessionUser callback must be defined';
+        const loginState = evalLoginState(props.isUserLogin);
+        setUserName('');
+        setPwd('');
+        props.onLogin(loginState);
+        props.setSessionUser(loggedInUser);
+      })
+      .catch((e) => console.error(e));
   };
   return (
     <>
@@ -87,14 +90,10 @@ function preventFormSubmission(e: React.FormEvent) {
   e.preventDefault();
 }
 
-function evalLoginState(wasLoginSuccessful: boolean, isUserLogin: boolean) {
-  if (wasLoginSuccessful) {
-    if (isUserLogin) {
-      return LoginState.LoggedInUser;
-    } else {
-      return LoginState.LoggedInMaster;
-    }
+function evalLoginState(isUserLogin: boolean) {
+  if (isUserLogin) {
+    return LoginState.LoggedInUser;
   } else {
-    return LoginState.LoginError;
+    return LoginState.LoggedInMaster;
   }
 }
