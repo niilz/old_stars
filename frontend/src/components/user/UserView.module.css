@@ -1,0 +1,15 @@
+.User {
+  font-size: 3rem;
+  height: 20vh;
+  text-align: center;
+}
+
+.stats {
+  width: 80vw;
+  display: flex;
+  justify-content: space-around;
+}
+
+.beer {
+  font-size: 3.3rem;
+}
