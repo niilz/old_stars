@@ -50,14 +50,19 @@ fn options_login() -> Json<&'static str> {
 fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
     match login_user(&*conn, login_data.into_inner()) {
         // TODO: if Login Successfull add "Set-Cooky" header
-        Some(User) => Json(Ok(User)),
+        Some(user) => Json(Ok(user)),
         None => Json(Err("Login failed")),
     }
 }
 
 #[post("/register", format = "json", data = "<user>")]
 fn register(user: Json<LoginData>, conn: Db) -> Result<Json<User>, String> {
-    match insert_user(&conn, user.into_inner()) {
+    let user = user.into_inner();
+    if user.name.is_empty() || user.pwd.is_empty() {
+        eprintln!("user is empty");
+        return Err("'name' and 'pwd' must not be empty".to_string());
+    }
+    match insert_user(&conn, user) {
         Ok(user) => Ok(Json(user)),
         Err(e) => Err(format!("Could not reigster user. Error: {}", e)),
     }
