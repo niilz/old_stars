@@ -4,6 +4,16 @@ const baseHeaders = new Headers();
 baseHeaders.set('Accept', 'application/json');
 baseHeaders.set('Content-Type', 'application/json');
 
+interface OkRes {
+  Ok: Object;
+  Err?: never;
+}
+interface ErrRes {
+  Ok?: never;
+  Err: Object;
+}
+type ApiResponse = OkRes | ErrRes;
+
 export async function fetchWrapper(
   method: METHOD,
   endpoint: String,
@@ -22,4 +32,15 @@ export async function fetchWrapper(
   const apiRes = await fetch(`${API_URL}/${endpoint}`, options);
   const resJson = await apiRes.json();
   return resJson;
+}
+
+export function handleResponse(res: ApiResponse) {
+  const { Ok } = res;
+  const { Err } = res;
+  if (Ok) {
+    const user = Ok;
+    return user;
+  }
+  const errMessage = Err;
+  throw `Ooops... ${errMessage}`;
 }

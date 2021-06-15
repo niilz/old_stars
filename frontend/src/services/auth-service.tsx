@@ -1,5 +1,5 @@
 import { METHOD } from '../Constants';
-import { fetchWrapper } from './fetch-service';
+import { fetchWrapper, handleResponse } from './fetch-service';
 import { UserCredentials } from '../model/User';
 
 class AuthService {
@@ -10,14 +10,8 @@ class AuthService {
       JSON.stringify(user)
     );
 
-    const { Ok } = loginResponse;
-    const { Err } = loginResponse;
-    if (Ok) {
-      const user = Ok;
-      return user;
-    }
-    const errMessage = Err;
-    throw `Ooops... ${errMessage}`;
+    const loggedInUser = handleResponse(loginResponse);
+    return loggedInUser;
   }
 }
 

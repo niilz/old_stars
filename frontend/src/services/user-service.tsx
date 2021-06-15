@@ -1,9 +1,15 @@
 import { METHOD } from '../Constants';
 import { UserCredentials } from '../model/User';
-import { fetchWrapper } from './fetch-service';
+import { fetchWrapper, handleResponse } from './fetch-service';
 
-export function insertUser(user: UserCredentials) {
-  return fetchWrapper(METHOD.POST, 'register', JSON.stringify(user));
+export async function insertUser(user: UserCredentials) {
+  const insertResponse = await fetchWrapper(
+    METHOD.POST,
+    'register',
+    JSON.stringify(user)
+  );
+  const insertedUser = handleResponse(insertResponse);
+  return insertedUser;
 }
 
 export function deleteUser(id: Number) {

@@ -4,6 +4,7 @@ import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
 import { LoginState } from '../login/Login';
+import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
 
 interface RegisterLoginFormProps {
@@ -14,6 +15,7 @@ interface RegisterLoginFormProps {
   btnCallback?: () => void;
   isAdminView: boolean;
   styles?: string;
+  onError: (type: MsgType, msg: string) => void;
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
@@ -21,11 +23,14 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
   const [pwd, setPwd] = useState('');
 
   const handleRegister = async () => {
-    const newUser = await insertUser({ name: userName, pwd });
-    console.log('registerd The User:', newUser);
-    props.onRegister(newUser);
-    setUserName('');
-    setPwd('');
+    try {
+      const newUser = await insertUser({ name: userName, pwd });
+      props.onRegister(newUser as User);
+      setUserName('');
+      setPwd('');
+    } catch (e) {
+      props.onError(MsgType.ERR, e);
+    }
   };
 
   const handleLogin = () => {
@@ -40,9 +45,9 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
         setUserName('');
         setPwd('');
         props.onLogin(loginState);
-        props.setSessionUser(loggedInUser);
+        props.setSessionUser(loggedInUser as User);
       })
-      .catch((e) => console.error(e));
+      .catch((e) => props.onError(MsgType.ERR, e));
   };
   return (
     <>
@@ -52,14 +57,14 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           props.isUserLogin ? props.styles : ''
         }`}
       >
-        {props.isUserLogin ? (
+        {(props.isUserLogin || props.isAdminView) && (
           <input
             type="text"
             placeholder="user-name"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
           />
-        ) : null}
+        )}
         <input
           //type="password"
           type="text"
@@ -67,20 +72,20 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           placeholder="password"
           onChange={(e) => setPwd(e.target.value)}
         />
-        {!props.isAdminView ? (
+        {!props.isAdminView && (
           <Button
             text="Login"
             styles={styles.registerBtn}
             callback={handleLogin}
           />
-        ) : null}
-        {props.isUserLogin || props.isAdminView ? (
+        )}
+        {(props.isUserLogin || props.isAdminView) && (
           <Button
-            text="Register"
+            text={`${props.isUserLogin ? 'Register' : 'Save'}`}
             styles={styles.registerBtn}
             callback={handleRegister}
           />
-        ) : null}
+        )}
       </form>
     </>
   );

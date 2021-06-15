@@ -1,8 +1,9 @@
 import styles from './Message.module.css';
 
-enum MsgType {
+export enum MsgType {
   ERR = 'error',
   INFO = 'info',
+  NONE = 'none',
 }
 
 interface MessageProps {

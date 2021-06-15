@@ -1,5 +1,7 @@
 .Message {
-  font-size: 3rem;
+  font-size: 2.5rem;
+  width: 80vw;
+  text-align: center;
 }
 
 .error {
@@ -8,4 +10,8 @@
 
 .info {
   color: green;
+}
+
+.none {
+  display: none;
 }

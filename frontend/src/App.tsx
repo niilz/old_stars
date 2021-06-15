@@ -7,6 +7,7 @@ import styles from './App.module.css';
 import './global.css';
 import { User } from './model/User';
 import { deleteUser, getAllUsers } from './services/user-service';
+import { handleResponse } from './services/fetch-service';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
@@ -16,8 +17,9 @@ function App() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const fetchedUsers = await getAllUsers();
-      setUsers(fetchedUsers);
+      const userResponse = await getAllUsers();
+      const users = handleResponse(userResponse);
+      setUsers(users as User[]);
     };
     fetchUsers();
   }, []);
