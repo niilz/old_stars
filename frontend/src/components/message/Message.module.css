@@ -1,0 +1,11 @@
+.Message {
+  font-size: 3rem;
+}
+
+.error {
+  color: red;
+}
+
+.info {
+  color: green;
+}
