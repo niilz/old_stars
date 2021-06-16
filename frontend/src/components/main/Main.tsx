@@ -36,7 +36,7 @@ export function Main(props: MainProps) {
         <Button
           text="admin"
           styles={styles.Btn}
-          callback={() => props.setAdminView(true)}
+          callback={() => props.setAdminView(false)}
         />
       ) : null}
     </div>

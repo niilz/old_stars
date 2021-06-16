@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LoginState } from './components/login/Login';
+import { Login, LoginState } from './components/login/Login';
 import { Playground } from './components/playground/Playground';
 import { AdminConsole } from './components/admin/AdminConsole';
 import { Main } from './components/main/Main';
@@ -8,12 +8,14 @@ import './global.css';
 import { User } from './model/User';
 import { deleteUser, getAllUsers } from './services/user-service';
 import { handleResponse } from './services/fetch-service';
+import { Modal } from './components/modal/Modal';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
   const [isAdminView, setAdminView] = useState(false);
   const [users, setUsers] = useState(new Array<User>());
   const [loggedInUser, setLoggedInUser] = useState<User | undefined>();
+  const [openAdminLogin, setOpenAdminLogin] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -45,6 +47,19 @@ function App() {
         deleteUser,
         loggedInUser,
         setLoggedInUser
+      )}
+      {openAdminLogin && (
+        <Modal
+          children={
+            <Login
+              isUserLogin={false}
+              onLogin={() => console.log('called onLogin')}
+              isAdminView={true}
+              onRegister={() => console.log('onRegister has been called')}
+              setSessionUser={() => console.log('setSessionUser')}
+            />
+          }
+        />
       )}
     </>
   );

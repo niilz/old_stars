@@ -19,6 +19,12 @@ export enum LoginState {
   LoginError,
 }
 
+export enum LoginType {
+  Master,
+  User,
+  Admin,
+}
+
 export function Login(props: LoginProps) {
   const [message, setMessage] = useState('');
   const [type, setType] = useState(MsgType.NONE);
@@ -46,12 +52,10 @@ export function Login(props: LoginProps) {
     <>
       <Message msg={message} type={type} />
       <RegisterLoginForm
-        isUserLogin={props.isUserLogin}
+        {...props}
         onRegister={handleRegister}
         onLogin={handleLogin}
         onError={handleError}
-        setSessionUser={props.setSessionUser}
-        isAdminView={props.isAdminView}
         styles={styles.LoginForm}
       />
     </>
