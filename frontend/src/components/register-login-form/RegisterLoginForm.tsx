@@ -48,6 +48,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       })
       .catch((e) => props.onError(MsgType.ERR, e));
   };
+  console.log(props.loginType);
   return (
     <>
       <form
@@ -56,7 +57,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           props.loginType == LoginType.User ? props.styles : ''
         }`}
       >
-        {props.loginType == LoginType.User && (
+        {props.loginType === LoginType.User && (
           <input
             type="text"
             placeholder="user-name"
@@ -76,9 +77,9 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           styles={styles.registerBtn}
           callback={handleLogin}
         />
-        {props.loginType !== LoginType.Admin && (
+        {props.loginType === LoginType.User && (
           <Button
-            text={`${props.loginType === LoginType.User ? 'Register' : 'Save'}`}
+            text="Register"
             styles={styles.registerBtn}
             callback={handleRegister}
           />
