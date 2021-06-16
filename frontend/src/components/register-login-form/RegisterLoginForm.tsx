@@ -10,7 +10,7 @@ import styles from './RegisterLoginForm.module.css';
 interface RegisterLoginFormProps {
   loginType: LoginType;
   onRegister: (user: User) => void;
-  onLogin?: (loginGranted: LoginState) => void;
+  onLogin: (loginGranted: LoginState) => void;
   setSessionUser?: (user: User) => void;
   styles?: string;
   onError: (type: MsgType, msg: string) => void;
@@ -37,12 +37,13 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       pwd: pwd,
     })
       .then((loggedInUser) => {
-        if (!props.onLogin || !props.setSessionUser)
-          throw 'login- and setSessionUser callback must be defined';
         const loginState = evalLoginState(props.loginType);
         setUserName('');
         setPwd('');
         props.onLogin(loginState);
+        if (props.loginType !== LoginType.User) return;
+        if (!props.setSessionUser)
+          throw 'login- and setSessionUser callback must be defined';
         props.setSessionUser(loggedInUser as User);
       })
       .catch((e) => props.onError(MsgType.ERR, e));
@@ -77,7 +78,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
         />
         {props.loginType !== LoginType.Admin && (
           <Button
-            text={`${props.loginType == LoginType.User ? 'Register' : 'Save'}`}
+            text={`${props.loginType === LoginType.User ? 'Register' : 'Save'}`}
             styles={styles.registerBtn}
             callback={handleRegister}
           />

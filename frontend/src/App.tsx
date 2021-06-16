@@ -35,6 +35,14 @@ function App() {
     setUsers(updatedUsers);
   };
 
+  const handleAdminLogin = (loginState: LoginState) => {
+    if (loginState !== LoginState.LoggedInAdmin)
+      throw 'Only Admin should be able to log in as admin';
+    setLoginState(loginState);
+    setOpenAdminLogin(false);
+    setIsAdminView(true);
+  };
+
   return (
     <>
       {loginState === LoginState.LoggedInUser && loggedInUser ? (
@@ -53,17 +61,13 @@ function App() {
           setSessionUser={setLoggedInUser}
           deleteUser={deleteUser}
           openAdminLogin={setOpenAdminLogin}
+          setAdminView={setIsAdminView}
         />
       )}
       {openAdminLogin && (
         <Modal
           children={
-            <Login
-              loginType={LoginType.Admin}
-              onLogin={() => console.log('called onLogin')}
-              onRegister={() => console.log('onRegister has been called')}
-              setSessionUser={() => console.log('setSessionUser')}
-            />
+            <Login loginType={LoginType.Admin} onLogin={handleAdminLogin} />
           }
         />
       )}

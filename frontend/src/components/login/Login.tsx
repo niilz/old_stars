@@ -6,9 +6,9 @@ import styles from './Login.module.css';
 
 type LoginProps = {
   loginType: LoginType;
-  onRegister: (user: User) => void;
   onLogin: (loginState: LoginState) => void;
-  setSessionUser: (user: User) => void;
+  onRegister?: (user: User) => void;
+  setSessionUser?: (user: User) => void;
 };
 
 export enum LoginState {
@@ -44,6 +44,8 @@ export function Login(props: LoginProps) {
   };
 
   const handleRegister = (user: User) => {
+    if (!props.onRegister)
+      throw 'onRegister must be defined to register a User';
     setMessage('Registration was successful');
     setType(MsgType.INFO);
     props.onRegister(user);

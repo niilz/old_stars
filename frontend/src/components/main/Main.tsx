@@ -16,32 +16,36 @@ interface MainProps {
   deleteUser: (id: Number) => void;
   openAdminLogin: (flag: boolean) => void;
   isAdminView: boolean;
+  setAdminView: (flag: boolean) => void;
 }
 
 export function Main(props: MainProps) {
-  const [isAdminView, setAdminView] = useState(false);
   return (
     <div className={styles.Main}>
-      <Header
-        showLogo={false}
-        styles={{ headerStripes: styles.headerStripes, title: styles.title }}
-      />
-      <AppLogo styles={styles.logo} />
-      {isAdminView ? (
+      {!props.isAdminView ? (
+        <>
+          <Header
+            showLogo={false}
+            styles={{
+              headerStripes: styles.headerStripes,
+              title: styles.title,
+            }}
+          />
+          <AppLogo styles={styles.logo} />
+          <Login {...props} />
+          {!props.isAdminView && (
+            <Button
+              text="admin"
+              styles={styles.Btn}
+              callback={() => props.openAdminLogin(true)}
+            />
+          )}
+        </>
+      ) : (
         <AdminConsole
-          navToHome={() => setAdminView(false)}
+          navToHome={() => props.setAdminView(false)}
           users={props.users}
           onDelete={props.deleteUser}
-        />
-      ) : (
-        <Login {...props} />
-      )}
-
-      {!isAdminView && (
-        <Button
-          text="admin"
-          styles={styles.Btn}
-          callback={() => props.openAdminLogin(true)}
         />
       )}
     </div>
