@@ -19,7 +19,9 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
 }
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
-    old_users.filter(not(name.eq("master"))).load::<User>(conn)
+    old_users
+        .filter(not(name.eq("master").and(not(name.eq("admin")))))
+        .load::<User>(conn)
 }
 
 pub fn delete_user_from_db(conn: &PgConnection, del_id: i32) -> QueryResult<User> {
