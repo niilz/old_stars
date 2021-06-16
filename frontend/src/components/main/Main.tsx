@@ -1,23 +1,25 @@
+import { useState } from 'react';
 import { User } from '../../model/User';
+import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
 import { Header } from '../header/Header';
-import { Login, LoginState } from '../login/Login';
+import { Login, LoginState, LoginType } from '../login/Login';
 import { AppLogo } from '../logo/Logo';
 import styles from './Main.module.css';
 
 interface MainProps {
   onLogin: (state: LoginState) => void;
-  isAdminView: boolean;
-  setAdminView: (flag: boolean) => void;
-  isUserLogin: boolean;
+  loginType: LoginType;
   setSessionUser: (user: User) => void;
   onRegister: (user: User) => void;
+  users: User[];
+  deleteUser: (id: Number) => void;
+  openAdminLogin: (flag: boolean) => void;
+  isAdminView: boolean;
 }
 
 export function Main(props: MainProps) {
-  {
-    /*<img src={logo} className="App-logo" alt="logo" />*/
-  }
+  const [isAdminView, setAdminView] = useState(false);
   return (
     <div className={styles.Main}>
       <Header
@@ -25,20 +27,23 @@ export function Main(props: MainProps) {
         styles={{ headerStripes: styles.headerStripes, title: styles.title }}
       />
       <AppLogo styles={styles.logo} />
-      <Login
-        isUserLogin={props.isUserLogin}
-        onRegister={props.onRegister}
-        onLogin={props.onLogin}
-        isAdminView={props.isAdminView}
-        setSessionUser={props.setSessionUser}
-      />
-      {!props.isAdminView ? (
+      {isAdminView ? (
+        <AdminConsole
+          navToHome={() => setAdminView(false)}
+          users={props.users}
+          onDelete={props.deleteUser}
+        />
+      ) : (
+        <Login {...props} />
+      )}
+
+      {!isAdminView && (
         <Button
           text="admin"
           styles={styles.Btn}
-          callback={() => props.setAdminView(false)}
+          callback={() => props.openAdminLogin(true)}
         />
-      ) : null}
+      )}
     </div>
   );
 }

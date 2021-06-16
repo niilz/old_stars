@@ -3,17 +3,15 @@ import { User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
-import { LoginState } from '../login/Login';
+import { LoginState, LoginType } from '../login/Login';
 import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
 
 interface RegisterLoginFormProps {
+  loginType: LoginType;
   onRegister: (user: User) => void;
   onLogin?: (loginGranted: LoginState) => void;
-  isUserLogin: boolean;
   setSessionUser?: (user: User) => void;
-  btnCallback?: () => void;
-  isAdminView: boolean;
   styles?: string;
   onError: (type: MsgType, msg: string) => void;
 }
@@ -35,13 +33,13 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
 
   const handleLogin = () => {
     AuthService.loginUser({
-      name: !props.isUserLogin ? 'master' : userName,
+      name: evalLoginName(props.loginType, userName),
       pwd: pwd,
     })
       .then((loggedInUser) => {
         if (!props.onLogin || !props.setSessionUser)
           throw 'login- and setSessionUser callback must be defined';
-        const loginState = evalLoginState(props.isUserLogin);
+        const loginState = evalLoginState(props.loginType);
         setUserName('');
         setPwd('');
         props.onLogin(loginState);
@@ -54,10 +52,10 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       <form
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
-          props.isUserLogin ? props.styles : ''
+          props.loginType == LoginType.User ? props.styles : ''
         }`}
       >
-        {(props.isUserLogin || props.isAdminView) && (
+        {props.loginType == LoginType.User && (
           <input
             type="text"
             placeholder="user-name"
@@ -72,16 +70,14 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           placeholder="password"
           onChange={(e) => setPwd(e.target.value)}
         />
-        {!props.isAdminView && (
+        <Button
+          text="Login"
+          styles={styles.registerBtn}
+          callback={handleLogin}
+        />
+        {props.loginType !== LoginType.Admin && (
           <Button
-            text="Login"
-            styles={styles.registerBtn}
-            callback={handleLogin}
-          />
-        )}
-        {(props.isUserLogin || props.isAdminView) && (
-          <Button
-            text={`${props.isUserLogin ? 'Register' : 'Save'}`}
+            text={`${props.loginType == LoginType.User ? 'Register' : 'Save'}`}
             styles={styles.registerBtn}
             callback={handleRegister}
           />
@@ -95,10 +91,28 @@ function preventFormSubmission(e: React.FormEvent) {
   e.preventDefault();
 }
 
-function evalLoginState(isUserLogin: boolean) {
-  if (isUserLogin) {
-    return LoginState.LoggedInUser;
-  } else {
-    return LoginState.LoggedInMaster;
+function evalLoginState(loginType: LoginType) {
+  switch (loginType) {
+    case LoginType.User:
+      return LoginState.LoggedInUser;
+    case LoginType.Master:
+      return LoginState.LoggedInMaster;
+    case LoginType.Admin:
+      return LoginState.LoggedInAdmin;
+    default:
+      throw `Unhandled loginTyp: ${loginType}. Cannot evaluate a LoginState`;
+  }
+}
+
+function evalLoginName(loginType: LoginType, userName: string) {
+  switch (loginType) {
+    case LoginType.User:
+      return userName;
+    case LoginType.Master:
+      return 'master';
+    case LoginType.Admin:
+      return 'admin';
+    default:
+      throw 'Cannot evaluate the Login Name if the userName is undefined';
   }
 }

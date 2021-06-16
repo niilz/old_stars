@@ -4,16 +4,13 @@ import { deleteUser } from '../../services/user-service';
 import { Button } from '../button/Button';
 import { Header } from '../header/Header';
 import { Message, MsgType } from '../message/Message';
-import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import { UserList } from '../user-list/UserList';
 import styles from './AdminConsole.module.css';
 
 interface AdminConsoleProps {
   navToHome: () => void;
   users: User[];
-  onRegister: (users: User) => void;
   onDelete: (id: Number) => void;
-  isAdminView: boolean;
 }
 
 export function AdminConsole(props: AdminConsoleProps) {
@@ -39,12 +36,6 @@ export function AdminConsole(props: AdminConsoleProps) {
         onDelete={deleteUserFromList}
       />
       <Message msg={message} type={type} />
-      <RegisterLoginForm
-        isUserLogin={false}
-        onRegister={props.onRegister}
-        onError={handleError}
-        isAdminView={props.isAdminView}
-      />
       <Button text="Home" styles={styles.Btn} callback={props.navToHome} />
     </div>
   );

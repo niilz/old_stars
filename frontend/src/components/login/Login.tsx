@@ -5,15 +5,15 @@ import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import styles from './Login.module.css';
 
 type LoginProps = {
-  isUserLogin: boolean;
+  loginType: LoginType;
   onRegister: (user: User) => void;
   onLogin: (loginState: LoginState) => void;
   setSessionUser: (user: User) => void;
-  isAdminView: boolean;
 };
 
 export enum LoginState {
   LoggedInMaster,
+  LoggedInAdmin,
   LoggedInUser,
   LoggedOut,
   LoginError,
@@ -23,6 +23,7 @@ export enum LoginType {
   Master,
   User,
   Admin,
+  None,
 }
 
 export function Login(props: LoginProps) {
