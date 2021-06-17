@@ -9,6 +9,7 @@ import styles from './RegisterLoginForm.module.css';
 
 interface RegisterLoginFormProps {
   loginType: LoginType;
+  setLoginType: (loginType: LoginType) => void;
   onRegister: (user: User) => void;
   onLogin: (loginGranted: LoginState) => void;
   setSessionUser?: (user: User) => void;
@@ -32,15 +33,18 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
   };
 
   const handleLogin = () => {
+    const tmpUser = userName || evalLoginName(props.loginType);
+    console.log('tmpUSer', tmpUser);
     AuthService.loginUser({
-      name: evalLoginName(props.loginType, userName),
+      name: userName || evalLoginName(props.loginType),
       pwd: pwd,
     })
       .then((loggedInUser) => {
         const loginState = evalLoginState(props.loginType);
+        props.onLogin(loginState);
         setUserName('');
         setPwd('');
-        props.onLogin(loginState);
+        props.setLoginType(evalLoginType(props.loginType));
         if (props.loginType !== LoginType.User) return;
         if (!props.setSessionUser)
           throw 'login- and setSessionUser callback must be defined';
@@ -48,7 +52,6 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       })
       .catch((e) => props.onError(MsgType.ERR, e));
   };
-  console.log(props.loginType);
   return (
     <>
       <form
@@ -106,15 +109,26 @@ function evalLoginState(loginType: LoginType) {
   }
 }
 
-function evalLoginName(loginType: LoginType, userName: string) {
+function evalLoginName(loginType: LoginType) {
   switch (loginType) {
-    case LoginType.User:
-      return userName;
     case LoginType.Master:
       return 'master';
     case LoginType.Admin:
       return 'admin';
     default:
       throw 'Cannot evaluate the Login Name if the userName is undefined';
+  }
+}
+
+function evalLoginType(prevLoginType: LoginType) {
+  switch (prevLoginType) {
+    case LoginType.Master:
+      return LoginType.User;
+    case LoginType.User:
+      return LoginType.None;
+    case LoginType.Admin:
+      return LoginType.None;
+    default:
+      throw 'Unsupported LoginState condition';
   }
 }

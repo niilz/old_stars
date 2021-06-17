@@ -12,6 +12,7 @@ import { Modal } from './components/modal/Modal';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
+  const [loginType, setLoginType] = useState(LoginType.Master);
   const [users, setUsers] = useState(new Array<User>());
   const [loggedInUser, setLoggedInUser] = useState<User | undefined>();
   const [openAdminLogin, setOpenAdminLogin] = useState(false);
@@ -36,11 +37,13 @@ function App() {
   };
 
   const handleAdminLogin = (loginState: LoginState) => {
+    console.log('adminlogin called');
     if (loginState !== LoginState.LoggedInAdmin)
       throw 'Only Admin should be able to log in as admin';
     setLoginState(loginState);
     setOpenAdminLogin(false);
     setIsAdminView(true);
+    setLoginType(loginType);
   };
 
   return (
@@ -55,9 +58,12 @@ function App() {
         <Main
           isAdminView={isAdminView}
           users={users}
-          loginType={LoginType.Master}
           onRegister={addUser}
           onLogin={setLoginState}
+          loginState={loginState}
+          setLoginState={setLoginState}
+          loginType={loginType}
+          setLoginType={setLoginType}
           setSessionUser={setLoggedInUser}
           deleteUser={deleteUser}
           openAdminLogin={setOpenAdminLogin}
@@ -67,7 +73,11 @@ function App() {
       {openAdminLogin && (
         <Modal
           children={
-            <Login loginType={LoginType.Admin} onLogin={handleAdminLogin} />
+            <Login
+              loginType={LoginType.Admin}
+              setLoginType={setLoginType}
+              onLogin={handleAdminLogin}
+            />
           }
         />
       )}

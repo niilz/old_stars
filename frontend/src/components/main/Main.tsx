@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { User } from '../../model/User';
 import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
@@ -10,6 +9,9 @@ import styles from './Main.module.css';
 interface MainProps {
   onLogin: (state: LoginState) => void;
   loginType: LoginType;
+  setLoginType: (loginType: LoginType) => void;
+  loginState: LoginState;
+  setLoginState: (loginState: LoginState) => void;
   setSessionUser: (user: User) => void;
   onRegister: (user: User) => void;
   users: User[];
@@ -20,6 +22,11 @@ interface MainProps {
 }
 
 export function Main(props: MainProps) {
+  const handleAdminClick = () => {
+    props.setAdminView(false);
+    props.setLoginType(LoginType.None);
+    props.setLoginState(props.loginState);
+  };
   return (
     <div className={styles.Main}>
       {!props.isAdminView ? (
@@ -43,7 +50,7 @@ export function Main(props: MainProps) {
         </>
       ) : (
         <AdminConsole
-          navToHome={() => props.setAdminView(false)}
+          navToHome={handleAdminClick}
           users={props.users}
           onDelete={props.deleteUser}
         />

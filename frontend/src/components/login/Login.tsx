@@ -6,6 +6,7 @@ import styles from './Login.module.css';
 
 type LoginProps = {
   loginType: LoginType;
+  setLoginType: (loginType: LoginType) => void;
   onLogin: (loginState: LoginState) => void;
   onRegister?: (user: User) => void;
   setSessionUser?: (user: User) => void;
@@ -40,6 +41,7 @@ export function Login(props: LoginProps) {
       setMessage('');
       setType(MsgType.NONE);
     }
+    console.log('handle Login in Login got called');
     props.onLogin(loginState);
   };
 
