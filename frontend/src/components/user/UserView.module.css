@@ -4,10 +4,17 @@
   text-align: center;
 }
 
-.stats {
+.icons {
   width: 80vw;
   display: flex;
   justify-content: space-around;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 2rem;
 }
 
 .beer {

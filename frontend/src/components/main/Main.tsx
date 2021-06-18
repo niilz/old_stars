@@ -32,6 +32,7 @@ export function Main(props: MainProps) {
       props.sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
     );
   };
+  console.log('main', props.sessionUser);
   return (
     <div className={styles.Main}>
       {!props.isAdminView ? (

@@ -52,6 +52,7 @@ function App() {
     setIsAdminView(false);
   };
 
+  console.log('app', loggedInUser);
   return (
     <>
       <Main
