@@ -37,7 +37,6 @@ function App() {
   };
 
   const handleAdminLogin = (loginState: LoginState) => {
-    console.log('adminlogin called');
     if (loginState !== LoginState.LoggedInAdmin)
       throw 'Only Admin should be able to log in as admin';
     setLoginState(loginState);

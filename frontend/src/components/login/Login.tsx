@@ -41,7 +41,6 @@ export function Login(props: LoginProps) {
       setMessage('');
       setType(MsgType.NONE);
     }
-    console.log('handle Login in Login got called');
     props.onLogin(loginState);
   };
 

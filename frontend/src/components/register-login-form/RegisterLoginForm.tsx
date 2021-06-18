@@ -33,8 +33,6 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
   };
 
   const handleLogin = () => {
-    const tmpUser = userName || evalLoginName(props.loginType);
-    console.log('tmpUSer', tmpUser);
     AuthService.loginUser({
       name: userName || evalLoginName(props.loginType),
       pwd: pwd,
@@ -129,6 +127,6 @@ function evalLoginType(prevLoginType: LoginType) {
     case LoginType.Admin:
       return LoginType.None;
     default:
-      throw 'Unsupported LoginState condition';
+      throw 'Unsupported LoginType-State';
   }
 }

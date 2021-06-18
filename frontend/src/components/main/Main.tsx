@@ -22,10 +22,10 @@ interface MainProps {
 }
 
 export function Main(props: MainProps) {
-  const handleAdminClick = () => {
+  const handleAdminHomeClick = () => {
     props.setAdminView(false);
-    props.setLoginType(LoginType.None);
-    props.setLoginState(props.loginState);
+    props.setLoginType(LoginType.User);
+    props.setLoginState(LoginState.LoggedInUser);
   };
   return (
     <div className={styles.Main}>
@@ -50,7 +50,7 @@ export function Main(props: MainProps) {
         </>
       ) : (
         <AdminConsole
-          navToHome={handleAdminClick}
+          navToHome={handleAdminHomeClick}
           users={props.users}
           onDelete={props.deleteUser}
         />
