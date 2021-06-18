@@ -90,7 +90,7 @@ fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
     }
 }
 
-#[post("/<drink>/<id>")]
+#[get("/<drink>/<id>")]
 fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> {
     match add_drink_to_user(&conn, id, &drink) {
         Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
@@ -125,7 +125,8 @@ fn main() {
                 login,
                 register,
                 all_users,
-                delete_user
+                delete_user,
+                add_drink
             ],
         )
         .attach(cors_options.to_cors().unwrap())
