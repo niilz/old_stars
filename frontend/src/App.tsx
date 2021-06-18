@@ -46,14 +46,15 @@ function App() {
     setLoginType(loginType);
   };
 
+  const handleLogout = () => {
+    setLoginState(LoginState.LoggedInMaster);
+    setLoginType(LoginType.User);
+  };
+
   return (
     <>
       {loginState === LoginState.LoggedInUser && loggedInUser ? (
-        <Playground
-          user={loggedInUser}
-          users={users}
-          logout={() => setLoginState(LoginState.LoggedOut)}
-        />
+        <Playground user={loggedInUser} users={users} logout={handleLogout} />
       ) : (
         <Main
           isAdminView={isAdminView}
