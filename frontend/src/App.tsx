@@ -48,6 +48,8 @@ function App() {
   const handleLogout = () => {
     setLoginState(LoginState.LoggedInMaster);
     setLoginType(LoginType.User);
+    setLoggedInUser(undefined);
+    setIsAdminView(false);
   };
 
   return (

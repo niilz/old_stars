@@ -27,8 +27,10 @@ interface MainProps {
 export function Main(props: MainProps) {
   const handleAdminHomeClick = () => {
     props.setAdminView(false);
-    props.setLoginType(props.sessionUser ? LoginType.User : LoginType.Master);
-    props.setLoginState(LoginState.LoggedInUser);
+    props.setLoginType(props.sessionUser ? LoginType.None : LoginType.User);
+    props.setLoginState(
+      props.sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInMaster
+    );
   };
   return (
     <div className={styles.Main}>
