@@ -12,7 +12,7 @@ import { Modal } from './components/modal/Modal';
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
-  const [loginType, setLoginType] = useState(LoginType.Master);
+  const [loginType, setLoginType] = useState(LoginType.Club);
   const [users, setUsers] = useState(new Array<User>());
   const [loggedInUser, setLoggedInUser] = useState<User | undefined>();
   const [openAdminLogin, setOpenAdminLogin] = useState(false);
@@ -46,7 +46,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    setLoginState(LoginState.LoggedInMaster);
+    setLoginState(LoginState.LoggedInClub);
     setLoginType(LoginType.User);
     setLoggedInUser(undefined);
     setIsAdminView(false);

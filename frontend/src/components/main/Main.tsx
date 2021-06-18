@@ -29,7 +29,7 @@ export function Main(props: MainProps) {
     props.setAdminView(false);
     props.setLoginType(props.sessionUser ? LoginType.None : LoginType.User);
     props.setLoginState(
-      props.sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInMaster
+      props.sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
     );
   };
   return (

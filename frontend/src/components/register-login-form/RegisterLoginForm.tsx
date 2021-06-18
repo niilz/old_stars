@@ -98,8 +98,8 @@ function evalLoginState(loginType: LoginType) {
   switch (loginType) {
     case LoginType.User:
       return LoginState.LoggedInUser;
-    case LoginType.Master:
-      return LoginState.LoggedInMaster;
+    case LoginType.Club:
+      return LoginState.LoggedInClub;
     case LoginType.Admin:
       return LoginState.LoggedInAdmin;
     default:
@@ -109,8 +109,8 @@ function evalLoginState(loginType: LoginType) {
 
 function evalLoginName(loginType: LoginType) {
   switch (loginType) {
-    case LoginType.Master:
-      return 'master';
+    case LoginType.Club:
+      return 'club';
     case LoginType.Admin:
       return 'admin';
     default:
@@ -120,7 +120,7 @@ function evalLoginName(loginType: LoginType) {
 
 function evalLoginType(prevLoginType: LoginType) {
   switch (prevLoginType) {
-    case LoginType.Master:
+    case LoginType.Club:
       return LoginType.User;
     case LoginType.User:
       return LoginType.None;

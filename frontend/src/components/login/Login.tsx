@@ -13,7 +13,7 @@ type LoginProps = {
 };
 
 export enum LoginState {
-  LoggedInMaster,
+  LoggedInClub,
   LoggedInAdmin,
   LoggedInUser,
   LoggedOut,
@@ -21,7 +21,7 @@ export enum LoginState {
 }
 
 export enum LoginType {
-  Master,
+  Club,
   User,
   Admin,
   None,
