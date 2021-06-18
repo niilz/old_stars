@@ -52,25 +52,22 @@ function App() {
 
   return (
     <>
-      {loginState === LoginState.LoggedInUser && loggedInUser ? (
-        <Playground user={loggedInUser} users={users} logout={handleLogout} />
-      ) : (
-        <Main
-          isAdminView={isAdminView}
-          users={users}
-          sessionUser={loggedInUser}
-          onRegister={addUser}
-          onLogin={setLoginState}
-          loginState={loginState}
-          setLoginState={setLoginState}
-          loginType={loginType}
-          setLoginType={setLoginType}
-          setSessionUser={setLoggedInUser}
-          deleteUser={deleteUser}
-          openAdminLogin={setOpenAdminLogin}
-          setAdminView={setIsAdminView}
-        />
-      )}
+      <Main
+        isAdminView={isAdminView}
+        users={users}
+        sessionUser={loggedInUser}
+        onRegister={addUser}
+        onLogin={setLoginState}
+        loginState={loginState}
+        setLoginState={setLoginState}
+        loginType={loginType}
+        setLoginType={setLoginType}
+        setSessionUser={setLoggedInUser}
+        deleteUser={deleteUser}
+        openAdminLogin={setOpenAdminLogin}
+        setAdminView={setIsAdminView}
+        onLogout={handleLogout}
+      />
       {openAdminLogin && (
         <Modal
           children={

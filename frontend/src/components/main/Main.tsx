@@ -4,6 +4,7 @@ import { Button } from '../button/Button';
 import { Header } from '../header/Header';
 import { Login, LoginState, LoginType } from '../login/Login';
 import { AppLogo } from '../logo/Logo';
+import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
 
 interface MainProps {
@@ -20,6 +21,7 @@ interface MainProps {
   openAdminLogin: (flag: boolean) => void;
   isAdminView: boolean;
   setAdminView: (flag: boolean) => void;
+  onLogout: () => void;
 }
 
 export function Main(props: MainProps) {
@@ -32,15 +34,27 @@ export function Main(props: MainProps) {
     <div className={styles.Main}>
       {!props.isAdminView ? (
         <>
-          <Header
-            showLogo={false}
-            styles={{
-              headerStripes: styles.headerStripes,
-              title: styles.title,
-            }}
-          />
-          <AppLogo styles={styles.logo} />
-          <Login {...props} />
+          {showBigHeaderAndStar(props) && (
+            <>
+              <Header
+                showLogo={false}
+                styles={{
+                  headerStripes: styles.headerStripes,
+                  title: styles.title,
+                }}
+              />
+              <AppLogo styles={styles.logo} />
+            </>
+          )}
+          {showPlayground(props) && props.sessionUser ? (
+            <Playground
+              user={props.sessionUser}
+              users={props.users}
+              logout={props.onLogout}
+            />
+          ) : (
+            <Login {...props} />
+          )}
           {!props.isAdminView && (
             <Button
               text="admin"
@@ -58,4 +72,12 @@ export function Main(props: MainProps) {
       )}
     </div>
   );
+}
+
+function showBigHeaderAndStar(props: MainProps) {
+  return !props.isAdminView && props.loginState !== LoginState.LoggedInUser;
+}
+
+function showPlayground(props: MainProps) {
+  return props.loginState === LoginState.LoggedInUser && props.sessionUser;
 }
