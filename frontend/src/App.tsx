@@ -52,6 +52,14 @@ function App() {
     setIsAdminView(false);
   };
 
+  const handleUpdateUserList = (updatedUser: User) => {
+    const updatedUserList = users.map((user) =>
+      user.id === updatedUser.id ? updatedUser : user
+    );
+    setUsers(updatedUserList);
+    setLoggedInUser(updatedUser);
+  };
+
   return (
     <>
       <Main
@@ -69,6 +77,7 @@ function App() {
         openAdminLogin={setOpenAdminLogin}
         setAdminView={setIsAdminView}
         onLogout={handleLogout}
+        onUserUpdate={handleUpdateUserList}
       />
       {openAdminLogin && (
         <Modal

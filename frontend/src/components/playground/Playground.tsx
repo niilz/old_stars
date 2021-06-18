@@ -9,13 +9,14 @@ interface PlaygroundProps {
   user: User;
   logout: () => void;
   users: User[];
+  onUserUpdate: (user: User) => void;
 }
 
 export function Playground(props: PlaygroundProps) {
   return (
     <div className={styles.Playground}>
       <Header showLogo={true} />
-      <UserView user={props.user} />
+      <UserView user={props.user} onUserUpdate={props.onUserUpdate} />
       <UserList users={props.users} isEditable={false} />
       <Button text="logout" styles={styles.Btn} callback={props.logout} />
     </div>

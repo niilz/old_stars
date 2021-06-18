@@ -22,6 +22,7 @@ interface MainProps {
   isAdminView: boolean;
   setAdminView: (flag: boolean) => void;
   onLogout: () => void;
+  onUserUpdate: (user: User) => void;
 }
 
 export function Main(props: MainProps) {
@@ -53,6 +54,7 @@ export function Main(props: MainProps) {
               user={props.sessionUser}
               users={props.users}
               logout={props.onLogout}
+              onUserUpdate={props.onUserUpdate}
             />
           ) : (
             <Login {...props} />
