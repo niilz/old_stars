@@ -13,6 +13,9 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
             name.eq(user.name),
             salt.eq(new_salt),
             pwd.eq(hashed_pwd),
+            beer_count.eq(0),
+            shot_count.eq(0),
+            water_count.eq(0),
             fk_icon_id.eq(42),
         ))
         .get_result(conn)
@@ -20,7 +23,7 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
     old_users
-        .filter(not(name.eq("master").and(not(name.eq("admin")))))
+        .filter(not(name.eq("club").and(not(name.eq("admin")))))
         .load::<User>(conn)
 }
 

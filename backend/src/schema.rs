@@ -4,6 +4,9 @@ table! {
         name -> VarChar,
         salt -> VarChar,
         pwd -> VarChar,
+        beer_count -> Integer,
+        shot_count -> Integer,
+        water_count -> Integer,
         fk_icon_id -> Integer,
     }
 }
