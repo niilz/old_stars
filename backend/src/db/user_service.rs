@@ -30,3 +30,19 @@ pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
 pub fn delete_user_from_db(conn: &PgConnection, del_id: i32) -> QueryResult<User> {
     diesel::delete(old_users.filter(id.eq(del_id))).get_result(conn)
 }
+
+pub fn add_drink_to_user(conn: &PgConnection, update_id: i32, drink: &str) -> QueryResult<User> {
+    let update_user = old_users.filter(id.eq(update_id));
+    match drink {
+        "beer" => diesel::update(update_user)
+            .set(beer_count.eq(beer_count + 1))
+            .get_result(conn),
+        "shot" => diesel::update(update_user)
+            .set(shot_count.eq(shot_count + 1))
+            .get_result(conn),
+        "water" => diesel::update(update_user)
+            .set(water_count.eq(water_count + 1))
+            .get_result(conn),
+        _ => unimplemented!("Other drinks are not supported"),
+    }
+}

@@ -56,33 +56,47 @@ fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static
 }
 
 #[post("/register", format = "json", data = "<user>")]
-fn register(user: Json<LoginData>, conn: Db) -> Json<Result<User, String>> {
+fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         eprintln!("user is empty");
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
     match insert_user(&conn, user) {
-        Ok(user) => Json(Ok(user)),
+        Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
 }
 
 #[get("/all", format = "json")]
-fn all_users(conn: Db) -> Json<Result<Vec<User>, String>> {
+fn all_users(conn: Db) -> Json<Result<Vec<AppUser>, String>> {
     match get_users(&conn) {
-        Ok(user) => Json(Ok(user)),
+        Ok(users) => Json(Ok(users
+            .iter()
+            .map(|user| AppUser::from_user(user))
+            .collect())),
         Err(e) => Json(Err(format!("Could not get all users. Error: {}", e))),
     }
 }
 
 #[delete("/delete/<id>")]
-fn delete_user(conn: Db, id: i32) -> Json<Result<User, String>> {
+fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
     match delete_user_from_db(&conn, id) {
-        Ok(user) => Json(Ok(user)),
+        Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
             id, e
+        ))),
+    }
+}
+
+#[post("/<drink>/<id>")]
+fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> {
+    match add_drink_to_user(&conn, id, &drink) {
+        Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
+        Err(e) => Json(Err(format!(
+            "Could not add a {} to user with id {}. Error: {}",
+            drink, id, e
         ))),
     }
 }
