@@ -12,6 +12,7 @@ interface MainProps {
   setLoginType: (loginType: LoginType) => void;
   loginState: LoginState;
   setLoginState: (loginState: LoginState) => void;
+  sessionUser: User | undefined;
   setSessionUser: (user: User) => void;
   onRegister: (user: User) => void;
   users: User[];
@@ -24,7 +25,7 @@ interface MainProps {
 export function Main(props: MainProps) {
   const handleAdminHomeClick = () => {
     props.setAdminView(false);
-    props.setLoginType(LoginType.User);
+    props.setLoginType(props.sessionUser ? LoginType.User : LoginType.Master);
     props.setLoginState(LoginState.LoggedInUser);
   };
   return (

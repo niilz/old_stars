@@ -58,6 +58,7 @@ function App() {
         <Main
           isAdminView={isAdminView}
           users={users}
+          sessionUser={loggedInUser}
           onRegister={addUser}
           onLogin={setLoginState}
           loginState={loginState}
