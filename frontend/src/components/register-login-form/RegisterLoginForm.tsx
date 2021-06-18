@@ -70,7 +70,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           //type="password"
           type="text"
           value={pwd}
-          placeholder="password"
+          placeholder={getPwdPlaceholder(props.loginType)}
           onChange={(e) => setPwd(e.target.value)}
         />
         <Button
@@ -129,4 +129,8 @@ function evalLoginType(prevLoginType: LoginType) {
     default:
       throw 'Unsupported LoginType-State';
   }
+}
+
+function getPwdPlaceholder(loginType: LoginType) {
+  return `${LoginType[loginType]} Password`;
 }
