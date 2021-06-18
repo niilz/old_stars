@@ -5,7 +5,6 @@ interface UserProps {
   user: User;
 }
 export function UserView(props: UserProps) {
-  console.log('UserView', props.user);
   return (
     <div className={styles.User}>
       <p className={styles.name}>{props.user.name}</p>

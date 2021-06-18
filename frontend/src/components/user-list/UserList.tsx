@@ -1,5 +1,6 @@
 import { User } from '../../model/User';
-import { ListItem } from '../deletable/Deletable';
+import { ListItem } from '../listItem/ListItem';
+import styles from './UserList.module.css';
 
 type UserListProps = {
   users: User[];
@@ -9,18 +10,28 @@ type UserListProps = {
 
 export function UserList(props: UserListProps) {
   return (
-    <ul>
-      {props.users.map((user) => (
-        <ListItem
-          key={user['id']}
-          id={user['id']}
-          text={user['name']}
-          isEditable={props.isEditable}
-          deleteGotClicked={() =>
-            props.onDelete ? props.onDelete(user['id']) : null
-          }
-        />
-      ))}
-    </ul>
+    <table className={styles.UserList}>
+      <thead>
+        <tr>
+          <th></th>
+          <th>🍺</th>
+          <th>🥃</th>
+          <th>🚰</th>
+        </tr>
+      </thead>
+      <tbody>
+        {props.users.map((user) => (
+          <ListItem
+            key={user['id']}
+            id={user['id']}
+            user={user}
+            isEditable={props.isEditable}
+            deleteGotClicked={() =>
+              props.onDelete ? props.onDelete(user['id']) : null
+            }
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }

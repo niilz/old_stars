@@ -12,7 +12,6 @@ interface PlaygroundProps {
 }
 
 export function Playground(props: PlaygroundProps) {
-  console.log('playground', props.user);
   return (
     <div className={styles.Playground}>
       <Header showLogo={true} />
