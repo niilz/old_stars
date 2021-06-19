@@ -23,7 +23,7 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
     old_users
-        .filter(not(name.eq("club").and(not(name.eq("admin")))))
+        .filter(not(name.eq("club").or(name.eq("admin"))))
         .load::<User>(conn)
 }
 
