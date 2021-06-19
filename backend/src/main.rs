@@ -108,7 +108,8 @@ fn main() {
     embedded_migrations::run(&connection);
 
     let mut cors_options = CorsOptions::default();
-    cors_options.allowed_origins = AllowedOrigins::some_exact(&[FRONT_END_URL, FRONT_END_URL_DEV]);
+    cors_options.allowed_origins =
+        AllowedOrigins::some_exact(&[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK]);
     cors_options.allowed_headers =
         AllowedHeaders::some(&["Accept", "Content-Type", "Access-Control-Allow-Origin"]);
     cors_options.allowed_methods = ["GET", "POST", "HEAD", "OPTIONS", "DELETE"]
