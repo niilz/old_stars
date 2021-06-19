@@ -67,8 +67,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           />
         )}
         <input
-          //type="password"
-          type="text"
+          type="password"
           value={pwd}
           placeholder={getPwdPlaceholder(props.loginType)}
           onChange={(e) => setPwd(e.target.value)}

@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Login, LoginState, LoginType } from './components/login/Login';
-import { Playground } from './components/playground/Playground';
-import { AdminConsole } from './components/admin/AdminConsole';
 import { Main } from './components/main/Main';
-import styles from './App.module.css';
 import './global.css';
 import { User } from './model/User';
-import { deleteUser, getAllUsers } from './services/user-service';
+import { getAllUsers } from './services/user-service';
 import { handleResponse } from './services/fetch-service';
 import { Modal } from './components/modal/Modal';
 
