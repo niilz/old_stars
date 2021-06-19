@@ -1,4 +1,4 @@
-import { API_URL, METHOD } from '../Constants';
+import { API_URL, API_URL_DEV, METHOD } from '../Constants';
 
 const baseHeaders = new Headers();
 baseHeaders.set('Accept', 'application/json');
@@ -29,7 +29,7 @@ export async function fetchWrapper(
     options.body = body;
   }
 
-  const apiRes = await fetch(`${API_URL}/${endpoint}`, options);
+  const apiRes = await fetch(`${API_URL_DEV}/${endpoint}`, options);
   const resJson = await apiRes.json();
   return resJson;
 }
