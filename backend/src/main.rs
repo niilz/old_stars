@@ -21,7 +21,8 @@ use std::{env, str::FromStr};
 
 diesel_migrations::embed_migrations!();
 
-const FRONT_END_URL: &'static str = "http://localhost:3000/";
+const FRONT_END_URL_DEV: &'static str = "http://localhost:3000/";
+const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars/";
 
 #[database("db")]
 struct Db(diesel::PgConnection);
@@ -106,7 +107,7 @@ fn main() {
     embedded_migrations::run(&connection);
 
     let mut cors_options = CorsOptions::default();
-    cors_options.allowed_origins = AllowedOrigins::some_exact(&[FRONT_END_URL]);
+    cors_options.allowed_origins = AllowedOrigins::some_exact(&[FRONT_END_URL, FRONT_END_URL_DEV]);
     cors_options.allowed_headers =
         AllowedHeaders::some(&["Accept", "Content-Type", "Access-Control-Allow-Origin"]);
     cors_options.allowed_methods = ["GET", "POST", "HEAD", "OPTIONS", "DELETE"]
