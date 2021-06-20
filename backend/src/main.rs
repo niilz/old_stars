@@ -48,6 +48,16 @@ fn options_login() -> Json<&'static str> {
     Json("Options Response")
 }
 
+#[options("/all")]
+fn options_all() -> Json<&'static str> {
+    Json("Options Response")
+}
+
+#[options("/register")]
+fn options_register() -> Json<&'static str> {
+    Json("Options Response")
+}
+
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
     match login_user(&*conn, login_data.into_inner()) {
@@ -127,7 +137,9 @@ fn main() {
                 options_login,
                 login,
                 register,
+                options_register,
                 all_users,
+                options_all,
                 delete_user,
                 add_drink
             ],
