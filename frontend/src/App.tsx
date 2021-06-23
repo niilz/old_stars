@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Login, LoginState, LoginType } from './components/login/Login';
 import { Main } from './components/main/Main';
 import './global.css';
@@ -6,6 +6,20 @@ import { User } from './model/User';
 import { getAllUsers } from './services/user-service';
 import { handleResponse } from './services/fetch-service';
 import { Modal } from './components/modal/Modal';
+
+export interface ContextType {
+  loginState: LoginState;
+  setLoginState: Function;
+  loginType: LoginType;
+  setLoginType: Function;
+}
+
+export const LoginContext = React.createContext({
+  loginState: LoginState.LoggedOut,
+  setLoginState: (_: LoginState) => {},
+  loginType: LoginType.Club,
+  setLoginType: (_: LoginType) => {},
+});
 
 function App() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
@@ -58,17 +72,15 @@ function App() {
   };
 
   return (
-    <>
+    <LoginContext.Provider
+      value={{ loginState, setLoginState, loginType, setLoginType }}
+    >
       <Main
         isAdminView={isAdminView}
         users={users}
         sessionUser={loggedInUser}
         onRegister={addUser}
         onLogin={setLoginState}
-        loginState={loginState}
-        setLoginState={setLoginState}
-        loginType={loginType}
-        setLoginType={setLoginType}
         setSessionUser={setLoggedInUser}
         deleteUser={deleteUser}
         openAdminLogin={setOpenAdminLogin}
@@ -77,17 +89,9 @@ function App() {
         onUserUpdate={handleUpdateUserList}
       />
       {openAdminLogin && (
-        <Modal
-          children={
-            <Login
-              loginType={LoginType.Admin}
-              setLoginType={setLoginType}
-              onLogin={handleAdminLogin}
-            />
-          }
-        />
+        <Modal children={<Login onLogin={handleAdminLogin} />} />
       )}
-    </>
+    </LoginContext.Provider>
   );
 }
 

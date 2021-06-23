@@ -5,8 +5,6 @@ import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import styles from './Login.module.css';
 
 type LoginProps = {
-  loginType: LoginType;
-  setLoginType: (loginType: LoginType) => void;
   onLogin: (loginState: LoginState) => void;
   onRegister?: (user: User) => void;
   setSessionUser?: (user: User) => void;

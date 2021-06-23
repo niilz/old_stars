@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { LoginContext } from '../../App';
 import { User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
@@ -8,8 +9,6 @@ import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
 
 interface RegisterLoginFormProps {
-  loginType: LoginType;
-  setLoginType: (loginType: LoginType) => void;
   onRegister: (user: User) => void;
   onLogin: (loginGranted: LoginState) => void;
   setSessionUser?: (user: User) => void;
@@ -18,6 +17,8 @@ interface RegisterLoginFormProps {
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
+  const { loginType, setLoginType } = useContext(LoginContext);
+
   const [userName, setUserName] = useState('');
   const [pwd, setPwd] = useState('');
 
@@ -34,16 +35,16 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
 
   const handleLogin = () => {
     AuthService.loginUser({
-      name: userName || evalLoginName(props.loginType),
+      name: userName || evalLoginName(loginType),
       pwd: pwd,
     })
       .then((loggedInUser) => {
-        const loginState = evalLoginState(props.loginType);
+        const loginState = evalLoginState(loginType);
         props.onLogin(loginState);
         setUserName('');
         setPwd('');
-        props.setLoginType(evalLoginType(props.loginType));
-        if (props.loginType !== LoginType.User) return;
+        setLoginType(evalLoginType(loginType));
+        if (loginType !== LoginType.User) return;
         if (!props.setSessionUser)
           throw 'login- and setSessionUser callback must be defined';
         props.setSessionUser(loggedInUser as User);
@@ -55,10 +56,10 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       <form
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
-          props.loginType == LoginType.User ? props.styles : ''
+          loginType == LoginType.User ? props.styles : ''
         }`}
       >
-        {props.loginType === LoginType.User && (
+        {loginType === LoginType.User && (
           <input
             type="text"
             placeholder="user-name"
@@ -69,7 +70,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
         <input
           type="password"
           value={pwd}
-          placeholder={getPwdPlaceholder(props.loginType)}
+          placeholder={getPwdPlaceholder(loginType)}
           onChange={(e) => setPwd(e.target.value)}
         />
         <Button
@@ -77,7 +78,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           styles={styles.registerBtn}
           callback={handleLogin}
         />
-        {props.loginType === LoginType.User && (
+        {loginType === LoginType.User && (
           <Button
             text="Register"
             styles={styles.registerBtn}

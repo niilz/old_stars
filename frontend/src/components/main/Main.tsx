@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { ContextType, LoginContext } from '../../App';
 import { User } from '../../model/User';
 import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
@@ -9,10 +11,6 @@ import styles from './Main.module.css';
 
 interface MainProps {
   onLogin: (state: LoginState) => void;
-  loginType: LoginType;
-  setLoginType: (loginType: LoginType) => void;
-  loginState: LoginState;
-  setLoginState: (loginState: LoginState) => void;
   sessionUser: User | undefined;
   setSessionUser: (user: User) => void;
   onRegister: (user: User) => void;
@@ -26,10 +24,11 @@ interface MainProps {
 }
 
 export function Main(props: MainProps) {
+  const { setLoginType, loginState, setLoginState } = useContext(LoginContext);
   const handleAdminHomeClick = () => {
     props.setAdminView(false);
-    props.setLoginType(props.sessionUser ? LoginType.None : LoginType.User);
-    props.setLoginState(
+    setLoginType(props.sessionUser ? LoginType.None : LoginType.User);
+    setLoginState(
       props.sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
     );
   };
@@ -37,7 +36,7 @@ export function Main(props: MainProps) {
     <div className={styles.Main}>
       {!props.isAdminView ? (
         <>
-          {showBigHeaderAndStar(props) && (
+          {showBigHeaderAndStar(props.isAdminView, loginState) && (
             <>
               <Header
                 showLogo={false}
@@ -49,7 +48,8 @@ export function Main(props: MainProps) {
               <AppLogo styles={styles.logo} />
             </>
           )}
-          {showPlayground(props) && props.sessionUser ? (
+          {props.sessionUser &&
+          showPlayground(loginState, props.sessionUser) ? (
             <Playground
               user={props.sessionUser}
               users={props.users}
@@ -78,10 +78,10 @@ export function Main(props: MainProps) {
   );
 }
 
-function showBigHeaderAndStar(props: MainProps) {
-  return !props.isAdminView && props.loginState !== LoginState.LoggedInUser;
+function showBigHeaderAndStar(isAdminView: boolean, ls: LoginState) {
+  return !isAdminView && ls !== LoginState.LoggedInUser;
 }
 
-function showPlayground(props: MainProps) {
-  return props.loginState === LoginState.LoggedInUser && props.sessionUser;
+function showPlayground(ls: LoginState, sessionUser: User) {
+  return ls === LoginState.LoggedInUser && sessionUser;
 }
