@@ -1,33 +1,21 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { LoginState } from '../../Constants';
 import { User } from '../../model/User';
+import { LoginContext, UserContext } from '../main/Main';
 import { Message, MsgType } from '../message/Message';
 import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import styles from './Login.module.css';
 
 type LoginProps = {
-  onLogin: (loginState: LoginState) => void;
-  onRegister?: (user: User) => void;
-  setSessionUser?: (user: User) => void;
+  onLogin: (ls: LoginState) => void;
 };
-
-export enum LoginState {
-  LoggedInClub,
-  LoggedInAdmin,
-  LoggedInUser,
-  LoggedOut,
-  LoginError,
-}
-
-export enum LoginType {
-  Club,
-  User,
-  Admin,
-  None,
-}
 
 export function Login(props: LoginProps) {
   const [message, setMessage] = useState('');
   const [type, setType] = useState(MsgType.NONE);
+
+  const { setLoginState } = useContext(LoginContext);
+  const { addUser } = useContext(UserContext);
 
   const handleError = (msgType: MsgType, msg: string) => {
     setMessage(msg);
@@ -39,15 +27,13 @@ export function Login(props: LoginProps) {
       setMessage('');
       setType(MsgType.NONE);
     }
-    props.onLogin(loginState);
+    setLoginState(loginState);
   };
 
   const handleRegister = (user: User) => {
-    if (!props.onRegister)
-      throw 'onRegister must be defined to register a User';
     setMessage('Registration was successful');
     setType(MsgType.INFO);
-    props.onRegister(user);
+    addUser(user);
   };
 
   return (

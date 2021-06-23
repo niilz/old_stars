@@ -1,23 +1,23 @@
 import React, { useContext, useState } from 'react';
-import { LoginContext } from '../../App';
+import { LoginState, LoginType } from '../../Constants';
 import { User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
-import { LoginState, LoginType } from '../login/Login';
+import { LoginContext, UserContext } from '../main/Main';
 import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
 
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void;
   onLogin: (loginGranted: LoginState) => void;
-  setSessionUser?: (user: User) => void;
   styles?: string;
   onError: (type: MsgType, msg: string) => void;
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
-  const { loginType, setLoginType } = useContext(LoginContext);
+  const { setLoginState, loginType, setLoginType } = useContext(LoginContext);
+  const { setSessionUser } = useContext(UserContext);
 
   const [userName, setUserName] = useState('');
   const [pwd, setPwd] = useState('');
@@ -40,14 +40,12 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
     })
       .then((loggedInUser) => {
         const loginState = evalLoginState(loginType);
-        props.onLogin(loginState);
+        setLoginState(loginState);
         setUserName('');
         setPwd('');
         setLoginType(evalLoginType(loginType));
         if (loginType !== LoginType.User) return;
-        if (!props.setSessionUser)
-          throw 'login- and setSessionUser callback must be defined';
-        props.setSessionUser(loggedInUser as User);
+        setSessionUser(loggedInUser as User);
       })
       .catch((e) => props.onError(MsgType.ERR, e));
   };

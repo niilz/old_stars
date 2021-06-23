@@ -7,3 +7,18 @@ export enum METHOD {
   HEAD = 'HEAD',
   OPTIONS = 'OPTIONS',
 }
+
+export enum LoginState {
+  LoggedInClub,
+  LoggedInAdmin,
+  LoggedInUser,
+  LoggedOut,
+  LoginError,
+}
+
+export enum LoginType {
+  Club,
+  User,
+  Admin,
+  None,
+}
