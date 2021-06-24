@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { AppCtx } from '../../App';
 import { LoginState, LoginType } from '../../Constants';
 import { User } from '../../model/User';
 import AuthService from '../../services/auth-service';
@@ -16,7 +17,8 @@ interface RegisterLoginFormProps {
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
-  const { setLoginState, loginType, setLoginType } = useContext(LoginContext);
+  const { setLoginState } = useContext(LoginContext);
+  const { loginType, setLoginType } = useContext(AppCtx);
   const { setSessionUser } = useContext(UserContext);
 
   const [userName, setUserName] = useState('');
@@ -54,7 +56,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       <form
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
-          loginType == LoginType.User ? props.styles : ''
+          loginType === LoginType.User ? props.styles : ''
         }`}
       >
         {loginType === LoginType.User && (

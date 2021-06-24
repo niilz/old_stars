@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { LoginState } from '../../Constants';
 import { User } from '../../model/User';
-import { LoginContext, UserContext } from '../main/Main';
+import { UserContext } from '../main/Main';
 import { Message, MsgType } from '../message/Message';
 import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import styles from './Login.module.css';
@@ -12,33 +12,31 @@ type LoginProps = {
 
 export function Login(props: LoginProps) {
   const [message, setMessage] = useState('');
-  const [type, setType] = useState(MsgType.NONE);
+  const [msgType, setMsgType] = useState(MsgType.NONE);
 
-  const { setLoginState } = useContext(LoginContext);
   const { addUser } = useContext(UserContext);
 
   const handleError = (msgType: MsgType, msg: string) => {
     setMessage(msg);
-    setType(msgType);
+    setMsgType(msgType);
   };
 
   const handleLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoginError) {
       setMessage('');
-      setType(MsgType.NONE);
+      setMsgType(MsgType.NONE);
     }
-    setLoginState(loginState);
   };
 
   const handleRegister = (user: User) => {
     setMessage('Registration was successful');
-    setType(MsgType.INFO);
+    setMsgType(MsgType.INFO);
     addUser(user);
   };
 
   return (
     <>
-      <Message msg={message} type={type} />
+      <Message msg={message} type={msgType} />
       <RegisterLoginForm
         {...props}
         onRegister={handleRegister}

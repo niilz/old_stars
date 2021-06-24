@@ -1,7 +1,7 @@
 import React from 'react';
 import { Login } from '../login/Login';
 import { useContext, useEffect, useState } from 'react';
-import { AdminContext } from '../../App';
+import { AppCtx } from '../../App';
 import { User } from '../../model/User';
 import { handleResponse } from '../../services/fetch-service';
 import { getAllUsers } from '../../services/user-service';
@@ -42,19 +42,20 @@ export const UserContext = React.createContext({
 export const LoginContext = React.createContext({
   loginState: LoginState.LoggedOut,
   setLoginState: (_: LoginState) => {},
-  loginType: LoginType.Club,
-  setLoginType: (_: LoginType) => {},
 });
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
-  const [loginType, setLoginType] = useState(LoginType.Club);
 
-  const { isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } = useContext(
-    AdminContext
-  );
+  const {
+    loginType,
+    setLoginType,
+    isAdminViewOpen,
+    setAdminViewOpen,
+    setAdminLoginOpen,
+  } = useContext(AppCtx);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -88,6 +89,14 @@ export function Main() {
     setUsers(updatedUserList);
     setSessionUser(updatedUser);
   };
+
+  const handleOpenAdminLogin = () => {
+    console.log('loginType', loginType);
+    setAdminLoginOpen(true);
+    setLoginType(LoginType.Admin);
+    console.log('loginType', loginType);
+  };
+
   const handleAdminHomeClick = () => {
     setAdminViewOpen(false);
     setLoginType(sessionUser ? LoginType.None : LoginType.User);
@@ -96,9 +105,7 @@ export function Main() {
     );
   };
   return (
-    <LoginContext.Provider
-      value={{ loginState, setLoginState, loginType, setLoginType }}
-    >
+    <LoginContext.Provider value={{ loginState, setLoginState }}>
       <div className={styles.Main}>
         {!isAdminViewOpen ? (
           <>
@@ -130,7 +137,7 @@ export function Main() {
               <Button
                 text="admin"
                 styles={styles.Btn}
-                callback={() => setAdminLoginOpen(true)}
+                callback={handleOpenAdminLogin}
               />
             )}
           </>

@@ -1,4 +1,4 @@
-import { ReactChild, ReactChildren } from 'react';
+import { ReactChild } from 'react';
 import styles from './Modal.module.css';
 
 interface ModalProps {
