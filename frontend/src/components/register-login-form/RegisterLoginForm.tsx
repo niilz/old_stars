@@ -5,7 +5,7 @@ import { User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
-import { LoginContext, UserContext } from '../main/Main';
+import { UserContext } from '../main/Main';
 import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
 
