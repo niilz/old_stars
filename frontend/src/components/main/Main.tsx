@@ -13,27 +13,6 @@ import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
 import { LoginState, LoginType } from '../../Constants';
 
-export interface LoginContextI {
-  loginState: LoginState;
-  setLoginState: Function;
-  loginType: LoginType;
-  setLoginType: Function;
-}
-
-interface LeftOverUserI {
-  sessionUser: User | undefined;
-  onRegister: (user: User) => void;
-  users: User[];
-  deleteUser: (id: Number) => void;
-  onLogout: () => void;
-  onUserUpdate: (user: User) => void;
-}
-
-interface UserContextI {
-  addUser: (user: User) => void;
-  setSessionUser: (user: User) => void;
-}
-
 export const UserContext = React.createContext({
   addUser: (_user: User) => {},
   setSessionUser: (_user: User) => {},
@@ -50,7 +29,6 @@ export function Main() {
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
 
   const {
-    loginType,
     setLoginType,
     isAdminViewOpen,
     setAdminViewOpen,
@@ -91,10 +69,8 @@ export function Main() {
   };
 
   const handleOpenAdminLogin = () => {
-    console.log('loginType', loginType);
     setAdminLoginOpen(true);
     setLoginType(LoginType.Admin);
-    console.log('loginType', loginType);
   };
 
   const handleAdminHomeClick = () => {

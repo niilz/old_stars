@@ -26,6 +26,7 @@ export function Login(props: LoginProps) {
       setMessage('');
       setMsgType(MsgType.NONE);
     }
+    props.onLogin(loginState);
   };
 
   const handleRegister = (user: User) => {

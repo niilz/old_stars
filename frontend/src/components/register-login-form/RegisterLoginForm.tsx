@@ -17,7 +17,6 @@ interface RegisterLoginFormProps {
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
-  const { setLoginState } = useContext(LoginContext);
   const { loginType, setLoginType } = useContext(AppCtx);
   const { setSessionUser } = useContext(UserContext);
 
@@ -42,7 +41,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
     })
       .then((loggedInUser) => {
         const loginState = evalLoginState(loginType);
-        setLoginState(loginState);
+        props.onLogin(loginState);
         setUserName('');
         setPwd('');
         setLoginType(evalLoginType(loginType));

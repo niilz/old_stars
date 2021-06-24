@@ -3,25 +3,21 @@ import { Login } from './components/login/Login';
 import { Main } from './components/main/Main';
 import './global.css';
 import { Modal } from './components/modal/Modal';
-import { LoginState } from './Constants';
+import { LoginState, LoginType } from './Constants';
 
-interface AdminContextI {
-  isAdminLoginOpen: boolean;
-  setAdminLoginOpen: (flag: boolean) => void;
-  isAdminViewOpen: boolean;
-  setAdminViewOpen: (flag: boolean) => void;
-}
-
-export const AdminContext = React.createContext({
+export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
   setAdminLoginOpen: (_flag: boolean) => {},
   isAdminViewOpen: false,
   setAdminViewOpen: (_flag: boolean) => {},
+  loginType: LoginType.Club,
+  setLoginType: (_lg: LoginType) => {},
 });
 
 function App() {
   const [isAdminLoginOpen, setAdminLoginOpen] = useState(false);
   const [isAdminViewOpen, setAdminViewOpen] = useState(false);
+  const [loginType, setLoginType] = useState(LoginType.Club);
 
   const handleAdminLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoggedInAdmin)
@@ -31,19 +27,21 @@ function App() {
   };
 
   return (
-    <AdminContext.Provider
+    <AppCtx.Provider
       value={{
         isAdminLoginOpen,
         setAdminLoginOpen,
         isAdminViewOpen,
         setAdminViewOpen,
+        loginType,
+        setLoginType,
       }}
     >
       <Main />
       {isAdminLoginOpen && (
         <Modal children={<Login onLogin={handleAdminLogin} />} />
       )}
-    </AdminContext.Provider>
+    </AppCtx.Provider>
   );
 }
 
