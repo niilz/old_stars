@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { FocusEvent, useContext, useState } from 'react';
 import { AppCtx } from '../../App';
 import { LoginState, LoginType } from '../../Constants';
 import { User } from '../../model/User';
@@ -50,9 +50,26 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       })
       .catch((e) => props.onError(MsgType.ERR, e));
   };
+
+  const handleFocus = (e: FocusEvent<HTMLFormElement>) => {
+    if (e.target instanceof HTMLInputElement) {
+      let body = document.querySelector('body');
+      if (body) body.classList.add('shifted');
+    }
+  };
+
+  const handleBlur = (e: FocusEvent<HTMLFormElement>) => {
+    if (e.target instanceof HTMLInputElement) {
+      let body = document.querySelector('body');
+      if (body) body.classList.remove('shifted');
+    }
+  };
+
   return (
     <>
       <form
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
           loginType === LoginType.User ? props.styles : ''
