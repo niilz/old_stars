@@ -1,2 +1,5 @@
 */target/
 user.json
+
+# Exlude video-files
+*.mov
