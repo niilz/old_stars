@@ -11,12 +11,11 @@ extern crate diesel_migrations;
 
 use backend::db::auth_service::*;
 use backend::db::user_service::*;
+use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
-use backend::model::{app_user::AppUser, user::User};
-use diesel::{pg::PgConnection, prelude::*, result::Error};
+use diesel::{pg::PgConnection, prelude::*};
 use rocket_contrib::{database, json::Json};
 use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
-use std::ops::Deref;
 use std::{env, str::FromStr};
 
 diesel_migrations::embed_migrations!();
