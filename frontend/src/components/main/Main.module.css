@@ -1,10 +1,11 @@
 .Main {
   display: flex;
-  height: 90%;
+  height: 80%;
   width: 90%;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  transition: 2s;
 }
 
 .headerStripes {
@@ -14,7 +15,7 @@
 }
 
 .title {
-  font-size: 5rem;
+  font-size: 4.4rem;
   margin-top: 2%;
 }
 
