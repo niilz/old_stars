@@ -17,18 +17,11 @@ pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser>
     match users.get(0) {
         Some(db_user) => {
             let stored_hash = &db_user.pwd;
-            let stored_salt = &db_user.salt;
-
-            let hash_to_check = hash(&login_data.pwd);
-
-            /*
-            if stored_hash == &hash_to_check {
+            if is_password_valid(login_data.pwd, stored_hash) {
                 Some(AppUser::from_user(db_user))
             } else {
                 None
             }
-            */
-            Some(AppUser::from_user(db_user))
         }
         None => None,
     }
@@ -50,15 +43,29 @@ pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {
     Ok(pwd_hash.to_string())
 }
 
+fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
+    let argon = Argon2::default();
+    let parsed_stored_pwd = PasswordHash::new(stored_hash);
+    match parsed_stored_pwd {
+        Err(e) => {
+            eprintln!("Could not parse the stored hash. Error: {}", e);
+            false
+        }
+        Ok(parsed_hash) => argon
+            .verify_password(input_pwd.as_bytes(), &parsed_hash)
+            .is_ok(),
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
-    fn can_create_hash() {
+    fn _can_create_hash() {
         let hash = hash("MySecretPwd");
         assert!(hash.is_ok());
     }
 
-    fn can_verify_pwd_with_hash() {
+    fn _can_verify_pwd_with_hash() {
         let plain_pwd = "EvenMoreSecure";
         let pwd_hashed = hash(plain_pwd).unwrap();
         let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
