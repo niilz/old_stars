@@ -73,6 +73,10 @@ fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
         eprintln!("user is empty");
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
+    if ["admin", "club"].contains(&&*user.name.to_lowercase()) {
+        eprintln!("user tried to register as: {}", user.name);
+        return Json(Err("This user-name can not be taken".to_string()));
+    }
     match insert_user(&conn, user) {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
