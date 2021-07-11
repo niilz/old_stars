@@ -1,24 +1,58 @@
-use crate::db::auth_service::{get_salt, hash};
+use crate::db::auth_service::hash;
 use crate::model::login_data::LoginData;
 use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
+use argon2::password_hash;
 use diesel::dsl::not;
 use diesel::{insert_into, prelude::*, PgConnection};
+use std::error::Error;
+use std::fmt;
 
-pub fn insert_user(conn: &PgConnection, user: LoginData) -> QueryResult<User> {
-    let new_salt = get_salt();
-    let hashed_pwd = hash(user.pwd, &new_salt);
-    insert_into(old_users)
+#[derive(Debug)]
+pub struct UserServiceError {
+    message: String,
+}
+
+impl UserServiceError {
+    fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
+        UserServiceError {
+            message: format!("Error during {}: {}", context, error),
+        }
+    }
+}
+
+impl fmt::Display for UserServiceError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error in UserService: {}", self.message)
+    }
+}
+impl Error for UserServiceError {}
+
+impl From<diesel::result::Error> for UserServiceError {
+    fn from(error: diesel::result::Error) -> Self {
+        Self::new("db-communication", &error)
+    }
+}
+
+impl From<password_hash::Error> for UserServiceError {
+    fn from(error: password_hash::Error) -> Self {
+        Self::new("Hashing", &error)
+    }
+}
+
+pub fn insert_user(conn: &PgConnection, user: LoginData) -> Result<User, UserServiceError> {
+    let hashed_pwd = hash(&user.pwd)?;
+    let inserted_user = insert_into(old_users)
         .values((
             name.eq(user.name),
-            salt.eq(new_salt),
-            pwd.eq(hashed_pwd),
+            pwd.eq(hashed_pwd.to_string()),
             beer_count.eq(0),
             shot_count.eq(0),
             water_count.eq(0),
             fk_icon_id.eq(42),
         ))
-        .get_result(conn)
+        .get_result(conn)?;
+    Ok(inserted_user)
 }
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {

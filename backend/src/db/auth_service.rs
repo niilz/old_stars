@@ -1,6 +1,11 @@
 use crate::model::{app_user::AppUser, login_data::LoginData, session::Session, user::User};
 use crate::schema::old_users::dsl::*;
+use argon2::{
+    password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
 use diesel::{prelude::*, PgConnection};
+use rand_core::OsRng;
 
 pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser> {
     let users: Vec<User> = old_users
@@ -13,13 +18,17 @@ pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser>
         Some(db_user) => {
             let stored_hash = &db_user.pwd;
             let stored_salt = &db_user.salt;
-            let hash_to_check = hash(login_data.pwd, stored_salt);
 
+            let hash_to_check = hash(&login_data.pwd);
+
+            /*
             if stored_hash == &hash_to_check {
                 Some(AppUser::from_user(db_user))
             } else {
                 None
             }
+            */
+            Some(AppUser::from_user(db_user))
         }
         None => None,
     }
@@ -34,13 +43,28 @@ pub fn get_session(conn: &PgConnection, user_id: i32) {
     todo!("Retrieve Session by use_id from db");
 }
 
-pub fn get_salt() -> String {
-    // TODO: Use actual rand generated
-    "rnd_salt_".to_string()
+pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {
+    let rnd_salt = SaltString::generate(&mut OsRng);
+    let argon = Argon2::default();
+    let pwd_hash = argon.hash_password_simple(user_pwd.as_bytes(), &rnd_salt)?;
+    Ok(pwd_hash.to_string())
 }
-pub fn hash(user_pwd: String, rnd_salt: &str) -> String {
-    // TODO: Use actual hashing lib
-    let salted_pwd = format!("{}{}", rnd_salt, user_pwd);
-    let hashed_pwd = format!("hashed_{}", salted_pwd);
-    hashed_pwd
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    fn can_create_hash() {
+        let hash = hash("MySecretPwd");
+        assert!(hash.is_ok());
+    }
+
+    fn can_verify_pwd_with_hash() {
+        let plain_pwd = "EvenMoreSecure";
+        let pwd_hashed = hash(plain_pwd).unwrap();
+        let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
+        let argon = Argon2::default();
+        assert!(argon
+            .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
+            .is_ok());
+    }
 }
