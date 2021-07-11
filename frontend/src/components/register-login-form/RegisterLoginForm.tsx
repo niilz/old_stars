@@ -16,6 +16,9 @@ interface RegisterLoginFormProps {
   onError: (type: MsgType, msg: string) => void;
 }
 
+let doc = document.documentElement;
+const keyboardHeight = Math.floor(window.innerHeight / 3.5);
+
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
   const { loginType, setLoginType } = useContext(AppCtx);
   const { setSessionUser } = useContext(UserContext);
@@ -51,25 +54,25 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       .catch((e) => props.onError(MsgType.ERR, e));
   };
 
-  const handleFocus = (e: FocusEvent<HTMLFormElement>) => {
+  const adjustToKeyboardOpen = (e: FocusEvent<HTMLFormElement>) => {
     if (e.target instanceof HTMLInputElement) {
-      let body = document.querySelector('body');
-      if (body) body.classList.add('shifted');
+      if (doc) doc.classList.add('shifted');
+      window.scroll(0, keyboardHeight);
     }
   };
 
-  const handleBlur = (e: FocusEvent<HTMLFormElement>) => {
+  const adjustToKeyboardClose = (e: FocusEvent<HTMLFormElement>) => {
     if (e.target instanceof HTMLInputElement) {
-      let body = document.querySelector('body');
-      if (body) body.classList.remove('shifted');
+      if (doc) doc.classList.remove('shifted');
+      window.scroll(0, 0);
     }
   };
 
   return (
     <>
       <form
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onFocus={adjustToKeyboardOpen}
+        onBlur={adjustToKeyboardClose}
         onSubmit={preventFormSubmission}
         className={`${styles.RegisterLoginForm} ${
           loginType === LoginType.User ? props.styles : ''

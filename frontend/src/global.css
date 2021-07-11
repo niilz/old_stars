@@ -16,11 +16,20 @@
 }
 
 html,
-body,
 #root {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+}
+
+html.shifted {
+  background-color: var(--primary);
+  height: 180vh;
+  overflow: scroll;
+}
+
+html.shifted #root {
+  height: 150vh;
 }
 
 #root {
@@ -32,10 +41,6 @@ body,
 }
 
 button {
-  /*
-  width: 20vw;
-  height: 4vh;
-  */
   font-weight: bold;
   letter-spacing: 0.3rem;
   font-size: 2rem;
