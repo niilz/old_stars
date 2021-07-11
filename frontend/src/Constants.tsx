@@ -1,5 +1,5 @@
 export const API_URL_DEV = 'http://localhost:8000';
-export const API_URL = 'https://oldstars.ngrok.io';
+export const API_URL = 'https://oldstars.cleverapps.io';
 export enum METHOD {
   GET = 'GET',
   POST = 'POST',
