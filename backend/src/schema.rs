@@ -2,7 +2,6 @@ table! {
     old_users {
         id -> Integer,
         name -> VarChar,
-        salt -> VarChar,
         pwd -> VarChar,
         beer_count -> Integer,
         shot_count -> Integer,

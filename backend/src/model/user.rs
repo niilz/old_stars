@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 pub struct User {
     pub id: i32,
     pub name: String,
-    pub salt: String,
     pub pwd: String,
     #[serde(rename = "beerCount")]
     pub beer_count: i32,
