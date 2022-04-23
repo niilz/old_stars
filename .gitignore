@@ -3,3 +3,5 @@ user.json
 
 # Exlude video-files
 *.mov
+
+.DS_Store
