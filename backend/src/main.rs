@@ -116,6 +116,7 @@ fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> 
     }
 }
 
+#[launch]
 fn main() {
     let connection = establish_connection();
     embedded_migrations::run(&connection);
@@ -130,7 +131,7 @@ fn main() {
         .map(|m| FromStr::from_str(m).unwrap())
         .collect();
 
-    rocket::ignite()
+    rocket::build()
         .mount(
             "/",
             routes![
