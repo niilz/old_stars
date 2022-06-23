@@ -5,3 +5,9 @@ user.json
 *.mov
 
 .DS_Store
+
+# Exclude Configuration
+Rocket.toml
+
+# Exclude packaged stuff
+*.tar
