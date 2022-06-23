@@ -123,7 +123,7 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 #[launch]
 fn rocket() -> _ {
     let connection = establish_connection();
-    embedded_migrations::run(&connection);
+    let _ = embedded_migrations::run(&connection);
 
     rocket::build()
         .mount(
