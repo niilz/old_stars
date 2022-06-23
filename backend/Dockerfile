@@ -1,23 +1,23 @@
-FROM rustlang/rust:stable AS planner
+FROM rust AS planner
 WORKDIR backend
 RUN cargo install cargo-chef
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM rustlang/rust:stable AS cacher
+FROM rust AS cacher
 WORKDIR backend
 RUN cargo install cargo-chef
 COPY --from=planner /backend/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
-FROM rustlang/rust:stable AS builder
+FROM rust AS builder
 WORKDIR backend
 COPY . .
 COPY --from=cacher /backend/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 RUN cargo build --release --bin backend
 
-FROM rustlang/rust:stable AS runtime
+FROM rust AS runtime
 WORKDIR /backend
 COPY ./.env /usr/local/bin
 COPY ./wait_for_it.sh .
