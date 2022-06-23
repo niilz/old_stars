@@ -11,8 +11,10 @@ services:
       - POSTGRES_DB=old_stars_db
 
   backend:
-    build: ./backend
-    image: old-stars-backend
+    image: old_stars_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - 8000:8000
     depends_on:
