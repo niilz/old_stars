@@ -65,7 +65,11 @@ pub fn delete_user_from_db(conn: &PgConnection, del_id: i32) -> QueryResult<User
     diesel::delete(old_users.filter(id.eq(del_id))).get_result(conn)
 }
 
-pub fn add_drink_to_user(conn: &PgConnection, update_id: i32, drink: &str) -> QueryResult<User> {
+pub fn add_drink_to_user<'a>(
+    conn: &PgConnection,
+    update_id: i32,
+    drink: &'a str,
+) -> QueryResult<User> {
     let update_user = old_users.filter(id.eq(update_id));
     match drink {
         "beer" => diesel::update(update_user)

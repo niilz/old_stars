@@ -1,10 +1,5 @@
-#![feature(decl_macro)]
-
 #[macro_use]
 extern crate rocket;
-
-#[macro_use]
-extern crate diesel;
 
 #[macro_use]
 extern crate diesel_migrations;
@@ -13,53 +8,58 @@ use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
-use diesel::{pg::PgConnection, prelude::*};
-use rocket_contrib::{database, json::Json};
-use rocket_cors::{AllowedHeaders, AllowedOrigins, CorsOptions};
-use std::{env, str::FromStr};
+use diesel::{pg::PgConnection, Connection};
+use rocket::{
+    fairing::{Fairing, Info, Kind},
+    http::Header,
+    serde::json::Json,
+    Request, Response,
+};
+use rocket_sync_db_pools::{database, diesel};
+use std::env;
 
 diesel_migrations::embed_migrations!();
+
+#[database("db")]
+pub struct Db(diesel::PgConnection);
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000/";
 const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars/";
 const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 
-#[database("db")]
-struct Db(diesel::PgConnection);
-
 #[get("/")]
-fn hello() -> Json<&'static str> {
+async fn hello() -> Json<&'static str> {
     Json("Hello from the backend-api")
 }
 
 #[head("/")]
-fn head() -> Json<&'static str> {
+async fn head() -> Json<&'static str> {
     Json("Head Response")
 }
 
 #[options("/")]
-fn options() -> Json<&'static str> {
+async fn options() -> Json<&'static str> {
     Json("Options Response")
 }
 
 #[options("/login")]
-fn options_login() -> Json<&'static str> {
+async fn options_login() -> Json<&'static str> {
     Json("Options Response")
 }
 
 #[options("/all")]
-fn options_all() -> Json<&'static str> {
+async fn options_all() -> Json<&'static str> {
     Json("Options Response")
 }
 
 #[options("/register")]
-fn options_register() -> Json<&'static str> {
+async fn options_register() -> Json<&'static str> {
     Json("Options Response")
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
-    match login_user(&*conn, login_data.into_inner()) {
+async fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
+    match conn.run(|c| login_user(c, login_data.into_inner())).await {
         // TODO: if Login Successfull add "Set-Cooky" header
         Some(user) => Json(Ok(user)),
         None => Json(Err("Login failed")),
@@ -67,7 +67,7 @@ fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static
 }
 
 #[post("/register", format = "json", data = "<user>")]
-fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
+async fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         eprintln!("user is empty");
@@ -77,15 +77,15 @@ fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
         eprintln!("user tried to register as: {}", user.name);
         return Json(Err("This user-name can not be taken".to_string()));
     }
-    match insert_user(&conn, user) {
+    match conn.run(|c| insert_user(c, user)).await {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
 }
 
 #[get("/all", format = "json")]
-fn all_users(conn: Db) -> Json<Result<Vec<AppUser>, String>> {
-    match get_users(&conn) {
+async fn all_users(conn: Db) -> Json<Result<Vec<AppUser>, String>> {
+    match conn.run(|c| get_users(c)).await {
         Ok(users) => Json(Ok(users
             .iter()
             .map(|user| AppUser::from_user(user))
@@ -95,8 +95,8 @@ fn all_users(conn: Db) -> Json<Result<Vec<AppUser>, String>> {
 }
 
 #[delete("/delete/<id>")]
-fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
-    match delete_user_from_db(&conn, id) {
+async fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
+    match conn.run(move |c| delete_user_from_db(c, id)).await {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
@@ -106,8 +106,12 @@ fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
 }
 
 #[get("/<drink>/<id>")]
-fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> {
-    match add_drink_to_user(&conn, id, &drink) {
+async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> {
+    let drink_clone = drink.clone();
+    match conn
+        .run(move |c| add_drink_to_user(c, id, &drink_clone))
+        .await
+    {
         Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
@@ -117,19 +121,9 @@ fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> 
 }
 
 #[launch]
-fn main() {
+fn rocket() -> _ {
     let connection = establish_connection();
     embedded_migrations::run(&connection);
-
-    let mut cors_options = CorsOptions::default();
-    cors_options.allowed_origins =
-        AllowedOrigins::some_exact(&[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK]);
-    cors_options.allowed_headers =
-        AllowedHeaders::some(&["Accept", "Content-Type", "Access-Control-Allow-Origin"]);
-    cors_options.allowed_methods = ["GET", "POST", "HEAD", "OPTIONS", "DELETE"]
-        .iter()
-        .map(|m| FromStr::from_str(m).unwrap())
-        .collect();
 
     rocket::build()
         .mount(
@@ -148,12 +142,38 @@ fn main() {
                 add_drink
             ],
         )
-        .attach(cors_options.to_cors().unwrap())
+        .attach(Cors)
         .attach(Db::fairing())
-        .launch();
 }
 
 fn establish_connection() -> PgConnection {
     let db_url = env::var("DATABASE_URL").expect("Could not read DATABASE_URL from env");
     PgConnection::establish(&db_url).expect("Could not establish_connection()")
+}
+
+struct Cors;
+
+#[rocket::async_trait]
+impl Fairing for Cors {
+    fn info(&self) -> Info {
+        Info {
+            name: "Cors-Information",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new(
+            "Access-Control-Allow-Origin",
+            [FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
+        ));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "GET, POST, HEAD, OPTIONS, DELETE",
+        ));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Headers",
+            "Accept, Content-Type, Access-Control-Allow-Origin",
+        ));
+    }
 }

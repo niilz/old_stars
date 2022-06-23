@@ -4,7 +4,7 @@ use argon2::{
     password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use diesel::{prelude::*, PgConnection};
+use diesel::prelude::*;
 use rand_core::OsRng;
 
 pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser> {
