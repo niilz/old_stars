@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate rocket;
 
-#[macro_use]
-extern crate diesel_migrations;
-
 use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
@@ -18,7 +15,6 @@ use rocket::{
 use rocket_sync_db_pools::{database, diesel};
 use std::env;
 
-diesel_migrations::embed_migrations!();
 
 #[database("db")]
 pub struct Db(diesel::PgConnection);
@@ -122,8 +118,6 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-    let connection = establish_connection();
-    let _ = embedded_migrations::run(&connection);
 
     rocket::build()
         .mount(
@@ -165,7 +159,8 @@ impl Fairing for Cors {
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            [FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
+            //[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
+            "*"
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
