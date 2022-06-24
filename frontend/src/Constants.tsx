@@ -1,5 +1,6 @@
 export const API_URL_DEV = 'http://localhost:8000';
-export const API_URL = 'https://oldstars.cleverapps.io';
+export const API_URL =
+  'http://ec2-3-73-55-110.eu-central-1.compute.amazonaws.com:8000';
 export enum METHOD {
   GET = 'GET',
   POST = 'POST',
