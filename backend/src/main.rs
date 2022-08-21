@@ -15,7 +15,6 @@ use rocket::{
 use rocket_sync_db_pools::{database, diesel};
 use std::env;
 
-
 #[database("db")]
 pub struct Db(diesel::PgConnection);
 
@@ -33,23 +32,8 @@ async fn head() -> Json<&'static str> {
     Json("Head Response")
 }
 
-#[options("/")]
+#[options("/<_..>")]
 async fn options() -> Json<&'static str> {
-    Json("Options Response")
-}
-
-#[options("/login")]
-async fn options_login() -> Json<&'static str> {
-    Json("Options Response")
-}
-
-#[options("/all")]
-async fn options_all() -> Json<&'static str> {
-    Json("Options Response")
-}
-
-#[options("/register")]
-async fn options_register() -> Json<&'static str> {
     Json("Options Response")
 }
 
@@ -118,7 +102,6 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-
     rocket::build()
         .mount(
             "/",
@@ -126,12 +109,9 @@ fn rocket() -> _ {
                 hello,
                 head,
                 options,
-                options_login,
                 login,
                 register,
-                options_register,
                 all_users,
-                options_all,
                 delete_user,
                 add_drink
             ],
@@ -160,7 +140,7 @@ impl Fairing for Cors {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
             //[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
-            "*"
+            "*",
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
