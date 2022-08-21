@@ -28,12 +28,8 @@ export function Main() {
   const [sessionUser, setSessionUser] = useState<User | null>(null);
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
 
-  const {
-    setLoginType,
-    isAdminViewOpen,
-    setAdminViewOpen,
-    setAdminLoginOpen,
-  } = useContext(AppCtx);
+  const { setLoginType, isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } =
+    useContext(AppCtx);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -66,6 +62,12 @@ export function Main() {
     );
     setUsers(updatedUserList);
     setSessionUser(updatedUser);
+  };
+
+  const handleRefresh = async () => {
+    const allUsersResponse = await getAllUsers();
+    const allUsers = handleResponse(allUsersResponse);
+    setUsers(allUsers as User[]);
   };
 
   const handleOpenAdminLogin = () => {
@@ -104,6 +106,7 @@ export function Main() {
                   users={users}
                   logout={handleLogout}
                   onUserUpdate={handleUpdateUserList}
+                  onRefresh={handleRefresh}
                 />
               ) : (
                 <Login onLogin={setLoginState} />

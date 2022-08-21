@@ -10,6 +10,7 @@ interface PlaygroundProps {
   logout: () => void;
   users: User[];
   onUserUpdate: (user: User) => void;
+  onRefresh: () => void;
 }
 
 export function Playground(props: PlaygroundProps) {
@@ -18,7 +19,10 @@ export function Playground(props: PlaygroundProps) {
       <Header showLogo={true} />
       <UserView user={props.user} onUserUpdate={props.onUserUpdate} />
       <UserList users={props.users} isEditable={false} />
-      <Button text="logout" styles={styles.Btn} callback={props.logout} />
+      <div className={styles.buttons}>
+        <Button text="logout" styles={styles.Btn} callback={props.logout} />
+        <Button text="🔄" styles={styles.refresh} callback={props.onRefresh} />
+      </div>
     </div>
   );
 }

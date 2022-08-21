@@ -5,3 +5,13 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.buttons {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.refresh {
+  font-size: 1.5rem;
+}
