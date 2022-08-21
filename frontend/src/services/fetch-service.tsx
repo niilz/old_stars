@@ -29,7 +29,7 @@ export async function fetchWrapper(
     options.body = body;
   }
 
-  const apiRes = await fetch(`${API_URL}/${endpoint}`, options);
+  const apiRes = await fetch(`${API_URL_DEV}/${endpoint}`, options);
   const resJson = await apiRes.json();
   return resJson;
 }
