@@ -61,5 +61,5 @@ jobs:
           host: ${{ secrets.EC2_FFM_HOST }}
           username: ${{ secrets.EC2_FFM_USER }}
           key: ${{ secrets.EC2_FFM_PK }}
-          port: ${{ secrets.EC2_FFM_PORT }}
+          port: ${{ secrets.EC2_FFM_SSH_PORT }}
           script: ls
