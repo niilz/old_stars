@@ -67,7 +67,7 @@ jobs:
             docker compose down
             echo Deleting all docker stuff
             docker system prune -af
-            echo Logging into ghcr
+            echo Logging into Github-Container-Registry
             echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ghcr.io/${{ github.actor }}/${{ github.repository}}_backend:main
             echo Setting evironment-variables
