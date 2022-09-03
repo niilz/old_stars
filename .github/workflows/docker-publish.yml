@@ -71,7 +71,7 @@ jobs:
             echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ghcr.io/${{ github.actor }}/${{ github.repository}}_backend:main
             echo Setting evironment-variables
-            export PG_USER=${{ EC2_FFM_PG_USER }}
-            export PG_PWD=${{ EC2_FFM_PG_PWD }}
+            export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
+            export PG_PWD=${{ secrets.EC2_FFM_PG_PWD }}
             echo Starting docker container
             docker compose up
