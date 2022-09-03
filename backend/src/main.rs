@@ -24,7 +24,7 @@ const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 
 #[get("/")]
 async fn hello() -> Json<&'static str> {
-    Json("Hello from the backend-api")
+    Json("Hello from the backend-api by GHCR")
 }
 
 #[head("/")]
