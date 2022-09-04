@@ -19,8 +19,13 @@ set -x PG_PWD some-password
 
 Set `DATABASE_URL`
 
+Example in fish
+
+```
+set -x DATABASE_URL postgresql://some-user-name:the-password@public-address-of-ec2-instance:5432/db_name
+```
+
 Example for aws-url (make sure DB-Port accepts connections from this IP)
-`postgresql://some-user-name:the-password@public-address-of-ec2-instance:5432/db_name`
 `postgresql://my-name:secret@ec2-1-42-43-424.eu-central-1.compute.amazonaws.com:5432/old_stars_db`
 
 ### Launch the configuration binary
