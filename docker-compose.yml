@@ -21,4 +21,8 @@ services:
       - ROCKET_DATABASES={db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}
       - ROCKET_ADDRESS=0.0.0.0
       - ROCKET_PORT=8000
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PWD=${ADMIN_PWD}
+      - CLUB_USER=${CLUB_USER}
+      - CLUB_PWD=${CLUB_PWD}
     command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/configurator ${ADMIN_USR} ${ADMIN_PWD} && bash /usr/local/bin/configurator ${CLUB_USER} ${CLUB_PWD} && bash /usr/local/bin/backend"
