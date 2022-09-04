@@ -73,9 +73,8 @@ jobs:
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
             export PG_PWD=${{ secrets.EC2_FFM_PG_PWD }}
-            export ADMIN_USER=${{ secrets.EC2_FFM_DB_ADMIN_USER }}
-            export ADMIN_PWD=${{ secrets.EC2_FFM_DB_ADMIN_PWD }}
-            export CLUB_USER=${{ secrets.EC2_FFM_DB_CLUB_USER }}
-            export CLUB_PWD=${{ secrets.EC2_FFM_DB_CLUB_PWD }}
             echo Starting docker container
             docker compose up
+            echo Setting up DB
+            /usr/local/bin/configurator ${{ secrets.EC2_FFM_DB_ADMIN_USER }} ${{ secrets.EC2_FFM_DB_ADMIN_PWD }}
+            /usr/local/bin/configurator ${{ secrets.EC2_FFM_DB_CLUB_USER }} ${{ secrets.EC2_FFM_DB_CLUB_PWD }}"
