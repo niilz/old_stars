@@ -22,6 +22,7 @@ WORKDIR /backend
 COPY ./.env /usr/local/bin
 COPY ./wait_for_it.sh .
 COPY --from=builder /backend/target/release/backend /usr/local/bin
+COPY --from=builder /backend/target/release/configurator /usr/local/bin
 #ENTRYPOINT ["/usr/local/bin/backend"]
 #CMD ["bash"]
 
