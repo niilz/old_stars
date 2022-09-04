@@ -16,6 +16,7 @@ COPY . .
 COPY --from=cacher /backend/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 RUN cargo build --release --bin backend
+RUN cargo build --release --bin configurator
 
 FROM rust:latest AS runtime
 WORKDIR /backend
