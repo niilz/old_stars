@@ -23,3 +23,5 @@ services:
       - ROCKET_PORT=8000
     command:
       - bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
+      - bash -c "bash /usr/local/bin/configurator ${ADMIN_USR} ${ADMIN_PWD}"
+      - bash -c "bash /usr/local/bin/configurator ${CLUB_USER} ${CLUB_PWD}"
