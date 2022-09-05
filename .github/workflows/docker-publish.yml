@@ -77,5 +77,6 @@ jobs:
             export ADMIN_PWD=${{ secrets.EC2_FFM_DB_ADMIN_PWD }}
             export CLUB_USER=${{ secrets.EC2_FFM_DB_CLUB_USER }}
             export CLUB_PWD=${{ secrets.EC2_FFM_DB_CLUB_PWD }}
+            env
             echo Starting docker container
             docker compose up
