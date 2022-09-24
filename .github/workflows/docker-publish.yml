@@ -55,6 +55,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Chekckout sources from the top
+        uses: actions/checkout@v3
       - name: Deploy docker-compose to EC2
         uses: appleboy/scp-action@master
         with:
