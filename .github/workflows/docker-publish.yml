@@ -55,17 +55,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      #- name: Chekckout sources from the top
-      #  uses: actions/checkout@v3
-      #- name: Deploy docker-compose to EC2
-      #  uses: appleboy/scp-action@master
-      #  with:
-      #    host: ${{ secrets.EC2_FFM_HOST }}
-      #    username: ${{ secrets.EC2_FFM_USER }}
-      #    key: ${{ secrets.EC2_FFM_PK }}
-      #    port: ${{ secrets.EC2_FFM_SSH_PORT }}
-      #    source: "docker-compose.yml"
-      #    target: "~/"
+      - name: Chekckout sources from the top
+        uses: actions/checkout@v3
+      - name: Deploy docker-compose to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_FFM_HOST }}
+          username: ${{ secrets.EC2_FFM_USER }}
+          key: ${{ secrets.EC2_FFM_PK }}
+          port: ${{ secrets.EC2_FFM_SSH_PORT }}
+          source: "docker-compose.yml"
+          target: "~/"
 
       - name: Deploy old-star-package
         uses: appleboy/ssh-action@master
