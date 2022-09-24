@@ -6,7 +6,9 @@ use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
 use diesel::{pg::PgConnection, Connection};
+use rocket::config::CipherSuite;
 use rocket::{
+    config::{Config, TlsConfig},
     fairing::{Fairing, Info, Kind},
     http::Header,
     serde::json::Json,
@@ -102,7 +104,19 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build()
+    let tls_config = TlsConfig::from_paths(
+        "/etc/letsencrypt/live/niilz.de/cert.pem",
+        "/etc/letsencrypt/live/niilz.de/privkey.pem",
+    )
+    .with_ciphers(CipherSuite::TLS_V13_SET)
+    .with_preferred_server_cipher_order(true);
+
+    let config = Config {
+        tls: Some(tls_config),
+        ..Default::default()
+    };
+
+    rocket::custom(config)
         .mount(
             "/",
             routes![
