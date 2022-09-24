@@ -13,7 +13,7 @@ services:
   backend:
     image: ghcr.io/niilz/old_stars_backend:main
     ports:
-      - 8000:8000
+      - 80:80
     depends_on:
       - db
     environment:
