@@ -25,4 +25,4 @@ services:
       - ADMIN_PWD=${ADMIN_PWD}
       - CLUB_USER=${CLUB_USER}
       - CLUB_PWD=${CLUB_PWD}
-    command: bash -c "bash ls -la /usr/local/bin && ./wait_for_it.sh db:5432 -- /usr/local/bin/configurator ${ADMIN_USER} ${ADMIN_PWD} && bash /usr/local/bin/configurator ${CLUB_USER} ${CLUB_PWD} && bash /usr/local/bin/backend"
+    command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/configurator ${ADMIN_USER} ${ADMIN_PWD} && /usr/local/bin/backend"
