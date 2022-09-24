@@ -12,6 +12,6 @@ To access backend-api from Android we also need the api-server to be accessable 
 
 - Install certbot (ACME-client see: [certbot instructions](https://certbot.eff.org/instructions))
 - Note that ssl-certificates *cannot* be issued for AWS-Public-DNS-Addresses directly!
-- Use **some-other-url.com** instead and configure *CNAME* at the Host-Provider to point to the aws-address
+- Use **some-other-url.com** instead and configure the *A-Record* at the Host-Provider to point to the aws-address
 - Use issued certificate in the server
 - Certificate (pk and chain) are placed in `/etc/letsencrypt/live/domain.com/`
