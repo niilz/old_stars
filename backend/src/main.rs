@@ -104,12 +104,9 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-    let tls_config = TlsConfig::from_paths(
-        "/etc/letsencrypt/live/niilz.de/cert.pem",
-        "/etc/letsencrypt/live/niilz.de/privkey.pem",
-    )
-    .with_ciphers(CipherSuite::TLS_V13_SET)
-    .with_preferred_server_cipher_order(true);
+    let tls_config = TlsConfig::from_paths("/certs/cert.pem", "/certs/privkey.pem")
+        .with_ciphers(CipherSuite::TLS_V13_SET)
+        .with_preferred_server_cipher_order(true);
 
     let config = Config {
         tls: Some(tls_config),
