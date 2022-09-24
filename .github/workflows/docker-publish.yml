@@ -65,7 +65,7 @@ jobs:
           key: ${{ secrets.EC2_FFM_PK }}
           port: ${{ secrets.EC2_FFM_SSH_PORT }}
           source: "docker-compose.yml"
-          target: "foo"
+          target: "~/"
 
       - name: Deploy old-star-package
         uses: appleboy/ssh-action@master
