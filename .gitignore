@@ -11,3 +11,9 @@ Rocket.toml
 
 # Exclude packaged stuff
 *.tar
+
+# Exclude certs
+certs
+
+# Exclude TODOs
+TODO.MD
