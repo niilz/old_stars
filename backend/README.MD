@@ -32,3 +32,15 @@ Example for aws-url (make sure DB-Port accepts connections from this IP)
 
 `cargo run --bin configurator some-user some-password`
 `cargo run --bin configurator mega_admin top-secret`
+
+### Disable Database
+
+To disable the database set the environment variable `NO_DB` to `1`
+
+Example in fish
+
+```
+set -x NO_DB 1
+```
+
+Note: Only the routes that do not use the database will be available
