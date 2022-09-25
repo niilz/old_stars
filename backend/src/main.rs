@@ -5,10 +5,9 @@ use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
+use backend::tls_config;
 use diesel::{pg::PgConnection, Connection};
-use rocket::config::CipherSuite;
 use rocket::{
-    config::{Config, TlsConfig},
     fairing::{Fairing, Info, Kind},
     http::Header,
     serde::json::Json,
@@ -104,31 +103,25 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-    let tls_config = TlsConfig::from_paths("/certs/cert.pem", "/certs/privkey.pem")
-        .with_ciphers(CipherSuite::TLS_V13_SET)
-        .with_preferred_server_cipher_order(true);
+    let tls_config = tls_config("./certs/chain.pem", "./certs/privkey.pem");
 
-    let config = Config {
-        tls: Some(tls_config),
-        ..Default::default()
-    };
-
-    rocket::custom(config)
-        .mount(
-            "/",
-            routes![
-                hello,
-                head,
-                options,
-                login,
-                register,
-                all_users,
-                delete_user,
-                add_drink
-            ],
-        )
+    let rocket = rocket::custom(tls_config)
         .attach(Cors)
-        .attach(Db::fairing())
+        .mount("/", routes![hello, head, options,]);
+
+    // Only attach the db-related routes if db is not disabled
+    let no_db_value = String::from("1");
+    if env::var("NO_DB") == Ok(no_db_value) {
+        println!("Running without DB");
+        rocket
+    } else {
+        rocket
+            .mount(
+                "/",
+                routes![login, register, all_users, delete_user, add_drink],
+            )
+            .attach(Db::fairing())
+    }
 }
 
 fn establish_connection() -> PgConnection {
