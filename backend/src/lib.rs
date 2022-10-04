@@ -14,6 +14,7 @@ pub fn tls_config(cert_path: &str, privat_key: &str) -> Config {
 
     Config {
         tls: Some(tls_config),
+        port: 443,
         ..Default::default()
     }
 }
