@@ -103,9 +103,22 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 
 #[launch]
 fn rocket() -> _ {
-    let tls_config = tls_config("./certs/chain.pem", "./certs/privkey.pem");
+    let cert_chain = env::var("CERT_CHAIN");
+    let private_key = env::var("PRIVATE_KEY");
+    let tls_config = match (cert_chain, private_key) {
+        (Ok(cert_chain), Ok(private_key)) => Some(tls_config(&cert_chain, &private_key)),
+        _ => {
+            eprintln!("Could not find Cert-Chain and/or Private-Key: No TLS!");
+            None
+        }
+    };
 
-    let rocket = rocket::custom(tls_config)
+    let rocket = match tls_config {
+        Some(config) => rocket::custom(config),
+        None => rocket::build(),
+    };
+
+    let rocket = rocket
         .attach(Cors)
         .mount("/", routes![hello, head, options,]);
 
