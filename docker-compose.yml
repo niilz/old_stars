@@ -22,7 +22,7 @@ services:
       - DATABASE_URL=postgres://${PG_USER}:${PG_PWD}@db/old_stars_db
       - ROCKET_DATABASES={db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}
       - ROCKET_ADDRESS=0.0.0.0
-      - ROCKET_PORT=80
+      - ROCKET_PORT=443
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PWD=${ADMIN_PWD}
       - CLUB_USER=${CLUB_USER}
