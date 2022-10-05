@@ -120,7 +120,7 @@ fn rocket() -> _ {
 
     let rocket = rocket
         .attach(Cors)
-        .mount("/", routes![hello, head, options,]);
+        .mount("/", routes![hello, head, options]);
 
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
