@@ -8,6 +8,7 @@ use backend::model::login_data::LoginData;
 use backend::tls_config;
 use diesel::{pg::PgConnection, Connection};
 use rocket::{
+    config::Config,
     fairing::{Fairing, Info, Kind},
     http::Header,
     serde::json::Json,
@@ -105,7 +106,7 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 fn rocket() -> _ {
     let cert_chain = env::var("CERT_CHAIN");
     let private_key = env::var("PRIVATE_KEY");
-    let tls_config = match (cert_chain, private_key) {
+    let config_builder = match (cert_chain.clone(), private_key.clone()) {
         (Ok(cert_chain), Ok(private_key)) => Some(tls_config(&cert_chain, &private_key)),
         _ => {
             eprintln!("Could not find Cert-Chain and/or Private-Key: No TLS!");
@@ -113,29 +114,35 @@ fn rocket() -> _ {
         }
     };
 
+    let config_figment = Config::figment()
+        .merge(("tls.certs", &cert_chain.unwrap()))
+        .merge(("tls.key", &private_key.unwrap()));
+
+    /*
     let rocket = match tls_config {
         // TODO: Add url to conig with 'set_extras'
         Some(config) => rocket::custom(config),
         None => rocket::build(),
     };
-
-    let rocket = rocket
-        .attach(Cors)
-        .mount("/", routes![hello, head, options]);
+    */
 
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
-    if env::var("NO_DB") == Ok(no_db_value) {
+    let rocket = if env::var("NO_DB") == Ok(no_db_value) {
         println!("Running without DB");
-        rocket
+        rocket::custom(config_figment).mount("/", routes![hello, head, options])
     } else {
-        rocket
+        let db_url = env::var("DATABASE_URL").unwrap();
+        let db_figment = config_figment.merge(("databases", db_url));
+        rocket::custom(db_figment)
             .mount(
                 "/",
                 routes![login, register, all_users, delete_user, add_drink],
             )
             .attach(Db::fairing())
-    }
+    };
+
+    rocket.attach(Cors)
 }
 
 fn establish_connection() -> PgConnection {
