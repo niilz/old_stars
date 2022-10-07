@@ -114,6 +114,7 @@ fn rocket() -> _ {
     };
 
     let rocket = match tls_config {
+        // TODO: Add url to conig with 'set_extras'
         Some(config) => rocket::custom(config),
         None => rocket::build(),
     };
