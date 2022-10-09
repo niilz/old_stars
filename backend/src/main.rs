@@ -110,6 +110,7 @@ fn rocket() -> _ {
     let config_figment = Config::figment();
 
     let config_figment = if let (Ok(cert), Ok(pk)) = (cert_chain, private_key) {
+        println!("Found certs, using TLS");
         config_figment
             .merge(("tls.certs", &cert))
             .merge(("tls.key", &pk))
@@ -125,10 +126,12 @@ fn rocket() -> _ {
         println!("Running without DB");
         rocket::custom(config_figment).mount("/", routes![hello, head, options])
     } else {
+        println!("Setting DB-Config");
         let db_url = env::var("DATABASE_URL").unwrap();
         let db_config = map! { "url" => db_url };
-        let db_figment = config_figment.merge(("databases", map!["db" => db_config]));
-        rocket::custom(db_figment)
+        let config_figment_with_db = config_figment.merge(("databases", map!["db" => db_config]));
+        println!("Configuring Rocket");
+        rocket::custom(config_figment_with_db)
             .mount(
                 "/",
                 routes![
@@ -145,6 +148,7 @@ fn rocket() -> _ {
             .attach(Db::fairing())
     };
 
+    println!("Launching rocket");
     rocket.attach(Cors)
 }
 
