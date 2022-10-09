@@ -77,7 +77,7 @@ jobs:
           script: |
             echo Stopping all containers
             docker compose down
-            echo Deleting all docker stuff (older than one month)
+            echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
             echo Logging into Github-Container-Registry
             echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
