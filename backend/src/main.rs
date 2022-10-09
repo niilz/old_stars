@@ -5,7 +5,6 @@ use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
-use backend::tls_config;
 use diesel::{pg::PgConnection, Connection};
 use rocket::{
     config::Config,
@@ -114,9 +113,10 @@ fn rocket() -> _ {
         config_figment
             .merge(("tls.certs", &cert))
             .merge(("tls.key", &pk))
+            .merge(("port", 1443))
     } else {
         println!("No TLS-configuration found");
-        config_figment
+        config_figment.merge(("port", 8000))
     };
 
     // Only attach the db-related routes if db is not disabled
