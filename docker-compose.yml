@@ -28,4 +28,8 @@ services:
       - CLUB_PWD=${CLUB_PWD}
       - CERT_CHAIN=${CERT_CHAIN}
       - PRIVATE_KEY=${PRIVATE_KEY}
-    command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/configurator ${ADMIN_USER} ${ADMIN_PWD} && /usr/local/bin/configurator ${CLUB_USER} ${CLUB_PWD} && /usr/local/bin/backend"
+        #command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/configurator ${ADMIN_USER} ${ADMIN_PWD} && /usr/local/bin/configurator ${CLUB_USER} ${CLUB_PWD} && /usr/local/bin/backend"
+
+    command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
+
+
