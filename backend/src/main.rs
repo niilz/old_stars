@@ -128,6 +128,7 @@ fn rocket() -> _ {
     } else {
         println!("Setting DB-Config");
         let db_url = env::var("DATABASE_URL").unwrap();
+        println!("DB-URL: {db_url}");
         let db_config = map! { "url" => db_url };
         let config_figment_with_db = config_figment.merge(("databases", map!["db" => db_config]));
         println!("Configuring Rocket");
