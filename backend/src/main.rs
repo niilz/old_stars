@@ -10,6 +10,7 @@ use diesel::{pg::PgConnection, Connection};
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
+    figment::util::map,
     http::Header,
     serde::json::Json,
     Request, Response,
@@ -106,25 +107,17 @@ async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, Str
 fn rocket() -> _ {
     let cert_chain = env::var("CERT_CHAIN");
     let private_key = env::var("PRIVATE_KEY");
-    let config_builder = match (cert_chain.clone(), private_key.clone()) {
-        (Ok(cert_chain), Ok(private_key)) => Some(tls_config(&cert_chain, &private_key)),
-        _ => {
-            eprintln!("Could not find Cert-Chain and/or Private-Key: No TLS!");
-            None
-        }
-    };
 
-    let config_figment = Config::figment()
-        .merge(("tls.certs", &cert_chain.unwrap()))
-        .merge(("tls.key", &private_key.unwrap()));
+    let config_figment = Config::figment();
 
-    /*
-    let rocket = match tls_config {
-        // TODO: Add url to conig with 'set_extras'
-        Some(config) => rocket::custom(config),
-        None => rocket::build(),
+    let config_figment = if let (Ok(cert), Ok(pk)) = (cert_chain, private_key) {
+        config_figment
+            .merge(("tls.certs", &cert))
+            .merge(("tls.key", &pk))
+    } else {
+        println!("No TLS-configuration found");
+        config_figment
     };
-    */
 
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
@@ -133,11 +126,21 @@ fn rocket() -> _ {
         rocket::custom(config_figment).mount("/", routes![hello, head, options])
     } else {
         let db_url = env::var("DATABASE_URL").unwrap();
-        let db_figment = config_figment.merge(("databases", db_url));
+        let db_config = map! { "url" => db_url };
+        let db_figment = config_figment.merge(("databases", map!["db" => db_config]));
         rocket::custom(db_figment)
             .mount(
                 "/",
-                routes![login, register, all_users, delete_user, add_drink],
+                routes![
+                    hello,
+                    head,
+                    options,
+                    login,
+                    register,
+                    all_users,
+                    delete_user,
+                    add_drink
+                ],
             )
             .attach(Db::fairing())
     };
