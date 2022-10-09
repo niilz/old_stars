@@ -17,11 +17,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8000:8000
+    volumes:
+      - ./certs:/certs
     depends_on:
       - db
     environment:
+      - RUST_BACKTRACE=1
       - DATABASE_URL=postgres://${PG_USER}:${PG_PWD}@db/old_stars_db
-      - ROCKET_DATABASES={db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}
+        #- ROCKET_DATABASES={db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}
+      - ROCKET_DATABASES='{db={url="postgres://${PG_USER}:${PG_PWD}@db/old_stars_db"}}'
       - ROCKET_ADDRESS=0.0.0.0
-      - ROCKET_PORT=8000
+      - ROCKET_PORT=443
+      - CERT_CHAIN=${CERT_CHAIN}
+      - PRIVATE_KEY=${PRIVATE_KEY}
     command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
