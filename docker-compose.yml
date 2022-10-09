@@ -13,8 +13,8 @@ services:
   backend:
     image: ghcr.io/niilz/old_stars_backend:main
     ports:
-      - 80:80
-      - 443:443
+      - 80:8000
+      - 443:1443
     volumes:
       - ./certs:/certs
     depends_on:
@@ -22,7 +22,6 @@ services:
     environment:
       - DATABASE_URL=postgres://${PG_USER}:${PG_PWD}@db/old_stars_db
       - ROCKET_ADDRESS=0.0.0.0
-      - ROCKET_PORT=443
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PWD=${ADMIN_PWD}
       - CLUB_USER=${CLUB_USER}
