@@ -77,6 +77,9 @@ jobs:
           script: |
             echo Stopping all containers
             docker compose down
+            echo Delete last old_stars_backend image
+            #TODO Delete only if the source code has changed
+            docker image rm ghcr.io/${{ github.actor }}/${{ github.repository}}_backend:main
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
             echo Logging into Github-Container-Registry
