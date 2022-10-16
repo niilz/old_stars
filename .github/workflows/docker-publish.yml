@@ -97,7 +97,7 @@ jobs:
             export CERT_CHAIN=${{ secrets.EC2_FFM_CERT_CHAIN_PATH }}
             export PRIVATE_KEY=${{ secrets.EC2_FFM_PRIVATE_KEY_PATH }}
             echo the exported variables are
-            env
+            env | tee > env.dump
             echo
             echo Starting docker containers
             docker compose up
