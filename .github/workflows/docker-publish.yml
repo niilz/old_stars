@@ -94,7 +94,7 @@ jobs:
             docker system prune -af --filter until=672h
             echo
             echo Pulling old_stars_backend image
-            docker pull ghcr.io/${{ gihtub.repository }}_backend:main
+            docker pull ghcr.io/${{ github.repository }}_backend:main
             echo
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
