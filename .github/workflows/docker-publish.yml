@@ -86,9 +86,7 @@ jobs:
             echo
             echo Delete last old_stars_backend image
             #TODO Delete only if the source code has changed
-            echo FOR DEBUG ${{ github.repository }}
-            echo "FOR DEBUG2 ${{ github.repository }}"
-            docker image rm ghcr.io/${{ github.repository }}_backend:main
+            #docker image rm ghcr.io/${{ github.repository }}_backend:main
             echo
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
