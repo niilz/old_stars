@@ -68,10 +68,10 @@ jobs:
           target: "~/"
 
       - name: Deploy old-star-package
-        uses: appleboy/ssh-action@master
       - env:
         GITHUB_OWNER: ${{ github.actor }}
         REPOSITORY: ${{ github.repository }}
+      - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_FFM_HOST }}
           username: ${{ secrets.EC2_FFM_USER }}
