@@ -54,9 +54,6 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_OWNER: ${{ github.actor }}
-      REPOSITORY: ${{ github.repository }}
     steps:
       - name: Chekckout sources from the top
         uses: actions/checkout@v3
@@ -81,11 +78,11 @@ jobs:
             echo Stopping all containers
             docker compose down
             echo
-            echo Logging into Github-Container-Registry
-            echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            echo
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
+            echo
+            echo Logging into Github-Container-Registry
+            echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             echo
             echo Pulling old_stars_backend image
             docker pull ghcr.io/${{ env.IMAGE_NAME }}:main
