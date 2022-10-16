@@ -87,9 +87,6 @@ jobs:
             echo Pulling old_stars_backend image
             docker pull ghcr.io/${{ env.IMAGE_NAME }}:main
             echo
-            echo Logging out of Github-Container-Registry
-            docker logout ghcr.io
-            echo
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
             export PG_PWD=${{ secrets.EC2_FFM_PG_PWD }}
@@ -103,4 +100,4 @@ jobs:
             env
             echo
             echo Starting docker containers
-            docker compose up -d
+            docker compose up
