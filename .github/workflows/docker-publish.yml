@@ -69,6 +69,9 @@ jobs:
 
       - name: Deploy old-star-package
         uses: appleboy/ssh-action@master
+      - env:
+        GITHUB_OWNER: ${{ github.actor }}
+        REPOSITORY: ${{ github.repository }}
         with:
           host: ${{ secrets.EC2_FFM_HOST }}
           username: ${{ secrets.EC2_FFM_USER }}
@@ -83,15 +86,15 @@ jobs:
             echo
             echo Delete last old_stars_backend image
             #TODO Delete only if the source code has changed
-            echo FOR DEBUG ${{ github.repository }}
-            echo "FOR DEBUG2 ${{ github.repository }}"
-            docker image rm "ghcr.io/${{ github.actor }}/${{ github.repository }}_backend:main"
+            echo FOR DEBUG ${REPOSITORY}
+            echo "FOR DEBUG2 ${REPOSITORY}"
+            docker image rm "ghcr.io/${GITHUB_OWNER}/${REPOSITORY}"_backend:main
             echo
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
             echo
             echo Pulling old_stars_backend image
-            docker pull "ghcr.io/${{ github.actor }}/${{ github.repository }}_backend:main"
+            docker pull "ghcr.io/${GITHUB_OWNER}/${REPOSITORY}_backend:main"
             echo
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
