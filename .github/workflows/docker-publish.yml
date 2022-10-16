@@ -78,15 +78,18 @@ jobs:
             echo Stopping all containers
             docker compose down
             echo
+            echo Removing old old_stars_backend
+            docker image rm ghcr.io/${{ env.IMAGE_NAME }}:main
+            echo
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
             echo
-            #echo Logging into Github-Container-Registry
-            #echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo Logging into Github-Container-Registry
+            echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             #echo
             #echo Pulling old_stars_backend image
             #docker pull ghcr.io/${{ env.IMAGE_NAME }}:main
-            #echo
+            echo
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
             export PG_PWD=${{ secrets.EC2_FFM_PG_PWD }}
