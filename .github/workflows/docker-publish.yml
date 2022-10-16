@@ -54,6 +54,9 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_OWNER: ${{ github.actor }}
+      REPOSITORY: ${{ github.repository }}
     steps:
       - name: Chekckout sources from the top
         uses: actions/checkout@v3
@@ -68,10 +71,7 @@ jobs:
           target: "~/"
 
       - name: Deploy old-star-package
-      - env:
-        GITHUB_OWNER: ${{ github.actor }}
-        REPOSITORY: ${{ github.repository }}
-      - uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_FFM_HOST }}
           username: ${{ secrets.EC2_FFM_USER }}
