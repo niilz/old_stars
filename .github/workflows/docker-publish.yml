@@ -49,8 +49,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=ghcr.io/niilz/old_stars_backend:buildcache
-          cache-to: type=registry,ref=ghcr.io/niilz/old_stars_backend:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/niilz/old_stars_backend:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/niilz/old_stars_backend:buildcache,mode=max
   
   deploy:
     runs-on: ubuntu-latest
@@ -80,14 +80,14 @@ jobs:
             echo
             # TODO: Only remove if source code has changed
             echo Removing old old_stars_backend
-            docker image rm ghcr.io/${{ env.IMAGE_NAME }}:main
+            docker image rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
             echo
             # TODO: Remove Volumes if no space is available
             echo Deleting all docker stuff, which is older than one month
             docker system prune -af --filter until=672h
             echo
             echo Logging into Github-Container-Registry
-            echo ${{ secrets.EC2_FFM_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo ${{ secrets.EC2_FFM_PAT }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
             echo
             echo Setting evironment-variables
             export PG_USER=${{ secrets.EC2_FFM_PG_USER }}
