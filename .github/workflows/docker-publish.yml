@@ -1,6 +1,11 @@
 name: Build & Publish backen-Docker-Image
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
 
 env:
   REGISTRY: ghcr.io
