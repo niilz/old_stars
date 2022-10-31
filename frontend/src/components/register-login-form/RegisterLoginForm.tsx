@@ -131,7 +131,7 @@ function evalLoginName(loginType: LoginType) {
     case LoginType.Club:
       return 'club';
     case LoginType.Admin:
-      return 'admin';
+      return 'admin!';
     default:
       throw 'Cannot evaluate the Login Name if the userName is undefined';
   }
