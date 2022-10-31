@@ -18,8 +18,7 @@ interface PlaygroundProps {
 export function Playground(props: PlaygroundProps) {
   const oldstar = new OldStar(props.user);
   return (
-    <div className={styles.Playground}>
-      <Header showLogo={true} />
+    <>
       {oldstar.needsWaterRound() && (
         <Modal
           children={
@@ -30,12 +29,19 @@ export function Playground(props: PlaygroundProps) {
           }
         />
       )}
-      <UserView user={props.user} onUserUpdate={props.onUserUpdate} />
-      <UserList users={props.users} isEditable={false} />
-      <div className={styles.buttons}>
-        <Button text="logout" styles={styles.Btn} callback={props.logout} />
-        <Button text="🔄" styles={styles.refresh} callback={props.onRefresh} />
+      <div className={styles.Playground}>
+        <Header showLogo={true} />
+        <UserView user={props.user} onUserUpdate={props.onUserUpdate} />
+        <UserList users={props.users} isEditable={false} />
+        <div className={styles.buttons}>
+          <Button text="logout" styles={styles.Btn} callback={props.logout} />
+          <Button
+            text="🔄"
+            styles={styles.refresh}
+            callback={props.onRefresh}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
