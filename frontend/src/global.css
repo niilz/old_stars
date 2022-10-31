@@ -28,10 +28,6 @@ html.shifted {
   overflow: scroll;
 }
 
-html.shifted #root {
-  height: 150vh;
-}
-
 #root {
   background-color: var(--primary);
   display: flex;
