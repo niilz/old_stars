@@ -59,6 +59,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/niilz/${{ env.IMAGE_NAME }}:buildcache,mode=max
   
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Chekckout sources from the top
