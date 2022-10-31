@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/old_stars/static/css/main.4eb1b3cd.chunk.css",
-    "main.js": "/old_stars/static/js/main.8d7f1666.chunk.js",
-    "main.js.map": "/old_stars/static/js/main.8d7f1666.chunk.js.map",
+    "main.css": "/old_stars/static/css/main.7939edd7.chunk.css",
+    "main.js": "/old_stars/static/js/main.d432283f.chunk.js",
+    "main.js.map": "/old_stars/static/js/main.d432283f.chunk.js.map",
     "runtime-main.js": "/old_stars/static/js/runtime-main.78c991a0.js",
     "runtime-main.js.map": "/old_stars/static/js/runtime-main.78c991a0.js.map",
     "static/js/2.75f891aa.chunk.js": "/old_stars/static/js/2.75f891aa.chunk.js",
@@ -10,14 +10,14 @@
     "static/js/3.d2fc5a8f.chunk.js": "/old_stars/static/js/3.d2fc5a8f.chunk.js",
     "static/js/3.d2fc5a8f.chunk.js.map": "/old_stars/static/js/3.d2fc5a8f.chunk.js.map",
     "index.html": "/old_stars/index.html",
-    "static/css/main.4eb1b3cd.chunk.css.map": "/old_stars/static/css/main.4eb1b3cd.chunk.css.map",
+    "static/css/main.7939edd7.chunk.css.map": "/old_stars/static/css/main.7939edd7.chunk.css.map",
     "static/js/2.75f891aa.chunk.js.LICENSE.txt": "/old_stars/static/js/2.75f891aa.chunk.js.LICENSE.txt",
     "static/media/global.css": "/old_stars/static/media/The Goldsmith_Vintage.cbfc2a7c.ttf"
   },
   "entrypoints": [
     "static/js/runtime-main.78c991a0.js",
     "static/js/2.75f891aa.chunk.js",
-    "static/css/main.4eb1b3cd.chunk.css",
-    "static/js/main.8d7f1666.chunk.js"
+    "static/css/main.7939edd7.chunk.css",
+    "static/js/main.d432283f.chunk.js"
   ]
 }
