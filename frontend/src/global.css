@@ -22,12 +22,6 @@ html,
   overflow: hidden;
 }
 
-html.shifted {
-  background-color: var(--primary);
-  height: 180vh;
-  overflow: scroll;
-}
-
 #root {
   background-color: var(--primary);
   display: flex;
