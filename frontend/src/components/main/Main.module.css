@@ -9,8 +9,6 @@
 }
 
 .headerStripes {
-  height: 15vh;
-  margin-top: 5vh;
   transform: rotate(-20deg);
 }
 

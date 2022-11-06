@@ -28,8 +28,12 @@ export function Main() {
   const [sessionUser, setSessionUser] = useState<User | null>(null);
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
 
-  const { setLoginType, isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } =
-    useContext(AppCtx);
+  const {
+    setLoginType,
+    isAdminViewOpen,
+    setAdminViewOpen,
+    setAdminLoginOpen,
+  } = useContext(AppCtx);
 
   useEffect(() => {
     const fetchUsers = async () => {

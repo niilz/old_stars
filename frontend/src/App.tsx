@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Login } from './components/login/Login';
 import { Main } from './components/main/Main';
 import './global.css';
@@ -12,12 +12,14 @@ export const AppCtx = React.createContext({
   setAdminViewOpen: (_flag: boolean) => {},
   loginType: LoginType.Club,
   setLoginType: (_lg: LoginType) => {},
+  appHeight: 0,
 });
 
 function App() {
   const [isAdminLoginOpen, setAdminLoginOpen] = useState(false);
   const [isAdminViewOpen, setAdminViewOpen] = useState(false);
   const [loginType, setLoginType] = useState(LoginType.Club);
+  const [appHeight, _setAppHeight] = useState(window.innerHeight);
 
   const handleAdminLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoggedInAdmin)
@@ -35,12 +37,15 @@ function App() {
         setAdminViewOpen,
         loginType,
         setLoginType,
+        appHeight,
       }}
     >
-      <Main />
-      {isAdminLoginOpen && (
-        <Modal children={<Login onLogin={handleAdminLogin} />} />
-      )}
+      <div className="App" style={{ height: appHeight }}>
+        <Main />
+        {isAdminLoginOpen && (
+          <Modal children={<Login onLogin={handleAdminLogin} />} />
+        )}
+      </div>
     </AppCtx.Provider>
   );
 }

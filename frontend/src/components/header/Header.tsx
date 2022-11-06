@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { AppCtx } from '../../App';
 import { AppLogo } from '../logo/Logo';
 import styles from './Header.module.css';
 
@@ -7,6 +9,7 @@ interface HeaderProps {
 }
 
 export function Header(props: HeaderProps) {
+  let { appHeight } = useContext(AppCtx);
   return (
     <header className={styles.Header}>
       {props.showLogo ? <AppLogo styles={styles.logo} /> : null}
@@ -14,6 +17,7 @@ export function Header(props: HeaderProps) {
         className={`${styles.headerStripes} ${
           props.styles ? props.styles.headerStripes : ''
         }`}
+        style={{ height: appHeight * 0.15, margin: appHeight * 0.05 }}
       >
         <h1
           className={`${styles.title} ${
