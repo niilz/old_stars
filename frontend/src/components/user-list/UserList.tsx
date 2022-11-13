@@ -10,28 +10,30 @@ type UserListProps = {
 
 export function UserList(props: UserListProps) {
   return (
-    <table className={styles.UserList}>
-      <thead>
-        <tr>
-          <th></th>
-          <th>🍺</th>
-          <th>🥃</th>
-          <th>🚰</th>
-        </tr>
-      </thead>
-      <tbody>
-        {props.users.map((user) => (
-          <ListItem
-            key={user['id']}
-            id={user['id']}
-            user={user}
-            isEditable={props.isEditable}
-            deleteGotClicked={() =>
-              props.onDelete ? props.onDelete(user['id']) : null
-            }
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className={styles.TableArea}>
+      <table className={styles.UserList}>
+        <thead>
+          <tr>
+            <th></th>
+            <th>🍺</th>
+            <th>🥃</th>
+            <th>🚰</th>
+          </tr>
+        </thead>
+        <tbody>
+          {props.users.map((user) => (
+            <ListItem
+              key={user['id']}
+              id={user['id']}
+              user={user}
+              isEditable={props.isEditable}
+              deleteGotClicked={() =>
+                props.onDelete ? props.onDelete(user['id']) : null
+              }
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

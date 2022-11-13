@@ -2,6 +2,17 @@
   width: 80vw;
 }
 
-th {
+.TableArea {
+  max-height: 35%;
+  overflow: scroll;
+}
+
+thead tr th {
+  top: 0;
   font-size: 2rem;
+  position: sticky;
+}
+
+th {
+  background-color: var(--primary);
 }
