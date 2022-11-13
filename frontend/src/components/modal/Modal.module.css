@@ -1,11 +1,10 @@
 .Modal {
+  width: 100vw;
   position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  height: 100vh;
-  width: 100vw;
   background-color: rgba(22, 100, 120, 0.9);
   z-index: 1;
 }
