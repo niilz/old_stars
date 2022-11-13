@@ -17,7 +17,6 @@ export function Header(props: HeaderProps) {
         className={`${styles.headerStripes} ${
           props.styles ? props.styles.headerStripes : ''
         }`}
-        style={{ height: appHeight * 0.15, margin: appHeight * 0.05 }}
       >
         <h1
           className={`${styles.title} ${

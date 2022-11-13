@@ -1,6 +1,5 @@
 .Main {
   display: flex;
-  height: 80%;
   width: 90%;
   flex-direction: column;
   justify-content: space-around;
@@ -10,6 +9,8 @@
 
 .headerStripes {
   transform: rotate(-20deg);
+  height: 100%;
+  margin-bottom: 3vh;
 }
 
 .title {
@@ -19,4 +20,5 @@
 
 .logo {
   font-size: 8rem;
+  margin-bottom: 3vh;
 }
