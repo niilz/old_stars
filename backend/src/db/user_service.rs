@@ -41,6 +41,15 @@ impl From<password_hash::Error> for UserServiceError {
 }
 
 pub fn insert_user(conn: &PgConnection, user: LoginData) -> Result<User, UserServiceError> {
+    // Do not allow for duplicate users
+    let users_with_given_name = old_users.filter(name.eq(&user.name)).load::<User>(conn)?;
+
+    if users_with_given_name.len() != 0 {
+        return Err(UserServiceError::new(
+            "Registration",
+            &"User already exists",
+        ));
+    }
     let hashed_pwd = hash(&user.pwd)?;
     let inserted_user = insert_into(old_users)
         .values((
@@ -56,6 +65,7 @@ pub fn insert_user(conn: &PgConnection, user: LoginData) -> Result<User, UserSer
 }
 
 pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
+    // TODO: Make seperate types or tables instead of _secret_ users-names
     old_users
         .filter(not(name.eq("club").or(name.eq("admin!"))))
         .load::<User>(conn)
@@ -82,5 +92,22 @@ pub fn add_drink_to_user<'a>(
             .set(water_count.eq(water_count + 1))
             .get_result(conn),
         _ => unimplemented!("Other drinks are not supported"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::UserServiceError;
+
+    #[test]
+    fn can_create_user_service_error() {
+        let dummy_ctx = "Some process";
+        let dummy_msg = "Something did not work";
+
+        let error_mock = UserServiceError::new(dummy_ctx, &dummy_msg);
+        assert_eq!(
+            error_mock.message,
+            format!("Error during {dummy_ctx}: Error: {dummy_msg}")
+        );
     }
 }
