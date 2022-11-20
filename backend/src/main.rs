@@ -5,7 +5,6 @@ use backend::db::auth_service::*;
 use backend::db::user_service::*;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
-use diesel::{pg::PgConnection, Connection};
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
@@ -163,8 +162,7 @@ impl Fairing for Cors {
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            //[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
-            "*",
+            [FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
