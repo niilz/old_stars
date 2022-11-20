@@ -107,7 +107,7 @@ mod tests {
         let error_mock = UserServiceError::new(dummy_ctx, &dummy_msg);
         assert_eq!(
             error_mock.message,
-            format!("Error during {dummy_ctx}: Error: {dummy_msg}")
+            format!("Error during {dummy_ctx}: {dummy_msg}")
         );
     }
 }
