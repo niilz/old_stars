@@ -149,11 +149,6 @@ fn rocket() -> _ {
     rocket.attach(Cors)
 }
 
-fn establish_connection() -> PgConnection {
-    let db_url = env::var("DATABASE_URL").expect("Could not read DATABASE_URL from env");
-    PgConnection::establish(&db_url).expect("Could not establish_connection()")
-}
-
 struct Cors;
 
 #[rocket::async_trait]
