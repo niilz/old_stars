@@ -60,12 +60,15 @@ fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
 #[cfg(test)]
 mod test {
     use super::*;
-    fn _can_create_hash() {
+
+    #[test]
+    fn can_create_hash() {
         let hash = hash("MySecretPwd");
         assert!(hash.is_ok());
     }
 
-    fn _can_verify_pwd_with_hash() {
+    #[test]
+    fn can_verify_pwd_with_hash() {
         let plain_pwd = "EvenMoreSecure";
         let pwd_hashed = hash(plain_pwd).unwrap();
         let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
