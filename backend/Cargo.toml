@@ -15,6 +15,7 @@ dotenv = "0.15"
 serde = { version = "1", features = ["derive"] }
 rand_core = {version = "0.6", features = ["std"] }
 argon2 = "0.2"
+uuid = { version = "1.2.2", features = ["v4"] }
 
 [dependencies.rocket_sync_db_pools]
 version = "0.1.0-rc.2"
