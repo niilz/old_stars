@@ -27,12 +27,12 @@ pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser>
     }
 }
 
-pub fn insert_session(conn: &PgConnection, user_id: i32) {
-    let session = Session::new(user_id);
+pub fn insert_session(_conn: &PgConnection, user_name: &str) {
+    let _session = Session::new(user_name);
     todo!("store session");
 }
 
-pub fn get_session(conn: &PgConnection, user_id: i32) {
+pub fn get_session(_conn: &PgConnection, _user_name: &str) {
     todo!("Retrieve Session by use_id from db");
 }
 

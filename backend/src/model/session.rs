@@ -16,9 +16,9 @@ pub struct Session {
 }
 
 impl Session {
-    fn new(user: &str) -> Self {
+    pub fn new(user_name: &str) -> Self {
         Self {
-            user: user.to_string(),
+            user: user_name.to_string(),
             uuid: Uuid::new_v4().to_string(),
         }
     }
