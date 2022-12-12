@@ -10,23 +10,27 @@ use argon2::{
 use diesel::prelude::*;
 use rand_core::OsRng;
 
-pub fn login_user(conn: &PgConnection, login_data: LoginData) -> Option<AppUser> {
-    let users: Vec<User> = old_users
-        .filter(name.eq(&login_data.name))
-        .limit(1)
-        .load(conn)
-        .expect(&format!("Error checking pwd for user: {}", login_data.name));
+pub struct LoginService {
+    pub user_service: Box<dyn UserService>,
+}
 
-    match users.get(0) {
-        Some(db_user) => {
-            let stored_hash = &db_user.pwd;
-            if is_password_valid(login_data.pwd, stored_hash) {
-                Some(AppUser::from_user(db_user))
-            } else {
+impl LoginService {
+    pub fn login_user(&self, login_data: LoginData) -> Option<AppUser> {
+        let user = self.user_service.get_user_by_name(&login_data.name);
+        match user {
+            Ok(db_user) => {
+                let stored_hash = &db_user.pwd;
+                if is_password_valid(login_data.pwd, stored_hash) {
+                    Some(AppUser::from_user(&db_user))
+                } else {
+                    None
+                }
+            }
+            Err(e) => {
+                eprintln!("Could not login user: {}, Err: {}", login_data.name, e);
                 None
             }
         }
-        None => None,
     }
 }
 

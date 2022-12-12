@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate rocket;
 
-use backend::db::auth_service::*;
-use backend::db::user_service::*;
+use backend::db::auth_service::LoginService;
+use backend::db::{connection::OldStarDb, user_service::*};
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
 use rocket::{
@@ -35,12 +35,19 @@ async fn head() -> Json<&'static str> {
 
 #[options("/<_..>")]
 async fn options() -> Json<&'static str> {
+    println!("Options got called");
     Json("Options Response")
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-async fn login(login_data: Json<LoginData>, conn: Db) -> Json<Result<AppUser, &'static str>> {
-    match conn.run(|c| login_user(c, login_data.into_inner())).await {
+fn login(login_data: Json<LoginData>) -> Json<Result<AppUser, &'static str>> {
+    let db = OldStarDb::new();
+    let user_service = DbUserService { conn: db.conn };
+    let auth_service = LoginService {
+        user_service: Box::new(user_service),
+    };
+
+    match auth_service.login_user(login_data.into_inner()) {
         // TODO: if Login Successfull add "Set-Cooky" header
         Some(user) => Json(Ok(user)),
         None => Json(Err("Login failed")),
@@ -61,8 +68,10 @@ async fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, Strin
 }
 
 #[get("/all", format = "json")]
-async fn all_users(conn: Db) -> Json<Result<Vec<AppUser>, String>> {
-    match conn.run(|c| get_users(c)).await {
+fn all_users() -> Json<Result<Vec<AppUser>, String>> {
+    println!("Getting all users");
+    let db = OldStarDb::new();
+    match get_users(&db.conn) {
         Ok(users) => Json(Ok(users
             .iter()
             .map(|user| AppUser::from_user(user))
