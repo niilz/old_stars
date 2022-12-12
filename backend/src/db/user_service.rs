@@ -2,6 +2,7 @@ use crate::db::auth_service::hash;
 use crate::model::login_data::LoginData;
 use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
+use crate::UserService;
 use argon2::password_hash;
 use diesel::dsl::not;
 use diesel::{insert_into, prelude::*, PgConnection};
@@ -11,6 +12,19 @@ use std::fmt;
 #[derive(Debug)]
 pub struct UserServiceError {
     message: String,
+}
+
+pub struct DbUserService {
+    pub conn: PgConnection,
+}
+
+impl UserService for DbUserService {
+    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
+        let user = old_users
+            .filter(name.eq(user_name))
+            .first::<User>(&self.conn)?;
+        Ok(user)
+    }
 }
 
 impl UserServiceError {

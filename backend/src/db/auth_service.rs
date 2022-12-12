@@ -1,5 +1,8 @@
-use crate::model::{app_user::AppUser, login_data::LoginData, session::Session, user::User};
 use crate::schema::old_users::dsl::*;
+use crate::{
+    model::{app_user::AppUser, login_data::LoginData, session::Session},
+    UserService,
+};
 use argon2::{
     password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
