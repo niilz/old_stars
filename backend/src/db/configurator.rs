@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate diesel_migrations;
 
-use backend::db::user_service;
+use backend::db::connection::OldStarDb;
+use backend::db::user_service::DbUserService;
 use backend::model::login_data::LoginData;
-use diesel::connection::Connection;
-use diesel::PgConnection;
+use backend::UserService;
 use std::env::{self, Args};
 use std::process::exit;
 
@@ -49,7 +49,9 @@ fn configure(url: &str, args: &mut Args) {
     };
 
     println!("trying to establish connection to url: {}", url);
-    let conn = PgConnection::establish(url).expect("Could not establish connection");
+    let db = OldStarDb::with_url(url);
+    let conn = db.conntection();
+    let user_service = DbUserService { db };
     let _ = embedded_migrations::run(&conn);
-    let _ = user_service::insert_user(&conn, login_data);
+    let _ = user_service.insert_user(login_data);
 }
