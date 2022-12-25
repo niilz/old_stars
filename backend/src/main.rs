@@ -5,21 +5,19 @@ use backend::db::auth_service::LoginService;
 use backend::db::{connection::OldStarDb, user_service::*};
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
+use backend::UserService;
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
-    figment::util::map,
     http::Header,
     serde::json::Json,
-    Request, Response,
+    Request, Response, State,
 };
-use rocket_sync_db_pools::{database, diesel};
+
 use std::env;
+use std::sync::{Arc, RwLock};
 
-#[database("db")]
-pub struct Db(diesel::PgConnection);
-
-const FRONT_END_URL_DEV: &'static str = "http://localhost:3000/";
+const FRONT_END_URL_DEV: &'static str = "https://localhost:3000";
 const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars/";
 const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 
@@ -40,14 +38,15 @@ async fn options() -> Json<&'static str> {
 }
 
 #[post("/login", format = "json", data = "<login_data>")]
-fn login(login_data: Json<LoginData>) -> Json<Result<AppUser, &'static str>> {
-    let db = OldStarDb::new();
-    let user_service = DbUserService { conn: db.conn };
-    let auth_service = LoginService {
-        user_service: Box::new(user_service),
-    };
-
-    match auth_service.login_user(login_data.into_inner()) {
+fn login(
+    login_data: Json<LoginData>,
+    login_service: &State<RwLock<LoginService>>,
+) -> Json<Result<AppUser, &'static str>> {
+    match login_service
+        .read()
+        .unwrap()
+        .login_user(login_data.into_inner())
+    {
         // TODO: if Login Successfull add "Set-Cooky" header
         Some(user) => Json(Ok(user)),
         None => Json(Err("Login failed")),
@@ -55,13 +54,16 @@ fn login(login_data: Json<LoginData>) -> Json<Result<AppUser, &'static str>> {
 }
 
 #[post("/register", format = "json", data = "<user>")]
-async fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, String>> {
+fn register(
+    user: Json<LoginData>,
+    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+) -> Json<Result<AppUser, String>> {
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         eprintln!("user is empty");
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
-    match conn.run(|c| insert_user(c, user)).await {
+    match user_service.insert_user(user) {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
@@ -71,7 +73,7 @@ async fn register(user: Json<LoginData>, conn: Db) -> Json<Result<AppUser, Strin
 fn all_users() -> Json<Result<Vec<AppUser>, String>> {
     println!("Getting all users");
     let db = OldStarDb::new();
-    match get_users(&db.conn) {
+    match get_users(&db.conntection()) {
         Ok(users) => Json(Ok(users
             .iter()
             .map(|user| AppUser::from_user(user))
@@ -81,8 +83,11 @@ fn all_users() -> Json<Result<Vec<AppUser>, String>> {
 }
 
 #[delete("/delete/<id>")]
-async fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
-    match conn.run(move |c| delete_user_from_db(c, id)).await {
+fn delete_user(
+    id: i32,
+    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+) -> Json<Result<AppUser, String>> {
+    match user_service.delete_user(id) {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
@@ -92,12 +97,13 @@ async fn delete_user(conn: Db, id: i32) -> Json<Result<AppUser, String>> {
 }
 
 #[get("/<drink>/<id>")]
-async fn add_drink(conn: Db, drink: String, id: i32) -> Json<Result<AppUser, String>> {
+fn add_drink(
+    drink: String,
+    id: i32,
+    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+) -> Json<Result<AppUser, String>> {
     let drink_clone = drink.clone();
-    match conn
-        .run(move |c| add_drink_to_user(c, id, &drink_clone))
-        .await
-    {
+    match user_service.add_drink_to_user(id, &drink_clone) {
         Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
@@ -133,10 +139,15 @@ fn rocket() -> _ {
         println!("Setting DB-Config");
         let db_url = env::var("DATABASE_URL").unwrap();
         println!("DB-URL: {db_url}");
-        let db_config = map! { "url" => db_url };
-        let config_figment_with_db = config_figment.merge(("databases", map!["db" => db_config]));
         println!("Configuring Rocket");
-        rocket::custom(config_figment_with_db)
+        let user_service = DbUserService {
+            db: OldStarDb::new(),
+        };
+        let user_service: Arc<dyn UserService + Send + Sync> = Arc::new(user_service);
+        let login_service = LoginService {
+            user_service: Arc::clone(&user_service),
+        };
+        rocket::custom(config_figment)
             .mount(
                 "/",
                 routes![
@@ -150,7 +161,8 @@ fn rocket() -> _ {
                     add_drink
                 ],
             )
-            .attach(Db::fairing())
+            .manage(Arc::clone(&user_service))
+            .manage(RwLock::new(login_service))
     };
 
     println!("Launching rocket");
