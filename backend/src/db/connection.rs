@@ -1,11 +1,6 @@
-//#[macro_use]
-//extern crate diesel_migrations;
-
 use diesel::connection::Connection;
 use diesel::PgConnection;
 use std::env;
-
-//embed_migrations!();
 
 pub struct OldStarDb {
     db_url: String,
@@ -21,12 +16,12 @@ impl OldStarDb {
         Self { db_url }
     }
 
+    pub fn with_url(db_url: &str) -> Self {
+        Self {
+            db_url: db_url.to_string(),
+        }
+    }
     pub fn conntection(&self) -> PgConnection {
         PgConnection::establish(&self.db_url).expect("Could not establish connection")
     }
 }
-
-/*
-let _ = embedded_migrations::run(&conn);
-let _ = user_service::insert_user(&conn, login_data);
-*/
