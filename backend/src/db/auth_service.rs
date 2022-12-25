@@ -9,9 +9,10 @@ use argon2::{
 };
 use diesel::prelude::*;
 use rand_core::OsRng;
+use std::sync::Arc;
 
 pub struct LoginService {
-    pub user_service: Box<dyn UserService>,
+    pub user_service: Arc<dyn UserService + Sync + Send>,
 }
 
 impl LoginService {
