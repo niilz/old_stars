@@ -9,10 +9,7 @@ pub struct OldStarDb {
 impl OldStarDb {
     pub fn new() -> Self {
         // Only attach the db-related routes if db is not disabled
-        println!("Setting DB-Config");
         let db_url = env::var("DATABASE_URL").expect("Database-Url is not set as env-var");
-        println!("DB-URL: {db_url:?}");
-
         Self { db_url }
     }
 

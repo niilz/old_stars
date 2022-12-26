@@ -1,4 +1,3 @@
-use crate::schema::old_users::dsl::*;
 use crate::{
     model::{app_user::AppUser, login_data::LoginData, session::Session},
     UserService,
@@ -68,6 +67,7 @@ fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::{db::user_service::UserServiceError, model::user::User};
 
     #[test]
     fn can_create_hash() {
@@ -84,5 +84,75 @@ mod test {
         assert!(argon
             .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
             .is_ok());
+    }
+
+    struct UserServiceMock;
+    impl UserService for UserServiceMock {
+        fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
+            let existing_user = "dummy-user";
+            match user_name {
+                "dummy-user" => Ok(User {
+                    id: 1,
+                    name: existing_user.to_string(),
+                    pwd: hash("hashed-pwd").unwrap().to_string(),
+                    beer_count: 0,
+                    shot_count: 0,
+                    water_count: 0,
+                    fk_icon_id: 0,
+                }),
+                _ => Err(UserServiceError::new(
+                    "Test-User-NotFound: ",
+                    &"Test-Error" as &dyn std::fmt::Display,
+                )),
+            }
+        }
+
+        fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError> {
+            todo!()
+        }
+
+        fn delete_user(&self, id: i32) -> Result<User, UserServiceError> {
+            todo!()
+        }
+
+        fn add_drink_to_user<'a>(
+            &self,
+            update_id: i32,
+            drink: &'a str,
+        ) -> Result<User, UserServiceError> {
+            todo!()
+        }
+    }
+
+    #[test]
+    fn gets_user_if_login_succeeds() {
+        let dummy_user = "dummy-user";
+        let login_service = LoginService {
+            user_service: Arc::new(UserServiceMock),
+        };
+        let user_that_logs_in = LoginData {
+            name: dummy_user.to_string(),
+            pwd: "hashed-pwd".to_string(),
+        };
+        let found_user = login_service.login_user(user_that_logs_in).unwrap();
+        assert_eq!(found_user.id, 1);
+        assert_eq!(found_user.name, dummy_user);
+        assert_eq!(found_user.beer_count, 0);
+        assert_eq!(found_user.water_count, 0);
+        assert_eq!(found_user.shot_count, 0);
+    }
+
+    #[test]
+    fn gets_none_if_user_does_not_exist() {
+        let non_existing = "non-existing-user}";
+        let login_service = LoginService {
+            user_service: Arc::new(UserServiceMock),
+        };
+        let user_that_tries_logging_in = LoginData {
+            name: non_existing.to_string(),
+            pwd: "hashed_pwd".to_string(),
+        };
+        let result = login_service.login_user(user_that_tries_logging_in);
+        assert!(result.is_none());
     }
 }

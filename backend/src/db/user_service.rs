@@ -84,7 +84,7 @@ impl UserService for DbUserService {
 }
 
 impl UserServiceError {
-    fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
+    pub fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
         UserServiceError {
             message: format!("Error during {}: {}", context, error),
         }

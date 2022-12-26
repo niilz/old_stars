@@ -3,8 +3,8 @@ use serde::Serialize;
 
 #[derive(Serialize, Debug)]
 pub struct AppUser {
-    id: i32,
-    name: String,
+    pub id: i32,
+    pub name: String,
     #[serde(rename = "beerCount")]
     pub beer_count: i32,
     #[serde(rename = "shotCount")]
