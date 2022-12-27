@@ -6,8 +6,6 @@ mod mocks;
 
 use mocks::user_service::UserServiceMock;
 
-//use mocks::user_service;
-
 #[test]
 fn gets_user_if_login_succeeds() {
     let dummy_user = "dummy-user";
