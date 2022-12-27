@@ -12,7 +12,7 @@ use mocks::user_service::UserServiceMock;
 fn gets_user_if_login_succeeds() {
     let dummy_user = "dummy-user";
     let login_service = LoginService {
-        user_service: Arc::new(UserServiceMock),
+        user_service: Arc::new(UserServiceMock::new(dummy_user)),
     };
     let user_that_logs_in = LoginData {
         name: dummy_user.to_string(),
@@ -28,9 +28,10 @@ fn gets_user_if_login_succeeds() {
 
 #[test]
 fn gets_none_if_user_does_not_exist() {
+    let existing_user = "dummy-user";
     let non_existing = "non-existing-user}";
     let login_service = LoginService {
-        user_service: Arc::new(UserServiceMock),
+        user_service: Arc::new(UserServiceMock::new(existing_user)),
     };
     let user_that_tries_logging_in = LoginData {
         name: non_existing.to_string(),
