@@ -85,6 +85,21 @@ impl UserService for UserServiceMock {
         update_id: i32,
         drink: &'a str,
     ) -> Result<User, UserServiceError> {
-        todo!()
+        match self.dummy_db_by_id.get(&update_id) {
+            Some(user) => match self.dummy_db_by_name.get(&user.name) {
+                Some(user) => {
+                    user.beer_count += 1;
+                    Ok(*user)
+                }
+                None => Err(UserServiceError::new(
+                    "Test-Add: ",
+                    &"User-by-name-not-present",
+                )),
+            },
+            None => Err(UserServiceError::new(
+                "Test-Add: ",
+                &"Cannot-add-user-not-present",
+            )),
+        }
     }
 }
