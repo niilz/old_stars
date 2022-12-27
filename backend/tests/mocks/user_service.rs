@@ -12,7 +12,7 @@ pub(crate) struct UserServiceMock {
 }
 
 impl UserServiceMock {
-    fn new(user_name: &str) -> Self {
+    pub(crate) fn new(user_name: &str) -> Self {
         let dummy_user = User {
             id: 1,
             name: user_name.to_string(),
@@ -22,7 +22,7 @@ impl UserServiceMock {
             water_count: 0,
             fk_icon_id: 0,
         };
-        let dummy_db_by_id = HashMap::from([(1, dummy_user)]);
+        let dummy_db_by_id = HashMap::from([(1, dummy_user.clone())]);
         let dummy_db_by_name = HashMap::from([(user_name.to_string(), dummy_user)]);
         Self {
             id: 1,
@@ -32,15 +32,8 @@ impl UserServiceMock {
     }
 }
 
-impl UserService for UserServiceMock {
-    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
-        match self.dummy_db_by_name.get(user_name) {
-            Some(user) => Ok(*user),
-            _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
-        }
-    }
-
-    fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError> {
+impl UserServiceMock {
+    fn insert_user(&mut self, new_user: LoginData) -> Result<User, UserServiceError> {
         match self.dummy_db_by_name.get(&new_user.name) {
             Some(_) => Err(UserServiceError::new(
                 "Test-Insert: ",
@@ -57,15 +50,15 @@ impl UserService for UserServiceMock {
                     water_count: 0,
                     fk_icon_id: 0,
                 };
-                user.id = self.id;
-                self.dummy_db_by_id.insert(self.id, user);
-                self.dummy_db_by_name.insert(user.name, user);
+                self.dummy_db_by_id.insert(self.id, user.clone());
+                self.dummy_db_by_name
+                    .insert(user.name.to_string(), user.clone());
                 Ok(user)
             }
         }
     }
 
-    fn delete_user(&self, id: i32) -> Result<User, UserServiceError> {
+    fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError> {
         match self.dummy_db_by_id.remove(&id) {
             Some(user) => {
                 self.dummy_db_by_name
@@ -81,15 +74,15 @@ impl UserService for UserServiceMock {
     }
 
     fn add_drink_to_user<'a>(
-        &self,
+        &mut self,
         update_id: i32,
-        drink: &'a str,
+        _drink: &'a str,
     ) -> Result<User, UserServiceError> {
-        match self.dummy_db_by_id.get(&update_id) {
-            Some(user) => match self.dummy_db_by_name.get(&user.name) {
-                Some(user) => {
-                    user.beer_count += 1;
-                    Ok(*user)
+        match self.dummy_db_by_id.get_mut(&update_id) {
+            Some(user_by_id) => match self.dummy_db_by_name.get_mut(&user_by_id.name) {
+                Some(user_by_name) => {
+                    user_by_id.beer_count += 1;
+                    Ok(user_by_name.clone())
                 }
                 None => Err(UserServiceError::new(
                     "Test-Add: ",
@@ -101,5 +94,30 @@ impl UserService for UserServiceMock {
                 &"Cannot-add-user-not-present",
             )),
         }
+    }
+}
+
+impl UserService for UserServiceMock {
+    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
+        match self.dummy_db_by_name.get(user_name) {
+            Some(user) => Ok(user.to_owned()),
+            _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
+        }
+    }
+
+    fn insert_user(&self, _new_user: LoginData) -> Result<User, UserServiceError> {
+        unimplemented!("Should not be able to being called")
+    }
+
+    fn delete_user(&self, _id: i32) -> Result<User, UserServiceError> {
+        unimplemented!("Should not be able to being called")
+    }
+
+    fn add_drink_to_user<'a>(
+        &self,
+        _update_id: i32,
+        _drink: &'a str,
+    ) -> Result<User, UserServiceError> {
+        unimplemented!("Should not be able to being called")
     }
 }
