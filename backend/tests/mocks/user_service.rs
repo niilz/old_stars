@@ -6,9 +6,7 @@ use backend::{
 use std::collections::HashMap;
 
 pub(crate) struct UserServiceMock {
-    id: i32,
-    dummy_db_by_id: HashMap<i32, User>,
-    dummy_db_by_name: HashMap<String, User>,
+    dummy_db: HashMap<String, User>,
 }
 
 impl UserServiceMock {
@@ -22,19 +20,14 @@ impl UserServiceMock {
             water_count: 0,
             fk_icon_id: 0,
         };
-        let dummy_db_by_id = HashMap::from([(1, dummy_user.clone())]);
-        let dummy_db_by_name = HashMap::from([(user_name.to_string(), dummy_user)]);
-        Self {
-            id: 1,
-            dummy_db_by_id,
-            dummy_db_by_name,
-        }
+        let dummy_db = HashMap::from([(user_name.to_string(), dummy_user)]);
+        Self { dummy_db }
     }
 }
 
 impl UserService for UserServiceMock {
     fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
-        match self.dummy_db_by_name.get(user_name) {
+        match self.dummy_db.get(user_name) {
             Some(user) => Ok(user.to_owned()),
             _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
         }
