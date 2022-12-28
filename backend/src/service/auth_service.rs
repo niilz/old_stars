@@ -1,6 +1,6 @@
 use crate::{
     model::{app_user::AppUser, login_data::LoginData, session::Session},
-    UserService,
+    service::user_service::UserService,
 };
 use argon2::{
     password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},

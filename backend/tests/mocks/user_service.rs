@@ -1,7 +1,9 @@
 use backend::{
     model::{login_data::LoginData, user::User},
-    service::{auth_service::hash, user_service::UserServiceError},
-    UserService,
+    service::{
+        auth_service::hash,
+        user_service::{UserService, UserServiceError},
+    },
 };
 use std::collections::HashMap;
 

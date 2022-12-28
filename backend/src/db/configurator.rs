@@ -1,12 +1,15 @@
 #[macro_use]
 extern crate diesel_migrations;
 
-use backend::db::connection::OldStarDb;
-use backend::model::login_data::LoginData;
-use backend::service::user_service::DbUserService;
-use backend::UserService;
-use std::env::{self, Args};
-use std::process::exit;
+use backend::{
+    db::connection::OldStarDb,
+    model::login_data::LoginData,
+    service::user_service::{DbUserService, UserService},
+};
+use std::{
+    env::{self, Args},
+    process::exit,
+};
 
 embed_migrations!();
 

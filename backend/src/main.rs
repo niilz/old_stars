@@ -1,14 +1,14 @@
 #[macro_use]
 extern crate rocket;
 
-use backend::db::connection::OldStarDb;
-use backend::model::app_user::AppUser;
-use backend::model::login_data::LoginData;
-use backend::service::{
-    auth_service::LoginService,
-    user_service::{get_users, DbUserService},
+use backend::{
+    db::connection::OldStarDb,
+    model::{app_user::AppUser, login_data::LoginData},
+    service::{
+        auth_service::LoginService,
+        user_service::{get_users, DbUserService, UserService},
+    },
 };
-use backend::UserService;
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},

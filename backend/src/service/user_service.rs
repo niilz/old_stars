@@ -3,11 +3,21 @@ use crate::{
     db::connection::OldStarDb,
     model::{login_data::LoginData, user::User},
     service::auth_service::hash,
-    UserService,
 };
 use argon2::password_hash;
 use diesel::{dsl::not, insert_into, prelude::*, PgConnection};
 use std::{error::Error, fmt};
+
+pub trait UserService: Send + Sync {
+    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError>;
+    fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError>;
+    fn delete_user(&self, id: i32) -> Result<User, UserServiceError>;
+    fn add_drink_to_user<'a>(
+        &self,
+        update_id: i32,
+        drink: &'a str,
+    ) -> Result<User, UserServiceError>;
+}
 
 #[derive(Debug)]
 pub struct UserServiceError {
