@@ -17,8 +17,11 @@ use rocket::{
     Request, Response, State,
 };
 
-use std::env;
-use std::sync::{Arc, RwLock};
+use std::{
+    collections::HashMap,
+    env,
+    sync::{Arc, RwLock},
+};
 
 const FRONT_END_URL_DEV: &'static str = "https://localhost:3000";
 const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars/";
@@ -150,6 +153,7 @@ fn rocket() -> _ {
         let user_service: Arc<dyn UserService + Send + Sync> = Arc::new(user_service);
         let login_service = LoginService {
             user_service: Arc::clone(&user_service),
+            sessions: HashMap::new(),
         };
         rocket::custom(config_figment)
             .mount(

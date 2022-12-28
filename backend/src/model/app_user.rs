@@ -1,7 +1,7 @@
 use crate::model::user::User;
 use serde::Serialize;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone, PartialEq, Eq)]
 pub struct AppUser {
     pub id: i32,
     pub name: String,

@@ -1,5 +1,5 @@
 use crate::{
-    model::{app_user::AppUser, login_data::LoginData},
+    model::{app_user::AppUser, login_data::LoginData, session::Session},
     service::user_service::UserService,
 };
 use argon2::{
@@ -7,10 +7,11 @@ use argon2::{
     Argon2,
 };
 use rand_core::OsRng;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 pub struct LoginService {
     pub user_service: Arc<dyn UserService + Sync + Send>,
+    pub sessions: HashMap<String, Session>,
 }
 
 impl LoginService {
@@ -29,6 +30,13 @@ impl LoginService {
                 eprintln!("Could not login user: {}, Err: {}", login_data.name, e);
                 None
             }
+        }
+    }
+    pub fn get_session_user(&self, session_id: &str) -> Option<AppUser> {
+        match self.sessions.get(session_id) {
+            // TODO: Check expiration
+            Some(session) => Some(session.user.clone()),
+            None => None,
         }
     }
 }
