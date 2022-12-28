@@ -4,9 +4,10 @@ extern crate diesel;
 pub mod db;
 pub mod model;
 pub mod schema;
+pub mod service;
 
-use db::user_service::UserServiceError;
 use model::{login_data::LoginData, user::User};
+use service::user_service::UserServiceError;
 
 pub trait UserService: Send + Sync {
     fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError>;

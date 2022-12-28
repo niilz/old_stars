@@ -1,15 +1,13 @@
-use crate::db::auth_service::hash;
-use crate::model::login_data::LoginData;
-use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
-use crate::UserService;
+use crate::{
+    db::connection::OldStarDb,
+    model::{login_data::LoginData, user::User},
+    service::auth_service::hash,
+    UserService,
+};
 use argon2::password_hash;
-use diesel::dsl::not;
-use diesel::{insert_into, prelude::*, PgConnection};
-use std::error::Error;
-use std::fmt;
-
-use super::connection::OldStarDb;
+use diesel::{dsl::not, insert_into, prelude::*, PgConnection};
+use std::{error::Error, fmt};
 
 #[derive(Debug)]
 pub struct UserServiceError {

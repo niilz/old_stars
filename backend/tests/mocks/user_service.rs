@@ -1,6 +1,6 @@
 use backend::{
-    db::{auth_service::hash, user_service::UserServiceError},
     model::{login_data::LoginData, user::User},
+    service::{auth_service::hash, user_service::UserServiceError},
     UserService,
 };
 use std::collections::HashMap;

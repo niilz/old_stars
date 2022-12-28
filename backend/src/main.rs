@@ -1,10 +1,13 @@
 #[macro_use]
 extern crate rocket;
 
-use backend::db::auth_service::LoginService;
-use backend::db::{connection::OldStarDb, user_service::*};
+use backend::db::connection::OldStarDb;
 use backend::model::app_user::AppUser;
 use backend::model::login_data::LoginData;
+use backend::service::{
+    auth_service::LoginService,
+    user_service::{get_users, DbUserService},
+};
 use backend::UserService;
 use rocket::{
     config::Config,

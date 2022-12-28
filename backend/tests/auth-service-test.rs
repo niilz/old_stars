@@ -1,5 +1,4 @@
-use backend::db::auth_service::LoginService;
-use backend::model::login_data::LoginData;
+use backend::{model::login_data::LoginData, service::auth_service::LoginService};
 use std::sync::Arc;
 
 mod mocks;

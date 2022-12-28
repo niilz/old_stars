@@ -67,7 +67,6 @@ fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{db::user_service::UserServiceError, model::user::User};
 
     #[test]
     fn can_create_hash() {
