@@ -1,12 +1,11 @@
 use crate::{
-    model::{app_user::AppUser, login_data::LoginData, session::Session},
+    model::{app_user::AppUser, login_data::LoginData},
     service::user_service::UserService,
 };
 use argon2::{
     password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
-use diesel::prelude::*;
 use rand_core::OsRng;
 use std::sync::Arc;
 
@@ -34,15 +33,6 @@ impl LoginService {
     }
 }
 
-pub fn insert_session(_conn: &PgConnection, user_name: &str) {
-    let _session = Session::new(user_name);
-    todo!("store session");
-}
-
-pub fn get_session(_conn: &PgConnection, _user_name: &str) {
-    todo!("Retrieve Session by use_id from db");
-}
-
 pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {
     let rnd_salt = SaltString::generate(&mut OsRng);
     let argon = Argon2::default();
@@ -61,27 +51,5 @@ fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
         Ok(parsed_hash) => argon
             .verify_password(input_pwd.as_bytes(), &parsed_hash)
             .is_ok(),
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn can_create_hash() {
-        let hash = hash("MySecretPwd");
-        assert!(hash.is_ok());
-    }
-
-    #[test]
-    fn can_verify_pwd_with_hash() {
-        let plain_pwd = "EvenMoreSecure";
-        let pwd_hashed = hash(plain_pwd).unwrap();
-        let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
-        let argon = Argon2::default();
-        assert!(argon
-            .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
-            .is_ok());
     }
 }

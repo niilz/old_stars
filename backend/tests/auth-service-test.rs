@@ -1,4 +1,8 @@
-use backend::{model::login_data::LoginData, service::auth_service::LoginService};
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use backend::{
+    model::login_data::LoginData,
+    service::auth_service::{hash, LoginService},
+};
 use std::sync::Arc;
 
 mod mocks;
@@ -36,4 +40,21 @@ fn gets_none_if_user_does_not_exist() {
     };
     let result = login_service.login_user(user_that_tries_logging_in);
     assert!(result.is_none());
+}
+
+#[test]
+fn can_create_hash() {
+    let hash = hash("MySecretPwd");
+    assert!(hash.is_ok());
+}
+
+#[test]
+fn can_verify_pwd_with_hash() {
+    let plain_pwd = "EvenMoreSecure";
+    let pwd_hashed = hash(plain_pwd).unwrap();
+    let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
+    let argon = Argon2::default();
+    assert!(argon
+        .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
+        .is_ok());
 }
