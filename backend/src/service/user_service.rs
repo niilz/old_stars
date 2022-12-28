@@ -1,7 +1,7 @@
 use crate::schema::old_users::dsl::*;
 use crate::{
-    db::connection::OldStarDb,
     model::{login_data::LoginData, user::User},
+    repository::connection::OldStarDb,
     service::auth_service::hash,
 };
 use argon2::password_hash;

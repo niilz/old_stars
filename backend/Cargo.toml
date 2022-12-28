@@ -27,5 +27,5 @@ path = "./src/main.rs"
 
 [[bin]]
 name = "configurator"
-path = "./src/db/configurator.rs"
+path = "./src/config/configurator.rs"
 

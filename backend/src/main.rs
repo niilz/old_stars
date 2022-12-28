@@ -2,8 +2,8 @@
 extern crate rocket;
 
 use backend::{
-    db::connection::OldStarDb,
     model::{app_user::AppUser, login_data::LoginData},
+    repository::connection::OldStarDb,
     service::{
         auth_service::LoginService,
         user_service::{get_users, DbUserService, UserService},

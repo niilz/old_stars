@@ -2,8 +2,8 @@
 extern crate diesel_migrations;
 
 use backend::{
-    db::connection::OldStarDb,
     model::login_data::LoginData,
+    repository::connection::OldStarDb,
     service::user_service::{DbUserService, UserService},
 };
 use std::{
