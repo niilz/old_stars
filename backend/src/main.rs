@@ -6,7 +6,7 @@ use backend::{
     repository::connection::OldStarDb,
     service::{
         auth_service::LoginService,
-        user_service::{get_users, DbUserService, UserService},
+        user_service::{DbUserService, UserService},
     },
 };
 use rocket::{
@@ -73,10 +73,11 @@ fn register(
 }
 
 #[get("/all", format = "json")]
-fn all_users() -> Json<Result<Vec<AppUser>, String>> {
+fn all_users(
+    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+) -> Json<Result<Vec<AppUser>, String>> {
     println!("Getting all users");
-    let db = OldStarDb::new();
-    match get_users(&db.conntection()) {
+    match user_service.get_users() {
         Ok(users) => Json(Ok(users
             .iter()
             .map(|user| AppUser::from_user(user))

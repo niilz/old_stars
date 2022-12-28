@@ -28,6 +28,10 @@ impl UserServiceMock {
 }
 
 impl UserService for UserServiceMock {
+    fn get_users(&self) -> Result<Vec<User>, UserServiceError> {
+        unimplemented!("Not used in tests")
+    }
+
     fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
         match self.dummy_db.get(user_name) {
             Some(user) => Ok(user.to_owned()),

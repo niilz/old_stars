@@ -9,6 +9,7 @@ use diesel::{dsl::not, insert_into, prelude::*, PgConnection};
 use std::{error::Error, fmt};
 
 pub trait UserService: Send + Sync {
+    fn get_users(&self) -> Result<Vec<User>, UserServiceError>;
     fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError>;
     fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError>;
     fn delete_user(&self, id: i32) -> Result<User, UserServiceError>;
@@ -29,10 +30,18 @@ pub struct DbUserService {
 }
 
 impl UserService for DbUserService {
+    fn get_users(&self) -> Result<Vec<User>, UserServiceError> {
+        // TODO: Make seperate types or tables instead of _secret_ users-names
+        let users = old_users
+            .filter(not(name.eq("club").or(name.eq("admin!"))))
+            .load::<User>(&self.db.connection())?;
+        Ok(users)
+    }
+
     fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
         let user = old_users
             .filter(name.eq(user_name))
-            .first::<User>(&self.db.conntection())?;
+            .first::<User>(&self.db.connection())?;
         Ok(user)
     }
 
@@ -40,7 +49,7 @@ impl UserService for DbUserService {
         // Do not allow for duplicate users
         let users_with_given_name = old_users
             .filter(name.eq(&new_user.name))
-            .load::<User>(&self.db.conntection())?;
+            .load::<User>(&self.db.connection())?;
 
         if users_with_given_name.len() != 0 {
             return Err(UserServiceError::new(
@@ -58,13 +67,13 @@ impl UserService for DbUserService {
                 water_count.eq(0),
                 fk_icon_id.eq(42),
             ))
-            .get_result(&self.db.conntection())?;
+            .get_result(&self.db.connection())?;
         Ok(inserted_user)
     }
 
     fn delete_user(&self, del_id: i32) -> Result<User, UserServiceError> {
         let deleted_user =
-            diesel::delete(old_users.filter(id.eq(del_id))).get_result(&self.db.conntection())?;
+            diesel::delete(old_users.filter(id.eq(del_id))).get_result(&self.db.connection())?;
         Ok(deleted_user)
     }
 
@@ -74,7 +83,7 @@ impl UserService for DbUserService {
         drink: &'a str,
     ) -> Result<User, UserServiceError> {
         let update_user = old_users.filter(id.eq(update_id));
-        let connection = self.db.conntection();
+        let connection = self.db.connection();
         let updated_user = match drink {
             "beer" => diesel::update(update_user)
                 .set(beer_count.eq(beer_count + 1))
@@ -116,14 +125,6 @@ impl From<password_hash::Error> for UserServiceError {
     fn from(error: password_hash::Error) -> Self {
         Self::new("Hashing", &error)
     }
-}
-
-pub fn get_users(conn: &PgConnection) -> QueryResult<Vec<User>> {
-    // TODO: Make seperate types or tables instead of _secret_ users-names
-    println!("calling get_users");
-    old_users
-        .filter(not(name.eq("club").or(name.eq("admin!"))))
-        .load::<User>(conn)
 }
 
 #[cfg(test)]

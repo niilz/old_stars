@@ -18,7 +18,7 @@ impl OldStarDb {
             db_url: db_url.to_string(),
         }
     }
-    pub fn conntection(&self) -> PgConnection {
+    pub fn connection(&self) -> PgConnection {
         PgConnection::establish(&self.db_url).expect("Could not establish connection")
     }
 }

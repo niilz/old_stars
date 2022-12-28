@@ -53,7 +53,7 @@ fn configure(url: &str, args: &mut Args) {
 
     println!("trying to establish connection to url: {}", url);
     let db = OldStarDb::with_url(url);
-    let conn = db.conntection();
+    let conn = db.connection();
     let user_service = DbUserService { db };
     let _ = embedded_migrations::run(&conn);
     let _ = user_service.insert_user(login_data);
