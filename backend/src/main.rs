@@ -48,9 +48,7 @@ fn start(
     login_service: &State<RwLock<LoginService>>,
     cookies: &CookieJar<'_>,
 ) -> Json<Result<AppUser, &'static str>> {
-    println!("Cookies: {cookies:?}");
     if let Some(session_cookie) = cookies.get("old_star_user") {
-        println!("value: {}", session_cookie.value());
         match login_service
             .read()
             .unwrap()
