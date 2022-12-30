@@ -49,7 +49,7 @@ fn login(
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<AppUser, &'static str>> {
     match login_service
-        .read()
+        .write()
         .unwrap()
         .login_user(login_data.into_inner())
     {

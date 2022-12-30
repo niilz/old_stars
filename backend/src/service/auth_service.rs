@@ -15,13 +15,16 @@ pub struct LoginService {
 }
 
 impl LoginService {
-    pub fn login_user(&self, login_data: LoginData) -> Option<AppUser> {
+    pub fn login_user(&mut self, login_data: LoginData) -> Option<AppUser> {
         let user = self.user_service.get_user_by_name(&login_data.name);
         match user {
             Ok(db_user) => {
                 let stored_hash = &db_user.pwd;
                 if is_password_valid(login_data.pwd, stored_hash) {
-                    Some(AppUser::from_user(&db_user))
+                    let app_user = AppUser::from_user(&db_user);
+                    let session = Session::new(app_user.clone());
+                    self.sessions.insert(session.uuid.to_string(), session);
+                    Some(app_user)
                 } else {
                     None
                 }

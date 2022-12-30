@@ -21,7 +21,7 @@ use mocks::user_service::UserServiceMock;
 #[test]
 fn gets_user_if_login_succeeds() {
     let dummy_user = "dummy-user";
-    let login_service = LoginService {
+    let mut login_service = LoginService {
         user_service: Arc::new(UserServiceMock::new(dummy_user)),
         sessions: HashMap::new(),
     };
@@ -41,7 +41,7 @@ fn gets_user_if_login_succeeds() {
 fn gets_none_if_user_does_not_exist() {
     let existing_user = "dummy-user";
     let non_existing = "non-existing-user}";
-    let login_service = LoginService {
+    let mut login_service = LoginService {
         user_service: Arc::new(UserServiceMock::new(existing_user)),
         sessions: HashMap::new(),
     };
