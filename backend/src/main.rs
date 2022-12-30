@@ -12,7 +12,7 @@ use backend::{
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
-    http::Header,
+    http::{Cookie, CookieJar, Header},
     serde::json::Json,
     Request, Response, State,
 };
@@ -43,10 +43,30 @@ async fn options() -> Json<&'static str> {
     Json("Options Response")
 }
 
+#[get("/start")]
+fn start(
+    login_service: &State<RwLock<LoginService>>,
+    cookies: &CookieJar<'_>,
+) -> Json<Option<AppUser>> {
+    if let Some(session_cookie) = cookies.get("old_star_user") {
+        match login_service
+            .read()
+            .unwrap()
+            .get_session_user(session_cookie.name())
+        {
+            Some(user) => Json(Some(user)),
+            None => Json(None),
+        }
+    } else {
+        Json(None)
+    }
+}
+
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
+    cookies: &CookieJar<'_>,
 ) -> Json<Result<AppUser, &'static str>> {
     match login_service
         .write()
@@ -54,7 +74,10 @@ fn login(
         .login_user(login_data.into_inner())
     {
         // TODO: if Login Successfull add "Set-Cooky" header
-        Some(user) => Json(Ok(user)),
+        Some(session) => {
+            cookies.add(Cookie::new("old_star_session", session.uuid));
+            Json(Ok(session.user))
+        }
         None => Json(Err("Login failed")),
     }
 }
@@ -160,6 +183,7 @@ fn rocket() -> _ {
                     hello,
                     head,
                     options,
+                    start,
                     login,
                     register,
                     all_users,

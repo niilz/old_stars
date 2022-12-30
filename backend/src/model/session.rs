@@ -5,6 +5,7 @@ use crate::model::app_user::AppUser;
 
 pub const TWENTY_FOUR_HOURS: u64 = 60 * 60 * 24;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Session {
     pub user: AppUser,
     pub uuid: String,
