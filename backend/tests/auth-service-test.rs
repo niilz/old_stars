@@ -75,15 +75,9 @@ fn gets_user_if_session_exists_and_is_valid() {
     let dummy_user = "dummy-user";
     let user_service = Arc::new(UserServiceMock::new(dummy_user));
     let session_id = Uuid::new_v4().to_string();
-    let dummy_user = AppUser {
-        id: 1,
-        name: "dummy-user".to_string(),
-        beer_count: 2,
-        shot_count: 2,
-        water_count: 1,
-    };
+    let dummy_app_user = get_dummy_user(dummy_user);
     let dummy_session = Session {
-        user: dummy_user.clone(),
+        user: dummy_app_user.clone(),
         uuid: session_id.clone(),
         exp: SystemTime::now() + Duration::from_secs(60),
     };
@@ -94,7 +88,7 @@ fn gets_user_if_session_exists_and_is_valid() {
     let session_user = login_service
         .get_session_user(&session_id)
         .expect("User should be present");
-    assert_eq!(session_user, dummy_user);
+    assert_eq!(session_user, dummy_app_user);
 }
 
 #[test]
@@ -102,15 +96,9 @@ fn no_user_if_session_expired() {
     let dummy_user = "dummy-user";
     let user_service = Arc::new(UserServiceMock::new(dummy_user));
     let session_id = Uuid::new_v4().to_string();
-    let dummy_user = AppUser {
-        id: 1,
-        name: "dummy-user".to_string(),
-        beer_count: 2,
-        shot_count: 2,
-        water_count: 1,
-    };
+    let dummy_app_user = get_dummy_user(dummy_user);
     let expired_session = Session {
-        user: dummy_user.clone(),
+        user: dummy_app_user,
         uuid: session_id.clone(),
         exp: SystemTime::now() - Duration::from_secs(TWENTY_FOUR_HOURS),
     };
@@ -133,4 +121,15 @@ fn no_user_if_no_session_present() {
     };
     let no_user_found = login_service.get_session_user(&session_id);
     assert!(no_user_found.is_none());
+}
+
+// Helper
+fn get_dummy_user(user_name: &str) -> AppUser {
+    AppUser {
+        id: 1,
+        name: user_name.to_string(),
+        beer_count: 2,
+        shot_count: 2,
+        water_count: 1,
+    }
 }
