@@ -1,9 +1,17 @@
 use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use backend::{
-    model::{app_user::AppUser, login_data::LoginData, session::Session},
+    model::{
+        app_user::AppUser,
+        login_data::LoginData,
+        session::{Session, TWENTY_FOUR_HOURS},
+    },
     service::auth_service::{hash, LoginService},
 };
-use std::{collections::HashMap, sync::Arc, time::SystemTime};
+use std::{
+    collections::HashMap,
+    sync::Arc,
+    time::{Duration, SystemTime},
+};
 use uuid::Uuid;
 
 mod mocks;
@@ -77,7 +85,7 @@ fn gets_user_if_session_exists_and_is_valid() {
     let dummy_session = Session {
         user: dummy_user.clone(),
         uuid: session_id.clone(),
-        exp: SystemTime::now(),
+        exp: SystemTime::now() + Duration::from_secs(60),
     };
     let login_service = LoginService {
         user_service,
@@ -104,7 +112,7 @@ fn no_user_if_session_expired() {
     let expired_session = Session {
         user: dummy_user.clone(),
         uuid: session_id.clone(),
-        exp: SystemTime::now(),
+        exp: SystemTime::now() - Duration::from_secs(TWENTY_FOUR_HOURS),
     };
     let login_service = LoginService {
         user_service,

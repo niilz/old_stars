@@ -7,7 +7,7 @@ use argon2::{
     Argon2,
 };
 use rand_core::OsRng;
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc, time::SystemTime};
 
 pub struct LoginService {
     pub user_service: Arc<dyn UserService + Sync + Send>,
@@ -34,9 +34,15 @@ impl LoginService {
     }
     pub fn get_session_user(&self, session_id: &str) -> Option<AppUser> {
         match self.sessions.get(session_id) {
-            // TODO: Check expiration
-            Some(session) => Some(session.user.clone()),
-            None => None,
+            Some(session) if session.exp > SystemTime::now() => Some(session.user.clone()),
+            Some(_) => {
+                println!("Session expired, login required");
+                None
+            }
+            None => {
+                println!("No session found, login required");
+                None
+            }
         }
     }
 }
