@@ -73,9 +73,12 @@ fn login(
         .unwrap()
         .login_user(login_data.into_inner())
     {
-        // TODO: if Login Successfull add "Set-Cooky" header
         Some(session) => {
-            cookies.add(Cookie::new("old_star_session", session.uuid));
+            let session_cookie = Cookie::build("old_star_user", session.uuid.to_string())
+                .http_only(false)
+                .path("/")
+                .same_site(rocket::http::SameSite::Lax);
+            cookies.add(session_cookie.finish());
             Json(Ok(session.user))
         }
         None => Json(Err("Login failed")),
@@ -221,6 +224,7 @@ impl Fairing for Cors {
             "Access-Control-Allow-Methods",
             "GET, POST, HEAD, OPTIONS, DELETE",
         ));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         response.set_header(Header::new(
             "Access-Control-Allow-Headers",
             "Accept, Content-Type, Access-Control-Allow-Origin",
