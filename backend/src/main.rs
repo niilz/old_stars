@@ -66,7 +66,6 @@ fn register(
 ) -> Json<Result<AppUser, String>> {
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
-        eprintln!("user is empty");
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
     match user_service.insert_user(user) {
@@ -143,10 +142,9 @@ fn rocket() -> _ {
         println!("Running without DB");
         rocket::custom(config_figment).mount("/", routes![hello, head, options])
     } else {
-        println!("Setting DB-Config");
+        #[cfg(debug)]
         let db_url = env::var("DATABASE_URL").unwrap();
-        println!("DB-URL: {db_url}");
-        println!("Configuring Rocket");
+        dbg!("DB-URL: {db_url}");
         let user_service = DbUserService {
             db: OldStarDb::new(),
         };
