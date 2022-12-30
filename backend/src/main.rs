@@ -47,18 +47,20 @@ async fn options() -> Json<&'static str> {
 fn start(
     login_service: &State<RwLock<LoginService>>,
     cookies: &CookieJar<'_>,
-) -> Json<Option<AppUser>> {
+) -> Json<Result<AppUser, &'static str>> {
+    println!("Cookies: {cookies:?}");
     if let Some(session_cookie) = cookies.get("old_star_user") {
+        println!("value: {}", session_cookie.value());
         match login_service
             .read()
             .unwrap()
-            .get_session_user(session_cookie.name())
+            .get_session_user(session_cookie.value())
         {
-            Some(user) => Json(Some(user)),
-            None => Json(None),
+            Some(user) => Json(Ok(user)),
+            None => Json(Err("No Session found")),
         }
     } else {
-        Json(None)
+        Json(Err("No session-cookie was sent"))
     }
 }
 
