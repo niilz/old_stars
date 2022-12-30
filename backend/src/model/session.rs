@@ -1,14 +1,14 @@
-use std::time::{Duration, Instant};
+use std::time::{Duration, SystemTime};
 use uuid::Uuid;
 
 use crate::model::app_user::AppUser;
 
-const TWENTY_FOUR_HOURS: u64 = 60 * 60 * 24;
+pub const TWENTY_FOUR_HOURS: u64 = 60 * 60 * 24;
 
 pub struct Session {
     pub user: AppUser,
     pub uuid: String,
-    pub exp: Instant,
+    pub exp: SystemTime,
 }
 
 impl Session {
@@ -16,14 +16,18 @@ impl Session {
         Self {
             user,
             uuid: Uuid::new_v4().to_string(),
-            exp: Instant::now() + Duration::from_secs(TWENTY_FOUR_HOURS),
+            exp: SystemTime::now() + Duration::from_secs(TWENTY_FOUR_HOURS),
         }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use crate::model::{
+        app_user::AppUser,
+        session::{Session, TWENTY_FOUR_HOURS},
+    };
+    use std::time::{Duration, SystemTime};
 
     #[test]
     fn can_construct_session() {
@@ -38,7 +42,7 @@ mod test {
 
         assert_eq!(session.user.name.to_string(), "dummy-user");
         assert_eq!(36, session.uuid.len());
-        let tomorrow = Instant::now() + Duration::from_secs(TWENTY_FOUR_HOURS);
+        let tomorrow = SystemTime::now() + Duration::from_secs(TWENTY_FOUR_HOURS);
         let one_minute = Duration::from_secs(60);
         let one_minute_earlier = tomorrow - one_minute;
         let one_minute_later = tomorrow + one_minute;

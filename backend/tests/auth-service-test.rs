@@ -3,7 +3,7 @@ use backend::{
     model::{app_user::AppUser, login_data::LoginData, session::Session},
     service::auth_service::{hash, LoginService},
 };
-use std::{collections::HashMap, sync::Arc, time::Instant};
+use std::{collections::HashMap, sync::Arc, time::SystemTime};
 use uuid::Uuid;
 
 mod mocks;
@@ -77,7 +77,7 @@ fn gets_user_if_session_exists_and_is_valid() {
     let dummy_session = Session {
         user: dummy_user.clone(),
         uuid: session_id.clone(),
-        exp: Instant::now(),
+        exp: SystemTime::now(),
     };
     let login_service = LoginService {
         user_service,
@@ -87,4 +87,42 @@ fn gets_user_if_session_exists_and_is_valid() {
         .get_session_user(&session_id)
         .expect("User should be present");
     assert_eq!(session_user, dummy_user);
+}
+
+#[test]
+fn no_user_if_session_expired() {
+    let dummy_user = "dummy-user";
+    let user_service = Arc::new(UserServiceMock::new(dummy_user));
+    let session_id = Uuid::new_v4().to_string();
+    let dummy_user = AppUser {
+        id: 1,
+        name: "dummy-user".to_string(),
+        beer_count: 2,
+        shot_count: 2,
+        water_count: 1,
+    };
+    let expired_session = Session {
+        user: dummy_user.clone(),
+        uuid: session_id.clone(),
+        exp: SystemTime::now(),
+    };
+    let login_service = LoginService {
+        user_service,
+        sessions: HashMap::from([(session_id.clone(), expired_session)]),
+    };
+    let no_user_found = login_service.get_session_user(&session_id);
+    assert!(no_user_found.is_none());
+}
+
+#[test]
+fn no_user_if_no_session_present() {
+    let dummy_user = "dummy-user";
+    let user_service = Arc::new(UserServiceMock::new(dummy_user));
+    let session_id = Uuid::new_v4().to_string();
+    let login_service = LoginService {
+        user_service,
+        sessions: HashMap::new(),
+    };
+    let no_user_found = login_service.get_session_user(&session_id);
+    assert!(no_user_found.is_none());
 }
