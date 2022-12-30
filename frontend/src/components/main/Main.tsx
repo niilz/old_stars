@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react';
 import { AppCtx } from '../../App';
 import { User } from '../../model/User';
 import { handleResponse } from '../../services/fetch-service';
-import { getAllUsers } from '../../services/user-service';
+import { attachSession, getAllUsers } from '../../services/user-service';
 import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
 import { Header } from '../header/Header';
@@ -38,6 +38,18 @@ export function Main() {
       setUsers(users as User[]);
     };
     fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    const tryAttachSession = async () => {
+      const attachResponse = await attachSession();
+      const user = handleResponse(attachResponse);
+      if (user) {
+        setSessionUser(user as User);
+        setLoginState(LoginState.LoggedInUser);
+      }
+    };
+    tryAttachSession();
   }, []);
 
   const addUser = (user: User) => {

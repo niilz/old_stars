@@ -24,6 +24,7 @@ export async function fetchWrapper(
     headers: baseHeaders,
     mode: 'cors',
     cache: 'default',
+    credentials: 'include',
   };
   if (method === METHOD.POST) {
     options.body = body;
