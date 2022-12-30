@@ -23,8 +23,8 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-const FRONT_END_URL_DEV: &'static str = "https://localhost:3000";
-const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars/";
+const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
+const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars";
 const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 
 #[get("/")]
@@ -213,8 +213,9 @@ impl Fairing for Cors {
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            //[FRONT_END_URL, FRONT_END_URL_DEV, FRONT_END_URL_HACK].join(", "),
-            "*",
+            FRONT_END_URL_DEV, //FRONT_END_URL
+                               //FRONT_END_URL_HACK
+                               //"*",
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
