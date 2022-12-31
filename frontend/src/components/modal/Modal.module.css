@@ -9,6 +9,10 @@
   z-index: 1;
 }
 
+.Modal * {
+  color: #f66;
+}
+
 .Modal input::placeholder {
   color: #bbb;
 }

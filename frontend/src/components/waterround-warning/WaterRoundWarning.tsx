@@ -19,7 +19,7 @@ export function WaterRoundWarning(props: WaterRoundWarningProps) {
     props.onWaterConsumed(updatedUser as User);
   };
   return (
-    <div>
+    <div className={styles.warningWrapper}>
       <p className={styles.warning}>Du musst eine Wasserrunde trinken</p>
       <Button text="Wasser getrunken" styles={''} callback={handleDrinkWater} />
     </div>
