@@ -26,6 +26,7 @@ use std::{
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
 const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars";
 const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
+const SESSION_COOKIE_NAME: &'static str = "old_star_user";
 
 #[get("/")]
 async fn hello() -> Json<&'static str> {
@@ -48,7 +49,7 @@ fn start(
     login_service: &State<RwLock<LoginService>>,
     cookies: &CookieJar<'_>,
 ) -> Json<Result<AppUser, &'static str>> {
-    if let Some(session_cookie) = cookies.get("old_star_user") {
+    if let Some(session_cookie) = cookies.get(SESSION_COOKIE_NAME) {
         match login_service
             .read()
             .unwrap()
@@ -74,7 +75,7 @@ fn login(
         .login_user(login_data.into_inner())
     {
         Some(session) => {
-            let session_cookie = Cookie::build("old_star_user", session.uuid.to_string())
+            let session_cookie = Cookie::build(SESSION_COOKIE_NAME, session.uuid.to_string())
                 .http_only(false)
                 .path("/")
                 .same_site(rocket::http::SameSite::Lax);
