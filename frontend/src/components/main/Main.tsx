@@ -4,7 +4,11 @@ import { useContext, useEffect, useState } from 'react';
 import { AppCtx } from '../../App';
 import { User } from '../../model/User';
 import { handleResponse } from '../../services/fetch-service';
-import { attachSession, getAllUsers } from '../../services/user-service';
+import {
+  attachSession,
+  getAllUsers,
+  removeSession,
+} from '../../services/user-service';
 import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
 import { Header } from '../header/Header';
@@ -61,11 +65,14 @@ export function Main() {
     setUsers(updatedUsers);
   };
 
-  const handleLogout = () => {
-    setLoginState(LoginState.LoggedInClub);
-    setLoginType(LoginType.User);
-    setSessionUser(null);
-    setAdminViewOpen(false);
+  const handleLogout = async () => {
+    const removeSessionRes = await removeSession();
+    if (removeSessionRes) {
+      setLoginState(LoginState.LoggedInClub);
+      setLoginType(LoginType.User);
+      setSessionUser(null);
+      setAdminViewOpen(false);
+    }
   };
 
   const handleUpdateUserList = (updatedUser: User) => {

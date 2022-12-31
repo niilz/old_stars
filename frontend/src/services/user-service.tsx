@@ -23,3 +23,7 @@ export async function getAllUsers() {
 export async function attachSession() {
   return fetchWrapper(METHOD.GET, 'start', '');
 }
+
+export async function removeSession() {
+  return fetchWrapper(METHOD.GET, 'logout', '');
+}
