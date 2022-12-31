@@ -29,7 +29,7 @@ fn gets_user_if_login_succeeds() {
         name: dummy_user.to_string(),
         pwd: "hashed-pwd".to_string(),
     };
-    let found_user = login_service.login_user(user_that_logs_in).unwrap();
+    let found_user = login_service.login_user(user_that_logs_in).unwrap().user;
     assert_eq!(found_user.id, 1);
     assert_eq!(found_user.name, dummy_user);
     assert_eq!(found_user.beer_count, 0);
@@ -121,6 +121,34 @@ fn no_user_if_no_session_present() {
     };
     let no_user_found = login_service.get_session_user(&session_id);
     assert!(no_user_found.is_none());
+}
+
+#[test]
+fn can_remove_session() {
+    let dummy_user = "dummy-user";
+    let user_service = Arc::new(UserServiceMock::new(dummy_user));
+    let session_id = Uuid::new_v4().to_string();
+    let dummy_app_user = get_dummy_user(dummy_user);
+    let dummy_session = Session::new(dummy_app_user);
+    let mut login_service = LoginService {
+        user_service,
+        sessions: HashMap::from([(session_id.to_string(), dummy_session)]),
+    };
+    let delete_result = login_service.remove_session(&session_id);
+    assert!(delete_result.is_ok());
+}
+
+#[test]
+fn err_if_no_session_to_remove_available() {
+    let dummy_user = "dummy-user";
+    let user_service = Arc::new(UserServiceMock::new(dummy_user));
+    let session_id = Uuid::new_v4().to_string();
+    let mut login_service = LoginService {
+        user_service,
+        sessions: HashMap::new(),
+    };
+    let delete_result = login_service.remove_session(&session_id);
+    assert!(delete_result.is_err());
 }
 
 // Helper

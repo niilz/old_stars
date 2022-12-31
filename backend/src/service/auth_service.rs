@@ -49,6 +49,14 @@ impl LoginService {
             }
         }
     }
+
+    pub fn remove_session(&mut self, session_id: &str) -> Result<(), &'static str> {
+        if self.sessions.remove(session_id).is_some() {
+            Ok(())
+        } else {
+            Err("No session to remove")
+        }
+    }
 }
 
 pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {

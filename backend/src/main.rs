@@ -86,6 +86,23 @@ fn login(
     }
 }
 
+#[get("/logout")]
+fn logout(
+    login_service: &State<RwLock<LoginService>>,
+    cookies: &CookieJar<'_>,
+) -> Json<Result<(), &'static str>> {
+    match cookies.get(SESSION_COOKIE_NAME) {
+        Some(cookie) => {
+            let session_removed = login_service
+                .write()
+                .unwrap()
+                .remove_session(cookie.value());
+            Json(session_removed)
+        }
+        None => Json(Err("No session to logout from")),
+    }
+}
+
 #[post("/register", format = "json", data = "<user>")]
 fn register(
     user: Json<LoginData>,
@@ -189,6 +206,7 @@ fn rocket() -> _ {
                     options,
                     start,
                     login,
+                    logout,
                     register,
                     all_users,
                     delete_user,
