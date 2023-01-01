@@ -24,7 +24,7 @@ use std::{
 };
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
-const FRONT_END_URL: &'static str = "https://niilz.github.io/old_stars";
+const FRONT_END_URL: &'static str = "https://niilz.github.io";
 const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 const SESSION_COOKIE_NAME: &'static str = "old_star_user";
 
