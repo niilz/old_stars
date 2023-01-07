@@ -25,7 +25,6 @@ use std::{
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
 const FRONT_END_URL: &'static str = "https://niilz.github.io";
-const FRONT_END_URL_HACK: &'static str = "https://oldstars.ngrok.io/";
 const SESSION_COOKIE_NAME: &'static str = "old_star_user";
 
 #[get("/")]
@@ -237,7 +236,8 @@ impl Fairing for Cors {
             "Access-Control-Allow-Origin",
             //FRONT_END_URL_DEV,
             FRONT_END_URL,
-            //FRONT_END_URL_HACK
+            // This machines IP to allow acces from frontend on local network
+            //env::var("LOCAL_IP").unwrap()
             //"*",
         ));
         response.set_header(Header::new(
