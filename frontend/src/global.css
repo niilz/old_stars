@@ -12,6 +12,7 @@
   color: var(--secondary);
   box-sizing: border-box;
   margin: 0px;
+  padding: 0px;
   font-family: goldsmith;
 }
 
@@ -31,6 +32,7 @@ html,
 }
 
 button {
+  padding: 0.2rem 1rem 0 1rem;
   font-weight: bold;
   letter-spacing: 0.3rem;
   font-size: 2rem;
