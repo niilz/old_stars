@@ -1,4 +1,4 @@
-import { API_URL, API_URL_DEV, METHOD } from '../Constants';
+import { API_URL, API_URL_DEV, API_URL_LOCAL_NET, METHOD } from '../Constants';
 
 const baseHeaders = new Headers();
 baseHeaders.set('Accept', 'application/json');
