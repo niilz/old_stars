@@ -76,8 +76,9 @@ fn login(
         Some(session) => {
             let session_cookie = Cookie::build(SESSION_COOKIE_NAME, session.uuid.to_string())
                 .http_only(false)
-                .path("/old_stars")
-                .same_site(rocket::http::SameSite::Lax);
+                .path("/")
+                .secure(true)
+                .same_site(rocket::http::SameSite::None);
             cookies.add(session_cookie.finish());
             Json(Ok(session.user))
         }
