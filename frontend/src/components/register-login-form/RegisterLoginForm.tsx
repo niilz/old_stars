@@ -30,7 +30,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       setUserName('');
       setPwd('');
     } catch (e) {
-      props.onError(MsgType.ERR, e);
+      props.onError(MsgType.ERR, e as string);
     }
   };
 
