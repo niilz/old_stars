@@ -8,11 +8,13 @@ use backend::{
         auth_service::LoginService,
         user_service::{DbUserService, UserService},
     },
+    SessionResponse,
 };
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
-    http::{Cookie, CookieJar, Header},
+    http::{Header, Status},
+    request::{FromRequest, Outcome},
     serde::json::Json,
     Request, Response, State,
 };
@@ -25,7 +27,27 @@ use std::{
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
 const FRONT_END_URL: &'static str = "https://niilz.github.io";
-const SESSION_COOKIE_NAME: &'static str = "old_star_user";
+const SESSION_TOKEN_HEADER_NAME: &'static str = "old-star-user-session";
+
+struct SessionToken<'a>(&'a str);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for SessionToken<'r> {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        match request.headers().get_one(SESSION_TOKEN_HEADER_NAME) {
+            Some(token) => {
+                println!("Yeah got a token: {}", token);
+                Outcome::Success(SessionToken(token))
+            }
+            None => {
+                println!("No Session-Token was in the request");
+                Outcome::Failure((Status::Unauthorized, ()))
+            }
+        }
+    }
+}
 
 #[get("/")]
 async fn hello() -> Json<&'static str> {
@@ -46,19 +68,11 @@ async fn options() -> Json<&'static str> {
 #[get("/start")]
 fn start(
     login_service: &State<RwLock<LoginService>>,
-    cookies: &CookieJar<'_>,
+    token: SessionToken,
 ) -> Json<Result<AppUser, &'static str>> {
-    if let Some(session_cookie) = cookies.get(SESSION_COOKIE_NAME) {
-        match login_service
-            .read()
-            .unwrap()
-            .get_session_user(session_cookie.value())
-        {
-            Some(user) => Json(Ok(user)),
-            None => Json(Err("No Session found")),
-        }
-    } else {
-        Json(Err("No session-cookie was sent"))
+    match login_service.read().unwrap().get_session_user(token.0) {
+        Some(user) => Json(Ok(user)),
+        None => Json(Err("No Session found")),
     }
 }
 
@@ -66,21 +80,15 @@ fn start(
 fn login(
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
-    cookies: &CookieJar<'_>,
-) -> Json<Result<AppUser, &'static str>> {
+) -> Json<Result<SessionResponse, &'static str>> {
     match login_service
         .write()
         .unwrap()
         .login_user(login_data.into_inner())
     {
         Some(session) => {
-            let session_cookie = Cookie::build(SESSION_COOKIE_NAME, session.uuid.to_string())
-                .http_only(false)
-                .path("/")
-                .secure(true)
-                .same_site(rocket::http::SameSite::None);
-            cookies.add(session_cookie.finish());
-            Json(Ok(session.user))
+            println!("Issueing session token");
+            Json(Ok(SessionResponse::new(session.user, session.uuid)))
         }
         None => Json(Err("Login failed")),
     }
@@ -89,18 +97,10 @@ fn login(
 #[get("/logout")]
 fn logout(
     login_service: &State<RwLock<LoginService>>,
-    cookies: &CookieJar<'_>,
+    token: SessionToken,
 ) -> Json<Result<(), &'static str>> {
-    match cookies.get(SESSION_COOKIE_NAME) {
-        Some(cookie) => {
-            let session_removed = login_service
-                .write()
-                .unwrap()
-                .remove_session(cookie.value());
-            Json(session_removed)
-        }
-        None => Json(Err("No session to logout from")),
-    }
+    let session_removed = login_service.write().unwrap().remove_session(token.0);
+    Json(session_removed)
 }
 
 #[post("/register", format = "json", data = "<user>")]
@@ -238,7 +238,7 @@ impl Fairing for Cors {
             //FRONT_END_URL_DEV,
             FRONT_END_URL,
             // This machines IP to allow acces from frontend on local network
-            //env::var("LOCAL_IP").unwrap()
+            //env::var("LOCAL_IP").unwrap(),
             //"*",
         ));
         response.set_header(Header::new(
@@ -248,7 +248,9 @@ impl Fairing for Cors {
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
         response.set_header(Header::new(
             "Access-Control-Allow-Headers",
-            "Accept, Content-Type, Access-Control-Allow-Origin",
+            format!(
+                "Accept, Content-Type, Access-Control-Allow-Origin, {SESSION_TOKEN_HEADER_NAME}"
+            ),
         ));
     }
 }
