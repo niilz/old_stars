@@ -1,4 +1,10 @@
-import { API_URL, API_URL_DEV, API_URL_LOCAL_NET, METHOD } from '../Constants';
+import {
+  API_URL,
+  API_URL_DEV,
+  API_URL_LOCAL_NET,
+  METHOD,
+  SESSION_TOKEN_HEADER_NAME,
+} from '../Constants';
 
 const baseHeaders = new Headers();
 baseHeaders.set('Accept', 'application/json');
@@ -17,11 +23,17 @@ type ApiResponse = OkRes | ErrRes;
 export async function fetchWrapper(
   method: METHOD,
   endpoint: String,
-  body: string
+  body: string,
+  token?: string
 ) {
+  const headers = baseHeaders;
+  if (token) {
+    headers.set(`${SESSION_TOKEN_HEADER_NAME}`, token);
+  }
+
   const options: RequestInit = {
     method: method,
-    headers: baseHeaders,
+    headers: headers,
     mode: 'cors',
     cache: 'default',
     credentials: 'include',

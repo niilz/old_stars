@@ -10,8 +10,8 @@ class AuthService {
       JSON.stringify(user)
     );
 
-    const loggedInUser = handleResponse(loginResponse);
-    return loggedInUser;
+    const sessionData = handleResponse(loginResponse);
+    return sessionData;
   }
 }
 
