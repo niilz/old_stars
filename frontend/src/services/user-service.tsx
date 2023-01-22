@@ -20,8 +20,8 @@ export async function getAllUsers() {
   return fetchWrapper(METHOD.GET, 'all', '');
 }
 
-export async function attachSession() {
-  return fetchWrapper(METHOD.GET, 'start', '');
+export async function attachSession(sessionId: string) {
+  return fetchWrapper(METHOD.GET, 'start', '', sessionId);
 }
 
 export async function removeSession() {
