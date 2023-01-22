@@ -12,6 +12,11 @@ export interface UserCredentials {
   pwd: string;
 }
 
+export interface SessionData {
+  user: User;
+  sessionId: string;
+}
+
 export class OldStar implements User {
   id: number;
   name: string;
