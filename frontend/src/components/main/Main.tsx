@@ -15,7 +15,11 @@ import { Header } from '../header/Header';
 import { AppLogo } from '../logo/Logo';
 import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
-import { LoginState, LoginType } from '../../Constants';
+import {
+  LoginState,
+  LoginType,
+  SESSION_TOKEN_HEADER_NAME,
+} from '../../Constants';
 
 export const UserContext = React.createContext({
   addUser: (_user: User) => {},
@@ -45,15 +49,18 @@ export function Main() {
   }, []);
 
   useEffect(() => {
-    const tryAttachSession = async () => {
-      const attachResponse = await attachSession();
+    const tryAttachSession = async (sessionId: string) => {
+      const attachResponse = await attachSession(sessionId);
       const user = handleResponse(attachResponse);
       if (user) {
         setSessionUser(user as User);
         setLoginState(LoginState.LoggedInUser);
       }
     };
-    tryAttachSession();
+    const sessionId = window.localStorage.getItem(SESSION_TOKEN_HEADER_NAME);
+    if (sessionId) {
+      tryAttachSession(sessionId);
+    }
   }, []);
 
   const addUser = (user: User) => {
