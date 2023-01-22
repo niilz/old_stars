@@ -1,7 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { AppCtx } from '../../App';
-import { LoginState, LoginType } from '../../Constants';
-import { User } from '../../model/User';
+import {
+  LoginState,
+  LoginType,
+  SESSION_TOKEN_HEADER_NAME,
+} from '../../Constants';
+import { SessionData, User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
@@ -34,19 +38,24 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
     }
   };
 
-  const handleLogin = () => {
+  const login = () => {
     AuthService.loginUser({
       name: userName || evalLoginName(loginType),
       pwd: pwd,
     })
-      .then((loggedInUser) => {
+      .then((sessionData) => {
         const loginState = evalLoginState(loginType);
         props.onLogin(loginState);
         setUserName('');
         setPwd('');
         setLoginType(evalLoginType(loginType));
         if (loginType !== LoginType.User) return;
-        setSessionUser(loggedInUser as User);
+        const sessionDataCasted = sessionData as SessionData;
+        setSessionUser(sessionDataCasted.user);
+        window.localStorage.setItem(
+          SESSION_TOKEN_HEADER_NAME,
+          sessionDataCasted.sessionId
+        );
       })
       .catch((e) => props.onError(MsgType.ERR, e));
   };
@@ -73,11 +82,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           placeholder={getPwdPlaceholder(loginType)}
           onChange={(e) => setPwd(e.target.value)}
         />
-        <Button
-          text="Login"
-          styles={styles.registerBtn}
-          callback={handleLogin}
-        />
+        <Button text="Login" styles={styles.registerBtn} callback={login} />
         {loginType === LoginType.User && (
           <Button
             text="Register"
