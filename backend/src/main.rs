@@ -22,7 +22,7 @@ use rocket::{
 use std::{
     collections::HashMap,
     env,
-    sync::{Arc, RwLock},
+    sync::{Arc, Mutex, RwLock},
 };
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
@@ -106,13 +106,13 @@ fn logout(
 #[post("/register", format = "json", data = "<user>")]
 fn register(
     user: Json<LoginData>,
-    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<AppUser, String>> {
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
-    match user_service.insert_user(user) {
+    match user_service.lock().unwrap().insert_user(user) {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
@@ -120,10 +120,10 @@ fn register(
 
 #[get("/all", format = "json")]
 fn all_users(
-    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<Vec<AppUser>, String>> {
     println!("Getting all users");
-    match user_service.get_users() {
+    match user_service.lock().unwrap().get_users() {
         Ok(users) => Json(Ok(users
             .iter()
             .map(|user| AppUser::from_user(user))
@@ -135,9 +135,9 @@ fn all_users(
 #[delete("/delete/<id>")]
 fn delete_user(
     id: i32,
-    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<AppUser, String>> {
-    match user_service.delete_user(id) {
+    match user_service.lock().unwrap().delete_user(id) {
         Ok(user) => Json(Ok(AppUser::from_user(&user))),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
@@ -150,10 +150,14 @@ fn delete_user(
 fn add_drink(
     drink: String,
     id: i32,
-    user_service: &State<Arc<dyn UserService + Send + Sync>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<AppUser, String>> {
     let drink_clone = drink.clone();
-    match user_service.add_drink_to_user(id, &drink_clone) {
+    match user_service
+        .lock()
+        .unwrap()
+        .add_drink_to_user(id, &drink_clone)
+    {
         Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
@@ -192,7 +196,8 @@ fn rocket() -> _ {
         let user_service = DbUserService {
             db: OldStarDb::new(),
         };
-        let user_service: Arc<dyn UserService + Send + Sync> = Arc::new(user_service);
+        let user_service: Arc<Mutex<dyn UserService + Send + Sync>> =
+            Arc::new(Mutex::new(user_service));
         let login_service = LoginService {
             user_service: Arc::clone(&user_service),
             sessions: HashMap::new(),

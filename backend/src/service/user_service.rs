@@ -9,12 +9,12 @@ use diesel::{dsl::not, insert_into, prelude::*};
 use std::{error::Error, fmt};
 
 pub trait UserService: Send + Sync {
-    fn get_users(&self) -> Result<Vec<User>, UserServiceError>;
-    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError>;
-    fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError>;
-    fn delete_user(&self, id: i32) -> Result<User, UserServiceError>;
+    fn get_users(&mut self) -> Result<Vec<User>, UserServiceError>;
+    fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError>;
+    fn insert_user(&mut self, new_user: LoginData) -> Result<User, UserServiceError>;
+    fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError>;
     fn add_drink_to_user<'a>(
-        &self,
+        &mut self,
         update_id: i32,
         drink: &'a str,
     ) -> Result<User, UserServiceError>;
@@ -30,26 +30,26 @@ pub struct DbUserService {
 }
 
 impl UserService for DbUserService {
-    fn get_users(&self) -> Result<Vec<User>, UserServiceError> {
+    fn get_users(&mut self) -> Result<Vec<User>, UserServiceError> {
         // TODO: Make seperate types or tables instead of _secret_ users-names
         let users = old_users
             .filter(not(name.eq("club").or(name.eq("admin!"))))
-            .load::<User>(&self.db.connection())?;
+            .load::<User>(&mut self.db.connection())?;
         Ok(users)
     }
 
-    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
+    fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError> {
         let user = old_users
             .filter(name.eq(user_name))
-            .first::<User>(&self.db.connection())?;
+            .first::<User>(&mut self.db.connection())?;
         Ok(user)
     }
 
-    fn insert_user(&self, new_user: LoginData) -> Result<User, UserServiceError> {
+    fn insert_user(&mut self, new_user: LoginData) -> Result<User, UserServiceError> {
         // Do not allow for duplicate users
         let users_with_given_name = old_users
             .filter(name.eq(&new_user.name))
-            .load::<User>(&self.db.connection())?;
+            .load::<User>(&mut self.db.connection())?;
 
         if users_with_given_name.len() != 0 {
             return Err(UserServiceError::new(
@@ -67,33 +67,33 @@ impl UserService for DbUserService {
                 water_count.eq(0),
                 fk_icon_id.eq(42),
             ))
-            .get_result(&self.db.connection())?;
+            .get_result(&mut self.db.connection())?;
         Ok(inserted_user)
     }
 
-    fn delete_user(&self, del_id: i32) -> Result<User, UserServiceError> {
-        let deleted_user =
-            diesel::delete(old_users.filter(id.eq(del_id))).get_result(&self.db.connection())?;
+    fn delete_user(&mut self, del_id: i32) -> Result<User, UserServiceError> {
+        let deleted_user = diesel::delete(old_users.filter(id.eq(del_id)))
+            .get_result(&mut self.db.connection())?;
         Ok(deleted_user)
     }
 
     fn add_drink_to_user<'a>(
-        &self,
+        &mut self,
         update_id: i32,
         drink: &'a str,
     ) -> Result<User, UserServiceError> {
         let update_user = old_users.filter(id.eq(update_id));
-        let connection = self.db.connection();
+        let mut connection = self.db.connection();
         let updated_user = match drink {
             "beer" => diesel::update(update_user)
                 .set(beer_count.eq(beer_count + 1))
-                .get_result(&connection)?,
+                .get_result(&mut connection)?,
             "shot" => diesel::update(update_user)
                 .set(shot_count.eq(shot_count + 1))
-                .get_result(&connection)?,
+                .get_result(&mut connection)?,
             "water" => diesel::update(update_user)
                 .set(water_count.eq(water_count + 1))
-                .get_result(&connection)?,
+                .get_result(&mut connection)?,
             _ => unimplemented!("Other drinks are not supported"),
         };
         Ok(updated_user)

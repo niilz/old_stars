@@ -28,27 +28,27 @@ impl UserServiceMock {
 }
 
 impl UserService for UserServiceMock {
-    fn get_users(&self) -> Result<Vec<User>, UserServiceError> {
+    fn get_users(&mut self) -> Result<Vec<User>, UserServiceError> {
         unimplemented!("Not used in tests")
     }
 
-    fn get_user_by_name(&self, user_name: &str) -> Result<User, UserServiceError> {
+    fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError> {
         match self.dummy_db.get(user_name) {
             Some(user) => Ok(user.to_owned()),
             _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
         }
     }
 
-    fn insert_user(&self, _new_user: LoginData) -> Result<User, UserServiceError> {
+    fn insert_user(&mut self, _new_user: LoginData) -> Result<User, UserServiceError> {
         unimplemented!("Not needed in tests")
     }
 
-    fn delete_user(&self, _id: i32) -> Result<User, UserServiceError> {
+    fn delete_user(&mut self, _id: i32) -> Result<User, UserServiceError> {
         unimplemented!("Not needed in tests")
     }
 
     fn add_drink_to_user<'a>(
-        &self,
+        &mut self,
         _update_id: i32,
         _drink: &'a str,
     ) -> Result<User, UserServiceError> {

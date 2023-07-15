@@ -1,17 +1,22 @@
-#[macro_use]
-extern crate diesel_migrations;
-
 use backend::{
     model::login_data::LoginData,
     repository::connection::OldStarDb,
+    schema::old_users::dsl::*,
     service::user_service::{DbUserService, UserService},
 };
+use diesel::{
+    backend::Backend,
+    migration::{MigrationConnection, MigrationSource},
+    prelude::*,
+    Connection, PgConnection, RunQueryDsl,
+};
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::{
     env::{self, Args},
     process::exit,
 };
 
-embed_migrations!();
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 fn main() {
     let db_url = env::var("DATABASE_URL");
@@ -53,8 +58,15 @@ fn configure(url: &str, args: &mut Args) {
 
     println!("trying to establish connection to url: {}", url);
     let db = OldStarDb::with_url(url);
-    let conn = db.connection();
-    let user_service = DbUserService { db };
-    let _ = embedded_migrations::run(&conn);
+
+    let mut conn: diesel::pg::PgConnection = db.connection();
+    let mut user_service = DbUserService { db };
+    run_migration(&mut conn);
+
     let _ = user_service.insert_user(login_data);
+}
+
+fn run_migration(conn: &mut impl MigrationHarness<diesel::pg::Pg>) {
+    conn.run_pending_migrations(MIGRATIONS)
+        .expect("Could not run migrations");
 }

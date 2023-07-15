@@ -7,16 +7,24 @@ use argon2::{
     Argon2,
 };
 use rand_core::OsRng;
-use std::{collections::HashMap, sync::Arc, time::SystemTime};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+    time::SystemTime,
+};
 
 pub struct LoginService {
-    pub user_service: Arc<dyn UserService + Sync + Send>,
+    pub user_service: Arc<Mutex<dyn UserService + Sync + Send>>,
     pub sessions: HashMap<String, Session>,
 }
 
 impl LoginService {
     pub fn login_user(&mut self, login_data: LoginData) -> Option<Session> {
-        let user = self.user_service.get_user_by_name(&login_data.name);
+        let user = self
+            .user_service
+            .lock()
+            .unwrap()
+            .get_user_by_name(&login_data.name);
         match user {
             Ok(db_user) => {
                 let stored_hash = &db_user.pwd;
