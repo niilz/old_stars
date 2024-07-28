@@ -43,7 +43,7 @@ impl<'r> FromRequest<'r> for SessionToken<'r> {
             }
             None => {
                 println!("No Session-Token was in the request");
-                Outcome::Failure((Status::Unauthorized, ()))
+                Outcome::Error((Status::Unauthorized, ()))
             }
         }
     }
@@ -190,9 +190,8 @@ fn rocket() -> _ {
         println!("Running without DB");
         rocket::custom(config_figment).mount("/", routes![hello, head, options])
     } else {
-        #[cfg(debug)]
         let db_url = env::var("DATABASE_URL").unwrap();
-        dbg!("DB-URL: {db_url}");
+        dbg!(db_url);
         let user_service = DbUserService {
             db: OldStarDb::new(),
         };
