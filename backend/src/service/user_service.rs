@@ -82,6 +82,7 @@ impl UserService for DbUserService {
         update_id: i32,
         drink: &'a str,
     ) -> Result<User, UserServiceError> {
+        // TODO: Check if adding is allowd according to water:alcohol ratio
         let update_user = old_users.filter(id.eq(update_id));
         let mut connection = self.db.connection();
         let updated_user = match drink {
