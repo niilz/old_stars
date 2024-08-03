@@ -51,10 +51,18 @@ export function Main() {
   useEffect(() => {
     const tryAttachSession = async (sessionId: string) => {
       const attachResponse = await attachSession(sessionId);
-      const user = handleResponse(attachResponse);
-      if (user) {
-        setSessionUser(user as User);
-        setLoginState(LoginState.LoggedInUser);
+      if (attachResponse.Err) {
+        console.log(
+          `Session login did not work. Err: ${attachResponse.Err}. Clearing token`
+        );
+        window.localStorage.removeItem(SESSION_TOKEN_HEADER_NAME);
+      } else {
+        console.log(`got attachResponse: ${attachResponse}`);
+        const user = handleResponse(attachResponse);
+        if (user) {
+          setSessionUser(user as User);
+          setLoginState(LoginState.LoggedInUser);
+        }
       }
     };
     const sessionId = window.localStorage.getItem(SESSION_TOKEN_HEADER_NAME);
