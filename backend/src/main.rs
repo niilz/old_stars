@@ -13,10 +13,11 @@ use backend::{
 use rocket::{
     config::Config,
     fairing::{Fairing, Info, Kind},
+    figment::Figment,
     http::{Header, Status},
     request::{FromRequest, Outcome},
     serde::json::Json,
-    Request, Response, State,
+    Build, Request, Response, Rocket, State,
 };
 
 use std::{
@@ -166,8 +167,8 @@ fn add_drink(
     }
 }
 
-#[launch]
-fn rocket() -> _ {
+#[rocket::main]
+async fn main() {
     let cert_chain = env::var("CERT_CHAIN");
     let private_key = env::var("PRIVATE_KEY");
 
@@ -184,11 +185,22 @@ fn rocket() -> _ {
         config_figment.merge(("port", 8000))
     };
 
+    println!("Launching rocket");
+    if let Err(e) = rocket(config_figment).launch().await {
+        eprintln!("Schade, rocket failed. Err: {e:?}");
+        drop(e);
+    };
+}
+
+fn rocket(config_figment: Figment) -> Rocket<Build> {
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
+
     let rocket = if env::var("NO_DB") == Ok(no_db_value) {
         println!("Running without DB");
-        rocket::custom(config_figment).mount("/", routes![hello, head, options])
+        rocket::custom(config_figment)
+            .mount("/", routes![hello, head, options])
+            .attach(Cors)
     } else {
         let db_url = env::var("DATABASE_URL").unwrap();
         dbg!(db_url);
@@ -219,10 +231,10 @@ fn rocket() -> _ {
             )
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
+            .attach(Cors)
     };
 
-    println!("Launching rocket");
-    rocket.attach(Cors)
+    rocket
 }
 
 struct Cors;
