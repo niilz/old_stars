@@ -27,7 +27,7 @@ use std::{
 };
 
 const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
-const FRONT_END_URL: &'static str = "https://niilz.github.io";
+const FRONT_END_URL: &'static str = "https://www.niilz.com";
 const SESSION_TOKEN_HEADER_NAME: &'static str = "old-star-user-session";
 
 struct SessionToken<'a>(&'a str);
