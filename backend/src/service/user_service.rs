@@ -22,7 +22,7 @@ pub trait UserService: Send + Sync {
 
 #[derive(Debug)]
 pub struct UserServiceError {
-    message: String,
+    pub message: String,
 }
 
 pub struct DbUserService {
@@ -126,22 +126,5 @@ impl From<diesel::result::Error> for UserServiceError {
 impl From<password_hash::Error> for UserServiceError {
     fn from(error: password_hash::Error) -> Self {
         Self::new("Hashing", &error)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::UserServiceError;
-
-    #[test]
-    fn can_create_user_service_error() {
-        let dummy_ctx = "Some process";
-        let dummy_msg = "Something did not work";
-
-        let error_mock = UserServiceError::new(dummy_ctx, &dummy_msg);
-        assert_eq!(
-            error_mock.message,
-            format!("Error during {dummy_ctx}: {dummy_msg}")
-        );
     }
 }
