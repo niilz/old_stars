@@ -11,6 +11,14 @@ table! {
 }
 
 table! {
+    roles {
+        id -> Integer,
+        user_id -> Integer,
+        role -> VarChar,
+    }
+}
+
+table! {
     sessions {
         id -> Integer,
         name -> VarChar,
