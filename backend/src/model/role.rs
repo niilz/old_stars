@@ -17,10 +17,10 @@ use serde::{Deserialize, Serialize};
 )]
 #[diesel(belongs_to(User))]
 #[diesel(table_name = roles)]
-#[primary_key(role_id)]
+#[diesel(primary_key(role_id))]
 pub struct Role {
     pub role_id: i32,
-    pub fk_user_id: i32,
+    pub user_id: i32,
     pub role: OldStarsRole,
 }
 

@@ -5,7 +5,10 @@ use crate::{
         user::{InsertUser, User},
     },
     repository::connection::OldStarDb,
-    schema::{old_users::dsl::*, roles::dsl::*},
+    schema::{
+        old_users::dsl::*,
+        roles::dsl::{role, roles},
+    },
     service::auth_service::hash,
 };
 use argon2::password_hash;

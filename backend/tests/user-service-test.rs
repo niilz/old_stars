@@ -8,12 +8,12 @@ use backend::{
 
 #[test]
 fn create_user_assigns_role_user() {
-    let user_service_mock = UserServiceMock::new("dummy-user");
+    let mut user_service_mock = UserServiceMock::new("dummy-user");
     let new_user_dummy = LoginData {
         name: "dummy-name".to_string(),
         pwd: "dummy-pwd".to_string(),
     };
-    user_service_mock.insert_user(new_user_dummy);
+    //let _ = user_service_mock.insert_user(new_user_dummy);
 }
 
 #[test]

@@ -1,7 +1,8 @@
+use crate::schema::old_users;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Queryable, Selectable, Eq, PartialEq, Debug, Clone, Default)]
-#[diesel(table_name = crate::schema::old_users)]
+#[diesel(table_name = old_users)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {
     pub user_id: i32,
@@ -17,7 +18,7 @@ pub struct User {
 }
 
 #[derive(Insertable, Eq, PartialEq, Debug, Clone, Default)]
-#[diesel(table_name = crate::schema::old_users)]
+#[table_name = "old_users"]
 pub struct InsertUser<'a> {
     pub name: &'a str,
     pub pwd: &'a str,

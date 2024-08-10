@@ -14,7 +14,7 @@ pub(crate) struct UserServiceMock {
 impl UserServiceMock {
     pub(crate) fn new(user_name: &str) -> Self {
         let dummy_user = User {
-            id: 1,
+            user_id: 1,
             name: user_name.to_string(),
             pwd: hash("hashed-pwd").unwrap().to_string(),
             ..Default::default()
