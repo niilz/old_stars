@@ -1,8 +1,19 @@
+use crate::model::user::User;
 use crate::schema::roles;
-use diesel::{Identifiable, Queryable};
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Queryable, Identifiable, Eq, PartialEq, Debug, Clone)]
+#[derive(
+    Deserialize,
+    Serialize,
+    Queryable,
+    Selectable,
+    Identifiable,
+    Associations,
+    PartialEq,
+    Debug,
+    Clone,
+)]
+#[diesel(belongs_to(User))]
 #[diesel(table_name = roles)]
 pub struct Role {
     pub id: i32,
