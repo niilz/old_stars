@@ -1,7 +1,7 @@
-use crate::schema::old_users::dsl::*;
 use crate::{
-    model::{login_data::LoginData, user::User},
+    model::{login_data::LoginData, role::OldStarsRole, user::User},
     repository::connection::OldStarDb,
+    schema::{old_users::dsl::*, roles::dsl::*},
     service::auth_service::hash,
 };
 use argon2::password_hash;
@@ -31,9 +31,10 @@ pub struct DbUserService {
 
 impl UserService for DbUserService {
     fn get_users(&mut self) -> Result<Vec<User>, UserServiceError> {
-        // TODO: Make seperate types or tables instead of _secret_ users-names
         let users = old_users
-            .filter(not(name.eq("club").or(name.eq("admin!"))))
+            .inner_join(roles)
+            .filter(role.eq(OldStarsRole::User.to_string()))
+            .select(User::as_select())
             .load::<User>(&mut self.db.connection())?;
         Ok(users)
     }
