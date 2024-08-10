@@ -1,8 +1,8 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    old_users (id) {
-        id -> Int4,
+    old_users (user_id) {
+        user_id -> Int4,
         name -> Varchar,
         pwd -> Varchar,
         beer_count -> Int4,
@@ -13,8 +13,8 @@ diesel::table! {
 }
 
 diesel::table! {
-    roles (id) {
-        id -> Int4,
+    roles (role_id) {
+        role_id -> Int4,
         user_id -> Int4,
         role -> Varchar,
     }

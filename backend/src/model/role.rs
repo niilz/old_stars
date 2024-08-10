@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::model::user::User;
 use crate::schema::roles;
 use serde::{Deserialize, Serialize};
@@ -15,8 +17,9 @@ use serde::{Deserialize, Serialize};
 )]
 #[diesel(belongs_to(User))]
 #[diesel(table_name = roles)]
+#[primary_key(role_id)]
 pub struct Role {
-    pub id: i32,
+    pub role_id: i32,
     pub user_id: i32,
     pub role: OldStarsRole,
 }
@@ -25,4 +28,13 @@ pub struct Role {
 pub enum OldStarsRole {
     User,
     Admin,
+}
+
+impl Display for OldStarsRole {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::User => write!(f, "user"),
+            Self::Admin => write!(f, "admin"),
+        }
+    }
 }
