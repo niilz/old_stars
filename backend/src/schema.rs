@@ -5,17 +5,17 @@ diesel::table! {
         id -> Int4,
         name -> Varchar,
         pwd -> Varchar,
-        beer_count -> Nullable<Int4>,
-        shot_count -> Nullable<Int4>,
-        water_count -> Nullable<Int4>,
-        fk_icon_id -> Nullable<Int4>,
+        beer_count -> Int4,
+        shot_count -> Int4,
+        water_count -> Int4,
+        fk_icon_id -> Int4,
     }
 }
 
 diesel::table! {
     roles (id) {
         id -> Int4,
-        user_id -> Nullable<Int4>,
+        user_id -> Int4,
         role -> Varchar,
     }
 }
@@ -25,7 +25,7 @@ diesel::table! {
         id -> Int4,
         name -> Varchar,
         value -> Varchar,
-        user_id -> Nullable<Int4>,
+        user_id -> Int4,
     }
 }
 

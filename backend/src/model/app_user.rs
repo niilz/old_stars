@@ -6,11 +6,11 @@ pub struct AppUser {
     pub id: i32,
     pub name: String,
     #[serde(rename = "beerCount")]
-    pub beer_count: Option<i32>,
+    pub beer_count: i32,
     #[serde(rename = "shotCount")]
-    pub shot_count: Option<i32>,
+    pub shot_count: i32,
     #[serde(rename = "waterCount")]
-    pub water_count: Option<i32>,
+    pub water_count: i32,
 }
 
 impl AppUser {
