@@ -32,9 +32,9 @@ fn gets_user_if_login_succeeds() {
     let found_user = login_service.login_user(user_that_logs_in).unwrap().user;
     assert_eq!(found_user.id, 1);
     assert_eq!(found_user.name, dummy_user);
-    assert_eq!(found_user.beer_count, 0);
-    assert_eq!(found_user.water_count, 0);
-    assert_eq!(found_user.shot_count, 0);
+    assert_eq!(found_user.beer_count, Some(0));
+    assert_eq!(found_user.water_count, Some(0));
+    assert_eq!(found_user.shot_count, Some(0));
 }
 
 #[test]
@@ -156,8 +156,8 @@ fn get_dummy_user(user_name: &str) -> AppUser {
     AppUser {
         id: 1,
         name: user_name.to_string(),
-        beer_count: 2,
-        shot_count: 2,
-        water_count: 1,
+        beer_count: Some(2),
+        shot_count: Some(2),
+        water_count: Some(1),
     }
 }
