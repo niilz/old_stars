@@ -114,7 +114,7 @@ fn register(
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
     match user_service.lock().unwrap().insert_user(user) {
-        Ok(user) => Json(Ok(AppUser::from_user(&user))),
+        Ok(user) => Json(Ok(AppUser::from(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
 }
@@ -125,10 +125,7 @@ fn all_users(
 ) -> Json<Result<Vec<AppUser>, String>> {
     println!("Getting all users");
     match user_service.lock().unwrap().get_users() {
-        Ok(users) => Json(Ok(users
-            .iter()
-            .map(|user| AppUser::from_user(user))
-            .collect())),
+        Ok(users) => Json(Ok(users.iter().map(|user| AppUser::from(user)).collect())),
         Err(e) => Json(Err(format!("Could not get all users. Error: {}", e))),
     }
 }
@@ -139,7 +136,7 @@ fn delete_user(
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<AppUser, String>> {
     match user_service.lock().unwrap().delete_user(id) {
-        Ok(user) => Json(Ok(AppUser::from_user(&user))),
+        Ok(user) => Json(Ok(AppUser::from(&user))),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
             id, e
@@ -159,7 +156,7 @@ fn add_drink(
         .unwrap()
         .add_drink_to_user(id, &drink_clone)
     {
-        Ok(updated_user) => Json(Ok(AppUser::from_user(&updated_user))),
+        Ok(updated_user) => Json(Ok(AppUser::from(&updated_user))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
             drink, id, e

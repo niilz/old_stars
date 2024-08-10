@@ -13,10 +13,10 @@ pub struct AppUser {
     pub water_count: i32,
 }
 
-impl AppUser {
-    pub fn from_user(user: &User) -> Self {
-        AppUser {
-            id: user.id,
+impl From<&User> for AppUser {
+    fn from(user: &User) -> Self {
+        Self {
+            id: user.user_id,
             name: user.name.to_string(),
             beer_count: user.beer_count,
             shot_count: user.shot_count,

@@ -29,7 +29,7 @@ impl LoginService {
             Ok(db_user) => {
                 let stored_hash = &db_user.pwd;
                 if is_password_valid(login_data.pwd, stored_hash) {
-                    let app_user = AppUser::from_user(&db_user);
+                    let app_user = AppUser::from(&db_user);
                     let session = Session::new(app_user);
                     self.sessions
                         .insert(session.uuid.to_string(), session.clone());
