@@ -70,7 +70,7 @@ impl LoginService {
 pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {
     let rnd_salt = SaltString::generate(&mut OsRng);
     let argon = Argon2::default();
-    let pwd_hash = argon.hash_password_simple(user_pwd.as_bytes(), &rnd_salt)?;
+    let pwd_hash = argon.hash_password(user_pwd.as_bytes(), &rnd_salt)?;
     Ok(pwd_hash.to_string())
 }
 
