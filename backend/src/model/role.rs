@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 #[primary_key(role_id)]
 pub struct Role {
     pub role_id: i32,
-    pub user_id: i32,
+    pub fk_user_id: i32,
     pub role: OldStarsRole,
 }
 

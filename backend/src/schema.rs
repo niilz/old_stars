@@ -15,7 +15,7 @@ diesel::table! {
 diesel::table! {
     roles (role_id) {
         role_id -> Int4,
-        user_id -> Int4,
+        fk_user_id -> Int4,
         role -> Varchar,
     }
 }
@@ -29,7 +29,7 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(roles -> old_users (user_id));
+diesel::joinable!(roles -> old_users (fk_user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     old_users,

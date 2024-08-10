@@ -9,7 +9,7 @@ use crate::{
     service::auth_service::hash,
 };
 use argon2::password_hash;
-use diesel::{dsl::not, insert_into, prelude::*};
+use diesel::{insert_into, prelude::*};
 use std::{error::Error, fmt};
 
 pub trait UserService: Send + Sync {
