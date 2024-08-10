@@ -9,13 +9,13 @@ default-run = "backend"
 
 [dependencies]
 rocket = { version = "0.5.1", features = ["json", "tls"] }
-diesel = { version = "2.2", features = ["postgres"] }
-diesel_migrations = { version = "2.2" }
-dotenv = "0.15"
-serde = { version = "1", features = ["derive"] }
-rand_core = {version = "0.6", features = ["std"] }
-argon2 = "0.2"
-uuid = { version = "1.2.2", features = ["v4"] }
+diesel = { version = "2.2.2", features = ["postgres"] }
+diesel_migrations = "2.2.0"
+dotenv = "0.15.0"
+serde = { version = "1.0.205", features = ["derive"] }
+rand_core = { version = "0.6.4", features = ["std"] }
+argon2 = "0.5.3"
+uuid = { version = "1.10.0", features = ["v4"] }
 
 [dependencies.rocket_sync_db_pools]
 version = "0.1.0"
