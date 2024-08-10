@@ -17,10 +17,7 @@ impl UserServiceMock {
             id: 1,
             name: user_name.to_string(),
             pwd: hash("hashed-pwd").unwrap().to_string(),
-            beer_count: 0,
-            shot_count: 0,
-            water_count: 0,
-            fk_icon_id: 0,
+            ..Default::default()
         };
         let dummy_db = HashMap::from([(user_name.to_string(), dummy_user)]);
         Self { dummy_db }
