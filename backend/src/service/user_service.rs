@@ -1,5 +1,9 @@
 use crate::{
-    model::{login_data::LoginData, role::OldStarsRole, user::User},
+    model::{
+        login_data::LoginData,
+        role::OldStarsRole,
+        user::{InsertUser, User},
+    },
     repository::connection::OldStarDb,
     schema::{old_users::dsl::*, roles::dsl::*},
     service::auth_service::hash,
@@ -59,21 +63,15 @@ impl UserService for DbUserService {
             ));
         }
         let hashed_pwd = hash(&new_user.pwd)?;
+        let new_user = InsertUser::new(&new_user.name, &hashed_pwd);
         let inserted_user = insert_into(old_users)
-            .values((
-                name.eq(new_user.name),
-                pwd.eq(hashed_pwd.to_string()),
-                beer_count.eq(0),
-                shot_count.eq(0),
-                water_count.eq(0),
-                fk_icon_id.eq(42),
-            ))
+            .values(new_user)
             .get_result(&mut self.db.connection())?;
         Ok(inserted_user)
     }
 
     fn delete_user(&mut self, del_id: i32) -> Result<User, UserServiceError> {
-        let deleted_user = diesel::delete(old_users.filter(id.eq(del_id)))
+        let deleted_user = diesel::delete(old_users.filter(user_id.eq(del_id)))
             .get_result(&mut self.db.connection())?;
         Ok(deleted_user)
     }
@@ -84,7 +82,7 @@ impl UserService for DbUserService {
         drink: &'a str,
     ) -> Result<User, UserServiceError> {
         // TODO: Check if adding is allowd according to water:alcohol ratio
-        let update_user = old_users.filter(id.eq(update_id));
+        let update_user = old_users.filter(user_id.eq(update_id));
         let mut connection = self.db.connection();
         let updated_user = match drink {
             "beer" => diesel::update(update_user)
