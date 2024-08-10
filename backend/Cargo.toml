@@ -9,8 +9,8 @@ default-run = "backend"
 
 [dependencies]
 rocket = { version = "0.5.1", features = ["json", "tls"] }
-diesel = { version = "2.1", features = ["postgres"] }
-diesel_migrations = { version = "2.1" }
+diesel = { version = "2.2", features = ["postgres"] }
+diesel_migrations = { version = "2.2" }
 dotenv = "0.15"
 serde = { version = "1", features = ["derive"] }
 rand_core = {version = "0.6", features = ["std"] }
