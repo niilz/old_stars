@@ -13,7 +13,17 @@ fn create_user_assigns_role_user() {
         name: "dummy-name".to_string(),
         pwd: "dummy-pwd".to_string(),
     };
-    //let _ = user_service_mock.insert_user(new_user_dummy);
+    let user = user_service_mock.insert_user(new_user_dummy);
+    match user {
+        Ok(user) => assert_eq!(user.beer_count, 0),
+        Err(e) => panic!("test failed with: {e:?}"),
+    }
+
+    let all_users = user_service_mock.get_users();
+    match all_users {
+        Ok(users) => assert_eq!(users.len(), 1),
+        Err(e) => panic!("test failed: {e:?}"),
+    }
 }
 
 #[test]
