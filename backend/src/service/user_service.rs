@@ -49,7 +49,7 @@ pub trait UserService: Send + Sync {
     }
 
     fn map_role(&self, user_role: &str) -> Result<OldStarsRole, UserServiceError> {
-        match (&user_role[..]).try_into() {
+        match user_role.try_into() {
             Ok(user_role) => Ok(user_role),
             Err(e) => {
                 eprintln!("Could not map role '{user_role}'");
@@ -162,10 +162,10 @@ impl UserService for DbUserService {
         Ok(deleted_user)
     }
 
-    fn add_drink_to_user<'a>(
+    fn add_drink_to_user(
         &mut self,
         update_id: i32,
-        drink: &'a str,
+        drink: &str,
     ) -> Result<User, UserServiceError> {
         // TODO: Check if adding is allowd according to water:alcohol ratio
         let update_user = old_users.filter(user_id.eq(update_id));

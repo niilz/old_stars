@@ -40,7 +40,7 @@ pub enum OldStarsRole {
 impl TryFrom<&str> for OldStarsRole {
     type Error = String;
     fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value.as_ref() {
+        match value {
             "admin" => Ok(Self::Admin),
             "user" => Ok(Self::User),
             v => Err(format!("Could not convert '{v}' into a role")),

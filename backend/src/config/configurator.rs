@@ -39,9 +39,9 @@ fn configure(url: &str, args: &mut Args) {
         exit(1)
     }
 
-    let user_name = args.nth(0).unwrap();
+    let user_name = args.next().unwrap();
     println!("the user {}", user_name);
-    let user_pwd = args.nth(0).unwrap();
+    let user_pwd = args.next().unwrap();
     println!("the pwd {}", user_pwd);
 
     let login_data = LoginData {

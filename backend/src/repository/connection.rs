@@ -6,6 +6,12 @@ pub struct OldStarDb {
     db_url: String,
 }
 
+impl Default for OldStarDb {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl OldStarDb {
     pub fn new() -> Self {
         // Only attach the db-related routes if db is not disabled

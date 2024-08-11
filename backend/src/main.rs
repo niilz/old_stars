@@ -26,9 +26,9 @@ use std::{
     sync::{Arc, Mutex, RwLock},
 };
 
-const FRONT_END_URL_DEV: &'static str = "http://localhost:3000";
-const FRONT_END_URL: &'static str = "https://www.niilz.com";
-const SESSION_TOKEN_HEADER_NAME: &'static str = "old-star-user-session";
+const FRONT_END_URL_DEV: &str = "http://localhost:3000";
+const FRONT_END_URL: &str = "https://www.niilz.com";
+const SESSION_TOKEN_HEADER_NAME: &str = "old-star-user-session";
 
 struct SessionToken<'a>(&'a str);
 
@@ -196,7 +196,9 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
 
-    let rocket = if env::var("NO_DB") == Ok(no_db_value) {
+    
+
+    if env::var("NO_DB") == Ok(no_db_value) {
         println!("Running without DB");
         rocket::custom(config_figment)
             .mount("/", routes![hello, head, options])
@@ -232,9 +234,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
             .attach(Cors)
-    };
-
-    rocket
+    }
 }
 
 struct Cors;
