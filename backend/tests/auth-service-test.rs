@@ -1,8 +1,8 @@
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use backend::{
     model::{
         app_user::AppUser,
         login_data::LoginData,
+        role::OldStarsRole,
         session::{Session, TWENTY_FOUR_HOURS},
     },
     service::{auth_service::LoginService, user_service::UserService},
@@ -148,6 +148,7 @@ fn err_if_no_session_to_remove_available() {
 fn get_dummy_user(user_name: &str) -> AppUser {
     AppUser {
         id: 1,
+        role: Some(OldStarsRole::User),
         name: user_name.to_string(),
         beer_count: 2,
         shot_count: 2,

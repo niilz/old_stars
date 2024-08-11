@@ -3,10 +3,9 @@ use crate::{
     service::user_service::UserService,
 };
 use argon2::{
-    password_hash::{self, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    password_hash::{PasswordHash, PasswordVerifier},
     Argon2,
 };
-use rand_core::OsRng;
 use std::{
     collections::HashMap,
     sync::{Arc, Mutex},
@@ -20,16 +19,16 @@ pub struct LoginService {
 
 impl LoginService {
     pub fn login_user(&mut self, login_data: &LoginData) -> Option<Session> {
-        let user = self
+        let user_and_role = self
             .user_service
             .lock()
             .unwrap()
-            .get_user_by_name(&login_data.name);
-        match user {
-            Ok(db_user) => {
+            .get_user_and_role(&login_data.name);
+        match user_and_role {
+            Ok((db_user, role)) => {
                 let stored_hash = &db_user.pwd;
                 if is_password_valid(&login_data.pwd, stored_hash) {
-                    let app_user = AppUser::from(&db_user);
+                    let app_user = AppUser::from((db_user, Some(role)));
                     let session = Session::new(app_user);
                     self.sessions
                         .insert(session.uuid.to_string(), session.clone());

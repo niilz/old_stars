@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
-use crate::model::user::User;
 use crate::schema::roles;
+use crate::model::user::User;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -21,13 +21,31 @@ use serde::{Deserialize, Serialize};
 pub struct Role {
     pub role_id: i32,
     pub user_id: i32,
-    pub role: OldStarsRole,
+    pub role: String,
+}
+
+#[derive(Insertable, Eq, PartialEq, Debug, Clone, Default)]
+#[table_name = "roles"]
+pub struct InsertRole<'a> {
+    pub user_id: i32,
+    pub role: &'a str,
 }
 
 #[derive(Deserialize, Serialize, Eq, PartialEq, Debug, Clone)]
 pub enum OldStarsRole {
     User,
     Admin,
+}
+
+impl TryFrom<&str> for OldStarsRole {
+    type Error = String;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.as_ref() {
+            "admin" => Ok(Self::Admin),
+            "user" => Ok(Self::User),
+            v => Err(format!("Could not convert '{v}' into a role")),
+        }
+    }
 }
 
 impl Display for OldStarsRole {

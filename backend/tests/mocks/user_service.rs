@@ -1,6 +1,6 @@
 use backend::{
     model::{
-        login_data::LoginData,
+        role::OldStarsRole,
         user::{InsertUser, User},
     },
     service::user_service::{UserService, UserServiceError},
@@ -8,7 +8,7 @@ use backend::{
 use std::collections::HashMap;
 
 pub(crate) struct UserServiceMock {
-    dummy_db: HashMap<String, User>,
+    dummy_db: HashMap<String, (User, String)>,
 }
 
 impl UserServiceMock {
@@ -40,22 +40,38 @@ fn insert_to_user(user: &InsertUser, id: i32) -> User {
 }
 
 impl UserService for UserServiceMock {
-    fn get_users(&mut self) -> Result<Vec<User>, UserServiceError> {
-        Ok(self.dummy_db.values().map(|v| v.clone()).collect())
+    fn get_users(&mut self) -> Result<Vec<(User, String)>, UserServiceError> {
+        Ok(self
+            .dummy_db
+            .values()
+            .cloned()
+            .filter(|(_, role)| role == "user")
+            .collect())
     }
 
-    fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError> {
+    fn get_user_by_name(&mut self, user_name: &str) -> Result<(User, String), UserServiceError> {
         match self.dummy_db.get(user_name) {
-            Some(user) => Ok(user.to_owned()),
+            Some(user_and_role) => Ok(user_and_role.to_owned()),
             _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
         }
     }
 
-    fn insert_into_repo(&mut self, new_user: InsertUser) -> Result<User, UserServiceError> {
+    fn insert_into_repo(
+        &mut self,
+        new_user: InsertUser,
+        role: OldStarsRole,
+    ) -> Result<User, UserServiceError> {
         let user = insert_to_user(&new_user, self.dummy_db.len() as i32 + 1);
-        self.dummy_db.insert(user.name.to_string(), user);
+        self.dummy_db
+            .insert(user.name.to_string(), (user, role.to_string()));
 
-        Ok(self.dummy_db.get(new_user.name).unwrap().clone())
+        let user = self
+            .dummy_db
+            .get(new_user.name)
+            .map(|(user, _)| user.to_owned())
+            .unwrap();
+
+        Ok(user)
     }
 
     fn delete_user(&mut self, _id: i32) -> Result<User, UserServiceError> {

@@ -26,6 +26,7 @@ impl Session {
 mod test {
     use crate::model::{
         app_user::AppUser,
+        role::OldStarsRole,
         session::{Session, TWENTY_FOUR_HOURS},
     };
     use std::time::{Duration, SystemTime};
@@ -34,6 +35,7 @@ mod test {
     fn can_construct_session() {
         let dummy_user = AppUser {
             id: 1,
+            role: Some(OldStarsRole::User),
             name: "dummy-user".to_string(),
             beer_count: 2,
             shot_count: 2,
