@@ -1,9 +1,9 @@
 use backend::{
-    model::{login_data::LoginData, user::User},
-    service::{
-        auth_service::hash,
-        user_service::{UserService, UserServiceError},
+    model::{
+        login_data::LoginData,
+        user::{InsertUser, User},
     },
+    service::user_service::{UserService, UserServiceError},
 };
 use std::collections::HashMap;
 
@@ -12,21 +12,36 @@ pub(crate) struct UserServiceMock {
 }
 
 impl UserServiceMock {
-    pub(crate) fn new(user_name: &str) -> Self {
-        let dummy_user = User {
-            user_id: 1,
-            name: user_name.to_string(),
-            pwd: hash("hashed-pwd").unwrap().to_string(),
+    fn dummy_insert(&self, new_user: InsertUser) -> User {
+        User {
+            user_id: self.dummy_db.len() as i32 + 1,
+            name: new_user.name.to_string(),
+            pwd: new_user.pwd.to_string(),
             ..Default::default()
-        };
-        let dummy_db = HashMap::from([(user_name.to_string(), dummy_user)]);
-        Self { dummy_db }
+        }
+    }
+}
+
+impl UserServiceMock {
+    pub(crate) fn new() -> Self {
+        Self {
+            dummy_db: HashMap::new(),
+        }
+    }
+}
+
+fn insert_to_user(user: &InsertUser, id: i32) -> User {
+    User {
+        user_id: id,
+        name: user.name.to_string(),
+        pwd: user.pwd.to_string(),
+        ..Default::default()
     }
 }
 
 impl UserService for UserServiceMock {
     fn get_users(&mut self) -> Result<Vec<User>, UserServiceError> {
-        unimplemented!("Not used in tests")
+        Ok(self.dummy_db.values().map(|v| v.clone()).collect())
     }
 
     fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError> {
@@ -36,8 +51,11 @@ impl UserService for UserServiceMock {
         }
     }
 
-    fn insert_user(&mut self, _new_user: LoginData) -> Result<User, UserServiceError> {
-        unimplemented!("Not needed in tests")
+    fn insert_into_repo(&mut self, new_user: InsertUser) -> Result<User, UserServiceError> {
+        let user = insert_to_user(&new_user, self.dummy_db.len() as i32 + 1);
+        self.dummy_db.insert(user.name.to_string(), user);
+
+        Ok(self.dummy_db.get(new_user.name).unwrap().clone())
     }
 
     fn delete_user(&mut self, _id: i32) -> Result<User, UserServiceError> {

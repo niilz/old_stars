@@ -5,7 +5,7 @@ use backend::{
         login_data::LoginData,
         session::{Session, TWENTY_FOUR_HOURS},
     },
-    service::auth_service::{hash, LoginService},
+    service::{auth_service::LoginService, user_service::UserService},
 };
 use std::{
     collections::HashMap,
@@ -18,20 +18,31 @@ mod mocks;
 
 use mocks::user_service::UserServiceMock;
 
+const DUMMY_USER_NAME: &str = "dummy-user";
+
 #[test]
 fn gets_user_if_login_succeeds() {
-    let dummy_user = "dummy-user";
-    let mut login_service = LoginService {
-        user_service: Arc::new(Mutex::new(UserServiceMock::new(dummy_user))),
-        sessions: HashMap::new(),
-    };
-    let user_that_logs_in = LoginData {
-        name: dummy_user.to_string(),
+    let dummy_user = LoginData {
+        name: "dummy-user".to_string(),
         pwd: "hashed-pwd".to_string(),
     };
-    let found_user = login_service.login_user(user_that_logs_in).unwrap().user;
+    let mut user_service_mock = UserServiceMock::new();
+    let Ok(_user) = user_service_mock.insert_user(&dummy_user) else {
+        panic!("test failed: mock-insert did not work");
+    };
+
+    let mut login_service = LoginService {
+        user_service: Arc::new(Mutex::new(user_service_mock)),
+        sessions: HashMap::new(),
+    };
+
+    let Some(found_user) = login_service.login_user(&dummy_user) else {
+        panic!("test fails: No user found for '{dummy_user:?}'");
+    };
+    let found_user = found_user.user;
+
     assert_eq!(found_user.id, 1);
-    assert_eq!(found_user.name, dummy_user);
+    assert_eq!(found_user.name, dummy_user.name);
     assert_eq!(found_user.beer_count, 0);
     assert_eq!(found_user.water_count, 0);
     assert_eq!(found_user.shot_count, 0);
@@ -39,43 +50,29 @@ fn gets_user_if_login_succeeds() {
 
 #[test]
 fn gets_none_if_user_does_not_exist() {
-    let existing_user = "dummy-user";
-    let non_existing = "non-existing-user}";
-    let mut login_service = LoginService {
-        user_service: Arc::new(Mutex::new(UserServiceMock::new(existing_user))),
-        sessions: HashMap::new(),
-    };
     let user_that_tries_logging_in = LoginData {
-        name: non_existing.to_string(),
+        name: "non-existing-user".to_string(),
         pwd: "hashed_pwd".to_string(),
     };
-    let result = login_service.login_user(user_that_tries_logging_in);
+
+    let mut login_service = LoginService {
+        user_service: Arc::new(Mutex::new(UserServiceMock::new())),
+        sessions: HashMap::new(),
+    };
+    let result = login_service.login_user(&user_that_tries_logging_in);
     assert!(result.is_none());
 }
 
 #[test]
-fn can_create_hash() {
-    let hash = hash("MySecretPwd");
-    assert!(hash.is_ok());
-}
-
-#[test]
-fn can_verify_pwd_with_hash() {
-    let plain_pwd = "EvenMoreSecure";
-    let pwd_hashed = hash(plain_pwd).unwrap();
-    let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
-    let argon = Argon2::default();
-    assert!(argon
-        .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
-        .is_ok());
-}
-
-#[test]
 fn gets_user_if_session_exists_and_is_valid() {
-    let dummy_user = "dummy-user";
-    let user_service = Arc::new(Mutex::new(UserServiceMock::new(dummy_user)));
+    let dummy_user = LoginData {
+        name: "dummy-user".to_string(),
+        pwd: "hashed-pwd".to_string(),
+    };
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
+
     let session_id = Uuid::new_v4().to_string();
-    let dummy_app_user = get_dummy_user(dummy_user);
+    let dummy_app_user = get_dummy_user(&dummy_user.name);
     let dummy_session = Session {
         user: dummy_app_user.clone(),
         uuid: session_id.clone(),
@@ -93,10 +90,9 @@ fn gets_user_if_session_exists_and_is_valid() {
 
 #[test]
 fn no_user_if_session_expired() {
-    let dummy_user = "dummy-user";
-    let user_service = Arc::new(Mutex::new(UserServiceMock::new(dummy_user)));
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
     let session_id = Uuid::new_v4().to_string();
-    let dummy_app_user = get_dummy_user(dummy_user);
+    let dummy_app_user = get_dummy_user(DUMMY_USER_NAME);
     let expired_session = Session {
         user: dummy_app_user,
         uuid: session_id.clone(),
@@ -112,8 +108,7 @@ fn no_user_if_session_expired() {
 
 #[test]
 fn no_user_if_no_session_present() {
-    let dummy_user = "dummy-user";
-    let user_service = Arc::new(Mutex::new(UserServiceMock::new(dummy_user)));
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
     let session_id = Uuid::new_v4().to_string();
     let login_service = LoginService {
         user_service,
@@ -125,10 +120,9 @@ fn no_user_if_no_session_present() {
 
 #[test]
 fn can_remove_session() {
-    let dummy_user = "dummy-user";
-    let user_service = Arc::new(Mutex::new(UserServiceMock::new(dummy_user)));
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
     let session_id = Uuid::new_v4().to_string();
-    let dummy_app_user = get_dummy_user(dummy_user);
+    let dummy_app_user = get_dummy_user(DUMMY_USER_NAME);
     let dummy_session = Session::new(dummy_app_user);
     let mut login_service = LoginService {
         user_service,
@@ -140,8 +134,7 @@ fn can_remove_session() {
 
 #[test]
 fn err_if_no_session_to_remove_available() {
-    let dummy_user = "dummy-user";
-    let user_service = Arc::new(Mutex::new(UserServiceMock::new(dummy_user)));
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
     let session_id = Uuid::new_v4().to_string();
     let mut login_service = LoginService {
         user_service,

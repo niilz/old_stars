@@ -19,7 +19,7 @@ pub struct LoginService {
 }
 
 impl LoginService {
-    pub fn login_user(&mut self, login_data: LoginData) -> Option<Session> {
+    pub fn login_user(&mut self, login_data: &LoginData) -> Option<Session> {
         let user = self
             .user_service
             .lock()
@@ -28,7 +28,7 @@ impl LoginService {
         match user {
             Ok(db_user) => {
                 let stored_hash = &db_user.pwd;
-                if is_password_valid(login_data.pwd, stored_hash) {
+                if is_password_valid(&login_data.pwd, stored_hash) {
                     let app_user = AppUser::from(&db_user);
                     let session = Session::new(app_user);
                     self.sessions
@@ -67,14 +67,7 @@ impl LoginService {
     }
 }
 
-pub fn hash(user_pwd: &str) -> Result<String, password_hash::Error> {
-    let rnd_salt = SaltString::generate(&mut OsRng);
-    let argon = Argon2::default();
-    let pwd_hash = argon.hash_password(user_pwd.as_bytes(), &rnd_salt)?;
-    Ok(pwd_hash.to_string())
-}
-
-fn is_password_valid(input_pwd: String, stored_hash: &str) -> bool {
+fn is_password_valid(input_pwd: &str, stored_hash: &str) -> bool {
     let argon = Argon2::default();
     let parsed_stored_pwd = PasswordHash::new(stored_hash);
     match parsed_stored_pwd {

@@ -1,14 +1,7 @@
 use backend::{
     model::login_data::LoginData,
     repository::connection::OldStarDb,
-    schema::old_users::dsl::*,
     service::user_service::{DbUserService, UserService},
-};
-use diesel::{
-    backend::Backend,
-    migration::{MigrationConnection, MigrationSource},
-    prelude::*,
-    Connection, PgConnection, RunQueryDsl,
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::{
@@ -63,7 +56,7 @@ fn configure(url: &str, args: &mut Args) {
     let mut user_service = DbUserService { db };
     run_migration(&mut conn);
 
-    let _ = user_service.insert_user(login_data);
+    let _ = user_service.insert_user(&login_data);
 }
 
 fn run_migration(conn: &mut impl MigrationHarness<diesel::pg::Pg>) {

@@ -85,7 +85,7 @@ fn login(
     match login_service
         .write()
         .unwrap()
-        .login_user(login_data.into_inner())
+        .login_user(&login_data.into_inner())
     {
         Some(session) => {
             println!("Issueing session token");
@@ -113,7 +113,7 @@ fn register(
     if user.name.is_empty() || user.pwd.is_empty() {
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
-    match user_service.lock().unwrap().insert_user(user) {
+    match user_service.lock().unwrap().insert_user(&user) {
         Ok(user) => Json(Ok(AppUser::from(&user))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }

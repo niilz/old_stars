@@ -9,22 +9,48 @@ use crate::{
         old_users::dsl::*,
         roles::dsl::{role, roles},
     },
-    service::auth_service::hash,
 };
-use argon2::password_hash;
+use argon2::{
+    password_hash::{self, SaltString},
+    Argon2, PasswordHasher,
+};
 use diesel::{insert_into, prelude::*};
+use rand_core::OsRng;
 use std::{error::Error, fmt};
 
 pub trait UserService: Send + Sync {
     fn get_users(&mut self) -> Result<Vec<User>, UserServiceError>;
     fn get_user_by_name(&mut self, user_name: &str) -> Result<User, UserServiceError>;
-    fn insert_user(&mut self, new_user: LoginData) -> Result<User, UserServiceError>;
+    fn insert_into_repo(&mut self, new_user: InsertUser) -> Result<User, UserServiceError>;
     fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError>;
     fn add_drink_to_user<'a>(
         &mut self,
         update_id: i32,
         drink: &'a str,
     ) -> Result<User, UserServiceError>;
+
+    fn insert_user(&mut self, new_user: &LoginData) -> Result<User, UserServiceError> {
+        // Do not allow for duplicate users
+        let users_with_given_name = self.get_user_by_name(&new_user.name);
+
+        if users_with_given_name.is_ok() {
+            return Err(UserServiceError::new(
+                "Registration",
+                &"User already exists",
+            ));
+        }
+        let hashed_pwd = self.hash(&new_user.pwd)?;
+        let new_user = InsertUser::new(&new_user.name, &hashed_pwd);
+
+        self.insert_into_repo(new_user)
+    }
+
+    fn hash(&self, user_pwd: &str) -> Result<String, password_hash::Error> {
+        let rnd_salt = SaltString::generate(&mut OsRng);
+        let argon = Argon2::default();
+        let pwd_hash = argon.hash_password(user_pwd.as_bytes(), &rnd_salt)?;
+        Ok(pwd_hash.to_string())
+    }
 }
 
 #[derive(Debug)]
@@ -53,20 +79,7 @@ impl UserService for DbUserService {
         Ok(user)
     }
 
-    fn insert_user(&mut self, new_user: LoginData) -> Result<User, UserServiceError> {
-        // Do not allow for duplicate users
-        let users_with_given_name = old_users
-            .filter(name.eq(&new_user.name))
-            .load::<User>(&mut self.db.connection())?;
-
-        if users_with_given_name.len() != 0 {
-            return Err(UserServiceError::new(
-                "Registration",
-                &"User already exists",
-            ));
-        }
-        let hashed_pwd = hash(&new_user.pwd)?;
-        let new_user = InsertUser::new(&new_user.name, &hashed_pwd);
+    fn insert_into_repo(&mut self, new_user: InsertUser) -> Result<User, UserServiceError> {
         let inserted_user = insert_into(old_users)
             .values(new_user)
             .get_result(&mut self.db.connection())?;

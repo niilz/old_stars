@@ -27,8 +27,9 @@ pub struct InsertUser<'a> {
     pub water_count: i32,
     pub fk_icon_id: i32,
 }
+
 impl<'a> InsertUser<'a> {
-    pub(crate) fn new(name: &'a str, pwd: &'a str) -> Self {
+    pub fn new(name: &'a str, pwd: &'a str) -> Self {
         Self {
             name,
             pwd,
