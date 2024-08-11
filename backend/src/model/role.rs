@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
-use crate::schema::roles;
 use crate::model::user::User;
+use crate::schema::roles;
 use serde::{Deserialize, Serialize};
 
 #[derive(
