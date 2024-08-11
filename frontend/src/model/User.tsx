@@ -1,6 +1,7 @@
 export interface User {
   id: number;
   name: string;
+  role: string | null;
   pwd: string;
   beerCount: number;
   shotCount: number;
@@ -20,6 +21,7 @@ export interface SessionData {
 export class OldStar implements User {
   id: number;
   name: string;
+  role: string | null;
   pwd: string;
   beerCount: number;
   shotCount: number;
@@ -30,6 +32,7 @@ export class OldStar implements User {
   constructor(user: User) {
     this.id = user.id;
     this.name = user.name;
+    this.role = user.role;
     this.pwd = user.pwd;
     this.beerCount = user.beerCount;
     this.shotCount = user.shotCount;
