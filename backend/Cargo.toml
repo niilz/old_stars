@@ -16,6 +16,7 @@ serde = { version = "1.0.205", features = ["derive"] }
 rand_core = { version = "0.6.4", features = ["std"] }
 argon2 = "0.5.3"
 uuid = { version = "1.10.0", features = ["v4"] }
+clap = { version = "4.5.15", features = ["derive"] }
 
 [dependencies.rocket_sync_db_pools]
 version = "0.1.0"
