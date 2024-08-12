@@ -19,16 +19,18 @@ use rand_core::OsRng;
 use std::{error::Error, fmt};
 
 pub trait UserService: Send + Sync {
+    /// Required Methods
     fn get_users(&mut self) -> Result<Vec<(User, String)>, UserServiceError>;
     fn get_user_by_name(&mut self, user_name: &str) -> Result<(User, String), UserServiceError>;
     fn insert_into_repo(
         &mut self,
         new_user: InsertUser,
-        role: OldStarsRole,
+        role: &OldStarsRole,
     ) -> Result<User, UserServiceError>;
     fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError>;
     fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, UserServiceError>;
 
+    /// Provided Methods
     fn get_user_and_role(
         &mut self,
         user_name: &str,
@@ -65,6 +67,15 @@ pub trait UserService: Send + Sync {
         &mut self,
         new_user: &LoginData,
     ) -> Result<(User, OldStarsRole), UserServiceError> {
+        self.insert_with_role(new_user, OldStarsRole::User)
+    }
+
+    // not exposed to api
+    fn insert_with_role(
+        &mut self,
+        new_user: &LoginData,
+        user_role: OldStarsRole,
+    ) -> Result<(User, OldStarsRole), UserServiceError> {
         // Do not allow for duplicate users
         let users_with_given_name = self.get_user_by_name(&new_user.name);
 
@@ -77,29 +88,8 @@ pub trait UserService: Send + Sync {
         let hashed_pwd = self.hash(&new_user.pwd)?;
         let new_user = InsertUser::new(&new_user.name, &hashed_pwd);
 
-        let user = self.insert_into_repo(new_user, OldStarsRole::User)?;
-        Ok((user, OldStarsRole::User))
-    }
-
-    // not exposed to api
-    fn insert_admin(
-        &mut self,
-        new_user: &LoginData,
-    ) -> Result<(User, OldStarsRole), UserServiceError> {
-        // Do not allow for duplicate users
-        let users_with_given_name = self.get_user_by_name(&new_user.name);
-
-        if users_with_given_name.is_ok() {
-            return Err(UserServiceError::new(
-                "Registration",
-                &"Admin already exists",
-            ));
-        }
-        let hashed_pwd = self.hash(&new_user.pwd)?;
-        let new_user = InsertUser::new(&new_user.name, &hashed_pwd);
-
-        let admin = self.insert_into_repo(new_user, OldStarsRole::Admin)?;
-        Ok((admin, OldStarsRole::Admin))
+        let admin = self.insert_into_repo(new_user, &user_role)?;
+        Ok((admin, user_role))
     }
 
     fn hash(&self, user_pwd: &str) -> Result<String, password_hash::Error> {
@@ -141,7 +131,7 @@ impl UserService for DbUserService {
     fn insert_into_repo(
         &mut self,
         new_user: InsertUser,
-        user_role: OldStarsRole,
+        user_role: &OldStarsRole,
     ) -> Result<User, UserServiceError> {
         let inserted_user: User = insert_into(old_users)
             .values(new_user)
@@ -162,11 +152,7 @@ impl UserService for DbUserService {
         Ok(deleted_user)
     }
 
-    fn add_drink_to_user(
-        &mut self,
-        update_id: i32,
-        drink: &str,
-    ) -> Result<User, UserServiceError> {
+    fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, UserServiceError> {
         // TODO: Check if adding is allowd according to water:alcohol ratio
         let update_user = old_users.filter(user_id.eq(update_id));
         let mut connection = self.db.connection();

@@ -59,7 +59,7 @@ impl UserService for UserServiceMock {
     fn insert_into_repo(
         &mut self,
         new_user: InsertUser,
-        role: OldStarsRole,
+        role: &OldStarsRole,
     ) -> Result<User, UserServiceError> {
         let user = insert_to_user(&new_user, self.dummy_db.len() as i32 + 1);
         self.dummy_db

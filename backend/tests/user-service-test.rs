@@ -51,18 +51,30 @@ fn create_user_assigns_role_user() {
 }
 
 #[test]
-fn admin_is_not_in_all_users() {
+fn admin_and_club_is_not_in_all_users() {
     let mut user_service_mock = UserServiceMock::new();
 
-    let new_user_dummy = LoginData {
-        name: "dummy-name".to_string(),
+    let new_admin_dummy = LoginData {
+        name: "dummy-admin".to_string(),
         pwd: "dummy-pwd".to_string(),
     };
-    let user = user_service_mock.insert_admin(&new_user_dummy);
-    match user {
+    let new_club_dummy = LoginData {
+        name: "dummy-club".to_string(),
+        pwd: "dummy-pwd".to_string(),
+    };
+    let admin = user_service_mock.insert_with_role(&new_admin_dummy, OldStarsRole::Admin);
+    let club = user_service_mock.insert_with_role(&new_club_dummy, OldStarsRole::Club);
+    match admin {
         Ok((user, role)) => {
             assert_eq!(user.beer_count, 0);
             assert_eq!(role, OldStarsRole::Admin)
+        }
+        Err(e) => panic!("test failed with: {e:?}"),
+    }
+    match club {
+        Ok((user, role)) => {
+            assert_eq!(user.beer_count, 0);
+            assert_eq!(role, OldStarsRole::Club)
         }
         Err(e) => panic!("test failed with: {e:?}"),
     }

@@ -2,6 +2,7 @@ use std::fmt::Display;
 
 use crate::model::user::User;
 use crate::schema::roles;
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -31,10 +32,11 @@ pub struct InsertRole<'a> {
     pub role: &'a str,
 }
 
-#[derive(Deserialize, Serialize, Eq, PartialEq, Debug, Clone)]
+#[derive(Deserialize, Serialize, Eq, PartialEq, Debug, Clone, ValueEnum)]
 pub enum OldStarsRole {
     User,
     Admin,
+    Club,
 }
 
 impl TryFrom<&str> for OldStarsRole {
@@ -53,6 +55,7 @@ impl Display for OldStarsRole {
         match self {
             Self::User => write!(f, "user"),
             Self::Admin => write!(f, "admin"),
+            Self::Club => write!(f, "club"),
         }
     }
 }
