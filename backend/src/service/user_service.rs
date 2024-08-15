@@ -7,7 +7,7 @@ use crate::{
     repository::connection::OldStarDb,
     schema::{
         old_users::dsl::*,
-        roles::dsl::{role, roles},
+        roles::dsl::{role, roles, user_id as role_user_id},
     },
 };
 use argon2::{
@@ -147,6 +147,7 @@ impl UserService for DbUserService {
     }
 
     fn delete_user(&mut self, del_id: i32) -> Result<User, UserServiceError> {
+        diesel::delete(roles.filter(role_user_id.eq(del_id))).execute(&mut self.db.connection())?;
         let deleted_user = diesel::delete(old_users.filter(user_id.eq(del_id)))
             .get_result(&mut self.db.connection())?;
         Ok(deleted_user)
