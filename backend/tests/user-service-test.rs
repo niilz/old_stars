@@ -97,3 +97,23 @@ fn can_create_user_service_error() {
         format!("Error during {dummy_ctx}: {dummy_msg}")
     );
 }
+
+#[test]
+fn delet_user_deletes_role() {
+    // given
+    let mut user_service = UserServiceMock::new();
+    let new_user = LoginData {
+        name: "dummy-name".to_string(),
+        pwd: "dummy-pwd".to_string(),
+    };
+    let Ok((user, _role)) = user_service.insert_user(&new_user) else {
+        panic!("test fails");
+    };
+    assert!(!user_service.get_users().unwrap().is_empty());
+
+    // when
+    user_service.delete_user(user.user_id).unwrap();
+
+    //then
+    assert_eq!(user_service.get_users().unwrap(), Vec::new());
+}

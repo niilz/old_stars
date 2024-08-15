@@ -74,8 +74,21 @@ impl UserService for UserServiceMock {
         Ok(user)
     }
 
-    fn delete_user(&mut self, _id: i32) -> Result<User, UserServiceError> {
-        unimplemented!("Not needed in tests")
+    fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError> {
+        let name = self
+            .dummy_db
+            .values()
+            .map(|(user, _)| user)
+            .filter(|user| user.user_id == id)
+            .last()
+            .expect("mock error: no dummy with that id")
+            .name
+            .clone();
+        let deleted_user = self
+            .dummy_db
+            .remove(&name)
+            .expect("mock error: no user found to remove");
+        Ok(deleted_user.0)
     }
 
     fn add_drink_to_user<'a>(
