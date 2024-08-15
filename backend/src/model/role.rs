@@ -45,6 +45,7 @@ impl TryFrom<&str> for OldStarsRole {
         match value {
             "admin" => Ok(Self::Admin),
             "user" => Ok(Self::User),
+            "club" => Ok(Self::User),
             v => Err(format!("Could not convert '{v}' into a role")),
         }
     }

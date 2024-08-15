@@ -196,8 +196,6 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
     // Only attach the db-related routes if db is not disabled
     let no_db_value = String::from("1");
 
-    
-
     if env::var("NO_DB") == Ok(no_db_value) {
         println!("Running without DB");
         rocket::custom(config_figment)
