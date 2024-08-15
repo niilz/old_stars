@@ -7,7 +7,7 @@ use super::role::OldStarsRole;
 pub struct AppUser {
     pub id: i32,
     pub name: String,
-    pub role: Option<OldStarsRole>,
+    pub role: OldStarsRole,
     #[serde(rename = "beerCount")]
     pub beer_count: i32,
     #[serde(rename = "shotCount")]
@@ -16,8 +16,8 @@ pub struct AppUser {
     pub water_count: i32,
 }
 
-impl From<(User, Option<OldStarsRole>)> for AppUser {
-    fn from(user_and_role: (User, Option<OldStarsRole>)) -> Self {
+impl From<(User, OldStarsRole)> for AppUser {
+    fn from(user_and_role: (User, OldStarsRole)) -> Self {
         let user = user_and_role.0;
         let role = user_and_role.1;
         Self {

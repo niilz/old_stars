@@ -2,7 +2,7 @@
 extern crate rocket;
 
 use backend::{
-    model::{app_user::AppUser, login_data::LoginData},
+    model::{app_user::AppUser, login_data::LoginData, role::OldStarsRole},
     repository::connection::OldStarDb,
     service::{
         auth_service::LoginService,
@@ -114,7 +114,7 @@ fn register(
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
     }
     match user_service.lock().unwrap().insert_user(&user) {
-        Ok((user, role)) => Json(Ok(AppUser::from((user, Some(role))))),
+        Ok((user, role)) => Json(Ok(AppUser::from((user, role)))),
         Err(e) => Json(Err(format!("Could not reigster user. Error: {}", e))),
     }
 }
@@ -127,7 +127,7 @@ fn all_users(
     match user_service.lock().unwrap().get_users_and_roles() {
         Ok(users_with_roles) => Json(Ok(users_with_roles
             .into_iter()
-            .map(|(user, role)| AppUser::from((user, Some(role))))
+            .map(|(user, role)| AppUser::from((user, role)))
             .collect())),
         Err(e) => Json(Err(format!("Could not get all users. Error: {}", e))),
     }
@@ -137,9 +137,9 @@ fn all_users(
 fn delete_user(
     id: i32,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
-) -> Json<Result<AppUser, String>> {
+) -> Json<Result<(), String>> {
     match user_service.lock().unwrap().delete_user(id) {
-        Ok(user) => Json(Ok(AppUser::from((user, None)))),
+        Ok(_user) => Json(Ok(())),
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
             id, e
@@ -159,7 +159,7 @@ fn add_drink(
         .unwrap()
         .add_drink_to_user(id, &drink_clone)
     {
-        Ok(updated_user) => Json(Ok(AppUser::from((updated_user, None)))),
+        Ok(updated_user) => Json(Ok(AppUser::from((updated_user, OldStarsRole::User)))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
             drink, id, e

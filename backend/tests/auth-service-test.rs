@@ -36,16 +36,17 @@ fn gets_user_if_login_succeeds() {
         sessions: HashMap::new(),
     };
 
-    let Some(found_user) = login_service.login_user(&dummy_user) else {
+    let Some(session_ctx) = login_service.login_user(&dummy_user) else {
         panic!("test fails: No user found for '{dummy_user:?}'");
     };
-    let found_user = found_user.user;
+    let found_user = session_ctx.user;
 
     assert_eq!(found_user.id, 1);
     assert_eq!(found_user.name, dummy_user.name);
     assert_eq!(found_user.beer_count, 0);
     assert_eq!(found_user.water_count, 0);
     assert_eq!(found_user.shot_count, 0);
+    assert_eq!(found_user.role, OldStarsRole::User);
 }
 
 #[test]
@@ -148,7 +149,7 @@ fn err_if_no_session_to_remove_available() {
 fn get_dummy_user(user_name: &str) -> AppUser {
     AppUser {
         id: 1,
-        role: Some(OldStarsRole::User),
+        role: OldStarsRole::User,
         name: user_name.to_string(),
         beer_count: 2,
         shot_count: 2,

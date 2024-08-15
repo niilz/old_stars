@@ -35,7 +35,7 @@ mod test {
     fn can_construct_session() {
         let dummy_user = AppUser {
             id: 1,
-            role: Some(OldStarsRole::User),
+            role: OldStarsRole::User,
             name: "dummy-user".to_string(),
             beer_count: 2,
             shot_count: 2,
