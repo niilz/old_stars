@@ -1,4 +1,5 @@
 import { User } from '../../model/User';
+import { ApiResponse, handleResponse } from '../../services/fetch-service';
 import { deleteUser } from '../../services/user-service';
 import { Button } from '../button/Button';
 import { Header } from '../header/Header';
@@ -8,13 +9,13 @@ import styles from './AdminConsole.module.css';
 interface AdminConsoleProps {
   navToHome: () => void;
   users: User[];
-  onDelete: (id: Number) => void;
+  onDelete: (voidResult: Promise<ApiResponse>) => void;
 }
 
 export function AdminConsole(props: AdminConsoleProps) {
   const deleteUserFromList = (id: number) => {
-    deleteUser(id);
-    props.onDelete(id);
+    const voidResult = deleteUser(id);
+    props.onDelete(voidResult);
   };
 
   return (

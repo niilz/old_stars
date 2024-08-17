@@ -3,7 +3,7 @@ import { Login } from '../login/Login';
 import { useContext, useEffect, useState } from 'react';
 import { AppCtx } from '../../App';
 import { User } from '../../model/User';
-import { handleResponse } from '../../services/fetch-service';
+import { ApiResponse, handleResponse } from '../../services/fetch-service';
 import {
   attachSession,
   getAllUsers,
@@ -39,12 +39,13 @@ export function Main() {
   const { setLoginType, isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } =
     useContext(AppCtx);
 
+  const fetchUsers = async () => {
+    const userResponse = await getAllUsers();
+    const users = handleResponse(userResponse);
+    setUsers(users as User[]);
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      const userResponse = await getAllUsers();
-      const users = handleResponse(userResponse);
-      setUsers(users as User[]);
-    };
     fetchUsers();
   }, []);
 
@@ -75,9 +76,15 @@ export function Main() {
     const updatedUsers = [...users, user];
     setUsers(updatedUsers);
   };
-  const deleteUser = (id: Number) => {
-    const updatedUsers = users.filter((user) => user['id'] !== id);
-    setUsers(updatedUsers);
+  const deleteUser = (res: Promise<ApiResponse>) => {
+    res
+      .then((res) => {
+        handleResponse(res);
+        fetchUsers();
+      })
+      .catch((e) => {
+        console.error(`Could not delete user: ${e}`);
+      });
   };
 
   const handleLogout = async () => {
