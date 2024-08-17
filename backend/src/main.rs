@@ -137,9 +137,13 @@ fn all_users(
 fn delete_user(
     id: i32,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
+    login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<(), String>> {
     match user_service.lock().unwrap().delete_user(id) {
-        Ok(_user) => Json(Ok(())),
+        Ok(_user) => match login_service.write().unwrap().remove_user_session(id) {
+            Ok(()) => Json(Ok(())),
+            Err(e) => Json(Err(format!("Session-Delete failed for id {id}. Err: {e}"))),
+        },
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
             id, e

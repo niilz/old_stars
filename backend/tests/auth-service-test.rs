@@ -19,6 +19,7 @@ mod mocks;
 use mocks::user_service::UserServiceMock;
 
 const DUMMY_USER_NAME: &str = "dummy-user";
+const DUMMY_ID: i32 = 1;
 
 #[test]
 fn gets_user_if_login_succeeds() {
@@ -134,6 +135,20 @@ fn can_remove_session() {
 }
 
 #[test]
+fn can_remove_session_by_user_id() {
+    let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
+    let session_id = Uuid::new_v4().to_string();
+    let dummy_app_user = get_dummy_user(DUMMY_USER_NAME);
+    let dummy_session = Session::new(dummy_app_user);
+    let mut login_service = LoginService {
+        user_service,
+        sessions: HashMap::from([(session_id.to_string(), dummy_session)]),
+    };
+    let delete_result = login_service.remove_user_session(DUMMY_ID);
+    assert!(delete_result.is_ok());
+}
+
+#[test]
 fn err_if_no_session_to_remove_available() {
     let user_service = Arc::new(Mutex::new(UserServiceMock::new()));
     let session_id = Uuid::new_v4().to_string();
@@ -148,7 +163,7 @@ fn err_if_no_session_to_remove_available() {
 // Helper
 fn get_dummy_user(user_name: &str) -> AppUser {
     AppUser {
-        id: 1,
+        id: DUMMY_ID,
         role: OldStarsRole::User,
         name: user_name.to_string(),
         beer_count: 2,

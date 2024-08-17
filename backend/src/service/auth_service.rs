@@ -64,6 +64,25 @@ impl LoginService {
             Err("No session to remove")
         }
     }
+
+    pub fn remove_user_session(&mut self, user_id: i32) -> Result<(), &'static str> {
+        println!("Removing Session for user with id: {user_id}");
+        let (session_id, session_data) = self
+            .sessions
+            .iter()
+            .find(|(_, sess)| sess.user.id == user_id)
+            .ok_or("Session was not removed")?;
+        println!(
+            "Session_id has been removed for user: {:?}",
+            session_data.user
+        );
+        let session_id = session_id.clone();
+        if self.sessions.remove(&session_id).is_some() {
+            Ok(())
+        } else {
+            Err("No session to remove")
+        }
+    }
 }
 
 fn is_password_valid(input_pwd: &str, stored_hash: &str) -> bool {
