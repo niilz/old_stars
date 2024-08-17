@@ -140,10 +140,10 @@ fn delete_user(
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<(), String>> {
     match user_service.lock().unwrap().delete_user(id) {
-        Ok(_user) => match login_service.write().unwrap().remove_user_session(id) {
-            Ok(()) => Json(Ok(())),
-            Err(e) => Json(Err(format!("Session-Delete failed for id {id}. Err: {e}"))),
-        },
+        Ok(_user) => {
+            let _session_delete_result = login_service.write().unwrap().remove_user_session(id);
+            Json(Ok(()))
+        }
         Err(e) => Json(Err(format!(
             "Did NOT delete user with id {}! Error: {}",
             id, e
