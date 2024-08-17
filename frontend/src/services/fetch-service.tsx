@@ -18,7 +18,7 @@ interface ErrRes {
   Ok?: never;
   Err: Object;
 }
-type ApiResponse = OkRes | ErrRes;
+export type ApiResponse = OkRes | ErrRes;
 
 export async function fetchWrapper(
   method: METHOD,
@@ -50,10 +50,11 @@ export async function fetchWrapper(
 export function handleResponse(res: ApiResponse) {
   const { Ok } = res;
   const { Err } = res;
-  if (Ok) {
-    const user = Ok;
-    return user;
+  if (Err) {
+    const errMessage = Err;
+    throw `Ooops... ${errMessage}`;
   }
-  const errMessage = Err;
-  throw `Ooops... ${errMessage}`;
+  // response can be Ok(null)
+  const response = Ok;
+  return response;
 }
