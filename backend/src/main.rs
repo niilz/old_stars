@@ -239,8 +239,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             )
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
-            .manage(drink_service)
-            .manage(RwLock::new(db_conn))
+            .manage(RwLock::new(drink_service))
+            .manage(db_conn)
             .attach(Cors)
     }
 }
