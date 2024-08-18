@@ -17,30 +17,31 @@ use argon2::{
 use diesel::{insert_into, prelude::*};
 use rand_core::OsRng;
 
-use super::error::UserServiceError;
+use super::error::OldStarsServiceError;
 
 pub trait UserService: Send + Sync {
     /// Required Methods
-    fn get_users(&mut self) -> Result<Vec<(User, String)>, UserServiceError>;
-    fn get_user_by_name(&mut self, user_name: &str) -> Result<(User, String), UserServiceError>;
+    fn get_users(&mut self) -> Result<Vec<(User, String)>, OldStarsServiceError>;
+    fn get_user_by_name(&mut self, user_name: &str)
+        -> Result<(User, String), OldStarsServiceError>;
     fn insert_into_repo(
         &mut self,
         new_user: InsertUser,
         role: &OldStarsRole,
-    ) -> Result<User, UserServiceError>;
-    fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError>;
-    fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, UserServiceError>;
+    ) -> Result<User, OldStarsServiceError>;
+    fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, OldStarsServiceError>;
+    fn delete_user(&mut self, id: i32) -> Result<User, OldStarsServiceError>;
 
     /// Provided Methods
     fn get_user_and_role(
         &mut self,
         user_name: &str,
-    ) -> Result<(User, OldStarsRole), UserServiceError> {
+    ) -> Result<(User, OldStarsRole), OldStarsServiceError> {
         let (user, user_role) = self.get_user_by_name(user_name)?;
         Ok((user, self.map_role(&user_role)?))
     }
 
-    fn get_users_and_roles(&mut self) -> Result<Vec<(User, OldStarsRole)>, UserServiceError> {
+    fn get_users_and_roles(&mut self) -> Result<Vec<(User, OldStarsRole)>, OldStarsServiceError> {
         let users_and_roles = self
             .get_users()?
             .into_iter()
@@ -51,12 +52,12 @@ pub trait UserService: Send + Sync {
         Ok(users_and_roles)
     }
 
-    fn map_role(&self, user_role: &str) -> Result<OldStarsRole, UserServiceError> {
+    fn map_role(&self, user_role: &str) -> Result<OldStarsRole, OldStarsServiceError> {
         match user_role.try_into() {
             Ok(user_role) => Ok(user_role),
             Err(e) => {
                 eprintln!("Could not map role '{user_role}'");
-                Err(UserServiceError::new(
+                Err(OldStarsServiceError::new(
                     "get-user-and-role",
                     &format!("converting role failed: {e:?}"),
                 ))
@@ -67,7 +68,7 @@ pub trait UserService: Send + Sync {
     fn insert_user(
         &mut self,
         new_user: &LoginData,
-    ) -> Result<(User, OldStarsRole), UserServiceError> {
+    ) -> Result<(User, OldStarsRole), OldStarsServiceError> {
         self.insert_with_role(new_user, OldStarsRole::User)
     }
 
@@ -76,12 +77,12 @@ pub trait UserService: Send + Sync {
         &mut self,
         new_user: &LoginData,
         user_role: OldStarsRole,
-    ) -> Result<(User, OldStarsRole), UserServiceError> {
+    ) -> Result<(User, OldStarsRole), OldStarsServiceError> {
         // Do not allow for duplicate users
         let users_with_given_name = self.get_user_by_name(&new_user.name);
 
         if users_with_given_name.is_ok() {
-            return Err(UserServiceError::new(
+            return Err(OldStarsServiceError::new(
                 "Registration",
                 &"User already exists",
             ));
@@ -106,7 +107,7 @@ pub struct DbUserService {
 }
 
 impl UserService for DbUserService {
-    fn get_users(&mut self) -> Result<Vec<(User, String)>, UserServiceError> {
+    fn get_users(&mut self) -> Result<Vec<(User, String)>, OldStarsServiceError> {
         let users_and_roles = old_users
             .inner_join(roles)
             .filter(role.eq(OldStarsRole::User.to_string()))
@@ -115,7 +116,10 @@ impl UserService for DbUserService {
         Ok(users_and_roles)
     }
 
-    fn get_user_by_name(&mut self, user_name: &str) -> Result<(User, String), UserServiceError> {
+    fn get_user_by_name(
+        &mut self,
+        user_name: &str,
+    ) -> Result<(User, String), OldStarsServiceError> {
         let (user, user_role) = old_users
             .inner_join(roles)
             .filter(name.eq(user_name))
@@ -128,7 +132,7 @@ impl UserService for DbUserService {
         &mut self,
         new_user: InsertUser,
         user_role: &OldStarsRole,
-    ) -> Result<User, UserServiceError> {
+    ) -> Result<User, OldStarsServiceError> {
         let inserted_user: User = insert_into(old_users)
             .values(new_user)
             .get_result(&mut self.db.connection())?;
@@ -142,7 +146,7 @@ impl UserService for DbUserService {
         Ok(inserted_user)
     }
 
-    fn delete_user(&mut self, del_id: i32) -> Result<User, UserServiceError> {
+    fn delete_user(&mut self, del_id: i32) -> Result<User, OldStarsServiceError> {
         diesel::delete(roles.filter(role_user_id.eq(del_id))).execute(&mut self.db.connection())?;
         let deleted_user = diesel::delete(old_users.filter(user_id.eq(del_id)))
             .get_result(&mut self.db.connection())?;
@@ -171,7 +175,7 @@ impl UserService for DbUserService {
 
 }
 
-impl From<password_hash::Error> for UserServiceError {
+impl From<password_hash::Error> for OldStarsServiceError {
     fn from(error: password_hash::Error) -> Self {
         Self::new("Hashing", &error)
     }

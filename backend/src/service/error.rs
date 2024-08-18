@@ -2,25 +2,25 @@ use core::fmt;
 use std::error::Error;
 
 #[derive(Debug)]
-pub struct UserServiceError {
+pub struct OldStarsServiceError {
     pub message: String,
 }
-impl UserServiceError {
+impl OldStarsServiceError {
     pub fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
-        UserServiceError {
+        OldStarsServiceError {
             message: format!("Error during {}: {}", context, error),
         }
     }
 }
 
-impl fmt::Display for UserServiceError {
+impl fmt::Display for OldStarsServiceError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Error in UserService: {}", self.message)
     }
 }
-impl Error for UserServiceError {}
+impl Error for OldStarsServiceError {}
 
-impl From<diesel::result::Error> for UserServiceError {
+impl From<diesel::result::Error> for OldStarsServiceError {
     fn from(error: diesel::result::Error) -> Self {
         Self::new("db-communication", &error)
     }
