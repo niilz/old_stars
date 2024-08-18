@@ -1,7 +1,9 @@
 use crate::schema::old_users;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Queryable, Selectable, Eq, PartialEq, Debug, Clone, Default)]
+#[derive(
+    Deserialize, Serialize, Queryable, Selectable, AsChangeset, Eq, PartialEq, Debug, Clone, Default,
+)]
 #[diesel(table_name = old_users)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct User {

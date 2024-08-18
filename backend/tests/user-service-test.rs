@@ -4,7 +4,7 @@ use mocks::user_service::UserServiceMock;
 
 use backend::{
     model::{login_data::LoginData, role::OldStarsRole},
-    service::user_service::{UserService, UserServiceError},
+    service::{error::OldStarsServiceError, user_service::UserService},
 };
 
 #[test]
@@ -91,7 +91,7 @@ fn can_create_user_service_error() {
     let dummy_ctx = "Some process";
     let dummy_msg = "Something did not work";
 
-    let error_mock = UserServiceError::new(dummy_ctx, &dummy_msg);
+    let error_mock = OldStarsServiceError::new(dummy_ctx, &dummy_msg);
     assert_eq!(
         error_mock.message,
         format!("Error during {dummy_ctx}: {dummy_msg}")

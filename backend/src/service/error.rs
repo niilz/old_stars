@@ -15,7 +15,7 @@ impl OldStarsServiceError {
 
 impl fmt::Display for OldStarsServiceError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error in UserService: {}", self.message)
+        write!(f, "OldStarsServiceError: {}", self.message)
     }
 }
 impl Error for OldStarsServiceError {}

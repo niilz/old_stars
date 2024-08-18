@@ -3,7 +3,7 @@ use backend::{
         role::OldStarsRole,
         user::{InsertUser, User},
     },
-    service::user_service::{UserService, UserServiceError},
+    service::{error::OldStarsServiceError, user_service::UserService},
 };
 use std::collections::HashMap;
 
@@ -40,7 +40,7 @@ fn insert_to_user(user: &InsertUser, id: i32) -> User {
 }
 
 impl UserService for UserServiceMock {
-    fn get_users(&mut self) -> Result<Vec<(User, String)>, UserServiceError> {
+    fn get_users(&mut self) -> Result<Vec<(User, String)>, OldStarsServiceError> {
         Ok(self
             .dummy_db
             .values()
@@ -49,10 +49,13 @@ impl UserService for UserServiceMock {
             .collect())
     }
 
-    fn get_user_by_name(&mut self, user_name: &str) -> Result<(User, String), UserServiceError> {
+    fn get_user_by_name(
+        &mut self,
+        user_name: &str,
+    ) -> Result<(User, String), OldStarsServiceError> {
         match self.dummy_db.get(user_name) {
             Some(user_and_role) => Ok(user_and_role.to_owned()),
-            _ => Err(UserServiceError::new("Test-Get: ", &"User-NotFound")),
+            _ => Err(OldStarsServiceError::new("Test-Get: ", &"User-NotFound")),
         }
     }
 
@@ -60,7 +63,7 @@ impl UserService for UserServiceMock {
         &mut self,
         new_user: InsertUser,
         role: &OldStarsRole,
-    ) -> Result<User, UserServiceError> {
+    ) -> Result<User, OldStarsServiceError> {
         let user = insert_to_user(&new_user, self.dummy_db.len() as i32 + 1);
         self.dummy_db
             .insert(user.name.to_string(), (user, role.to_string()));
@@ -74,7 +77,7 @@ impl UserService for UserServiceMock {
         Ok(user)
     }
 
-    fn delete_user(&mut self, id: i32) -> Result<User, UserServiceError> {
+    fn delete_user(&mut self, id: i32) -> Result<User, OldStarsServiceError> {
         let name = self
             .dummy_db
             .values()
@@ -89,13 +92,5 @@ impl UserService for UserServiceMock {
             .remove(&name)
             .expect("mock error: no user found to remove");
         Ok(deleted_user.0)
-    }
-
-    fn add_drink_to_user<'a>(
-        &mut self,
-        _update_id: i32,
-        _drink: &'a str,
-    ) -> Result<User, UserServiceError> {
-        unimplemented!("Not needed in tests")
     }
 }

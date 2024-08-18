@@ -6,6 +6,7 @@ use backend::{
     repository::connection::OldStarDb,
     service::{
         auth_service::LoginService,
+        drink_service::{DBDrinkRepository, DrinkService},
         user_service::{DbUserService, UserService},
     },
     SessionResponse,
@@ -155,14 +156,15 @@ fn delete_user(
 fn add_drink(
     drink: String,
     id: i32,
-    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
+    db_conn: &State<OldStarDb>,
+    drink_service: &State<RwLock<DrinkService<DBDrinkRepository>>>,
 ) -> Json<Result<AppUser, String>> {
     let drink_clone = drink.clone();
-    match user_service
-        .lock()
-        .unwrap()
-        .add_drink_to_user(id, &drink_clone)
-    {
+    match drink_service.write().unwrap().add_drink_to_user(
+        id,
+        &drink_clone,
+        &mut db_conn.connection(),
+    ) {
         Ok(updated_user) => Json(Ok(AppUser::from((updated_user, OldStarsRole::User)))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
@@ -217,6 +219,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             user_service: Arc::clone(&user_service),
             sessions: HashMap::new(),
         };
+        let db_conn = OldStarDb::new();
+        let drink_service = DrinkService::new(DBDrinkRepository::default());
         rocket::custom(config_figment)
             .mount(
                 "/",
@@ -235,6 +239,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             )
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
+            .manage(drink_service)
+            .manage(RwLock::new(db_conn))
             .attach(Cors)
     }
 }

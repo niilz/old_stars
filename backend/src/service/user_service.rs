@@ -29,7 +29,6 @@ pub trait UserService: Send + Sync {
         new_user: InsertUser,
         role: &OldStarsRole,
     ) -> Result<User, OldStarsServiceError>;
-    fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, OldStarsServiceError>;
     fn delete_user(&mut self, id: i32) -> Result<User, OldStarsServiceError>;
 
     /// Provided Methods
@@ -152,27 +151,6 @@ impl UserService for DbUserService {
             .get_result(&mut self.db.connection())?;
         Ok(deleted_user)
     }
-
-    fn add_drink_to_user(&mut self, update_id: i32, drink: &str) -> Result<User, UserServiceError> {
-        // TODO: Check if adding is allowd according to water:alcohol ratio
-        let update_user = old_users.filter(user_id.eq(update_id));
-        let mut connection = self.db.connection();
-        let updated_user = match drink {
-            "beer" => diesel::update(update_user)
-                .set(beer_count.eq(beer_count + 1))
-                .get_result(&mut connection)?,
-            "shot" => diesel::update(update_user)
-                .set(shot_count.eq(shot_count + 1))
-                .get_result(&mut connection)?,
-            "water" => diesel::update(update_user)
-                .set(water_count.eq(water_count + 1))
-                .get_result(&mut connection)?,
-            _ => unimplemented!("Other drinks are not supported"),
-        };
-        Ok(updated_user)
-    }
-}
-
 }
 
 impl From<password_hash::Error> for OldStarsServiceError {
