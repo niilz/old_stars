@@ -22,8 +22,9 @@ function App() {
   const [appHeight, _setAppHeight] = useState(window.innerHeight);
 
   const handleAdminLogin = (loginState: LoginState) => {
-    if (loginState !== LoginState.LoggedInAdmin)
+    if (loginState !== LoginState.LoggedInAdmin) {
       throw 'Only Admin should be able to log in as admin';
+    }
     setAdminLoginOpen(false);
     setAdminViewOpen(true);
   };
