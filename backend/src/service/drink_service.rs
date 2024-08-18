@@ -66,7 +66,6 @@ impl<R: DrinkRepository> DrinkService<R> {
             "water" => update_user.water_count += 1,
             _ => unimplemented!("Other drinks are not supported"),
         };
-        println!("The updated user: {update_user:?}");
         self.repo.update_user(&update_user, conn)
     }
 }
