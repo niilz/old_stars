@@ -16,7 +16,8 @@ use argon2::{
 };
 use diesel::{insert_into, prelude::*};
 use rand_core::OsRng;
-use std::{error::Error, fmt};
+
+use super::error::UserServiceError;
 
 pub trait UserService: Send + Sync {
     /// Required Methods
@@ -100,11 +101,6 @@ pub trait UserService: Send + Sync {
     }
 }
 
-#[derive(Debug)]
-pub struct UserServiceError {
-    pub message: String,
-}
-
 pub struct DbUserService {
     pub db: OldStarDb,
 }
@@ -173,25 +169,6 @@ impl UserService for DbUserService {
     }
 }
 
-impl UserServiceError {
-    pub fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
-        UserServiceError {
-            message: format!("Error during {}: {}", context, error),
-        }
-    }
-}
-
-impl fmt::Display for UserServiceError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error in UserService: {}", self.message)
-    }
-}
-impl Error for UserServiceError {}
-
-impl From<diesel::result::Error> for UserServiceError {
-    fn from(error: diesel::result::Error) -> Self {
-        Self::new("db-communication", &error)
-    }
 }
 
 impl From<password_hash::Error> for UserServiceError {
