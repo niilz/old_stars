@@ -5,9 +5,7 @@ use backend::{
     model::{app_user::AppUser, login_data::LoginData, role::OldStarsRole},
     repository::connection::OldStarDb,
     service::{
-        auth_service::LoginService,
-        drink_service::{DBDrinkRepository, DrinkService},
-        user_service::{DbUserService, UserService},
+        auth_service::LoginService, drink_service::{DbDrinkRepo, DrinkService}, history_service::DbHistoryRepo, user_service::{DbUserService, UserService}
     },
     SessionResponse,
 };
@@ -157,7 +155,7 @@ fn add_drink(
     drink: String,
     id: i32,
     db_conn: &State<OldStarDb>,
-    drink_service: &State<RwLock<DrinkService<DBDrinkRepository>>>,
+    drink_service: &State<RwLock<DrinkService<DbDrinkRepo>>>,
 ) -> Json<Result<AppUser, String>> {
     let drink_clone = drink.clone();
     match drink_service.write().unwrap().add_drink_to_user(
@@ -220,7 +218,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             sessions: HashMap::new(),
         };
         let db_conn = OldStarDb::new();
-        let drink_service = DrinkService::new(DBDrinkRepository::default());
+        let drink_service = DrinkService::new(DbDrinkRepo::default());
+        let history_service = HistoryService::new(DbHistoryRepo::default());
         rocket::custom(config_figment)
             .mount(
                 "/",

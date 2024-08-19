@@ -18,9 +18,9 @@ pub trait DrinkRepository {
 }
 
 #[derive(Debug, Default)]
-pub struct DBDrinkRepository {}
+pub struct DbDrinkRepo {}
 
-impl DrinkRepository for DBDrinkRepository {
+impl DrinkRepository for DbDrinkRepo {
     type Conn = PgConnection;
     fn update_user(
         &mut self,
