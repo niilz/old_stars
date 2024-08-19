@@ -76,15 +76,10 @@ export function Main() {
     const updatedUsers = [...users, user];
     setUsers(updatedUsers);
   };
-  const deleteUser = (res: Promise<ApiResponse>) => {
-    res
-      .then((res) => {
-        handleResponse(res);
-        fetchUsers();
-      })
-      .catch((e) => {
-        console.error(`Could not delete user: ${e}`);
-      });
+  const deleteUser = async (res: Promise<ApiResponse>) => {
+    let result = await res;
+    handleResponse(result);
+    fetchUsers();
   };
 
   const handleLogout = async () => {
@@ -123,6 +118,12 @@ export function Main() {
       sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
     );
   };
+
+  const handleHistorize = async (historyResult: Promise<ApiResponse>) => {
+    const result = await historyResult;
+    console.log(`Histories: ${result}`);
+  };
+
   return (
     <LoginContext.Provider value={{ loginState, setLoginState }}>
       <div className={styles.Main}>
@@ -166,6 +167,7 @@ export function Main() {
             navToHome={handleAdminHomeClick}
             users={users}
             onDelete={deleteUser}
+            onHistorize={handleHistorize}
           />
         )}
       </div>
