@@ -2,10 +2,13 @@
 extern crate rocket;
 
 use backend::{
-    model::{app_user::AppUser, login_data::LoginData, role::OldStarsRole},
+    model::{app_user::AppUser, history::History, login_data::LoginData, role::OldStarsRole},
     repository::connection::OldStarDb,
     service::{
-        auth_service::LoginService, drink_service::{DbDrinkRepo, DrinkService}, history_service::DbHistoryRepo, user_service::{DbUserService, UserService}
+        auth_service::LoginService,
+        drink_service::{DbDrinkRepo, DrinkService},
+        history_service::{DbHistoryRepo, HistoryService},
+        user_service::{DbUserService, UserService},
     },
     SessionResponse,
 };
@@ -171,6 +174,21 @@ fn add_drink(
     }
 }
 
+#[get("/historize")]
+fn historize(
+    db_conn: &State<OldStarDb>,
+    history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
+) -> Json<Result<Vec<History>, String>> {
+    match history_service
+        .write()
+        .unwrap()
+        .historize_drinks(&mut db_conn.connection())
+    {
+        Ok(histories) => Json(Ok(histories)),
+        Err(e) => Json(Err(format!("Could not historize drinks: {e}"))),
+    }
+}
+
 #[rocket::main]
 async fn main() {
     let cert_chain = env::var("CERT_CHAIN");
@@ -233,12 +251,14 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     register,
                     all_users,
                     delete_user,
-                    add_drink
+                    add_drink,
+                    historize
                 ],
             )
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
             .manage(RwLock::new(drink_service))
+            .manage(RwLock::new(history_service))
             .manage(db_conn)
             .attach(Cors)
     }

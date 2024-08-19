@@ -28,6 +28,7 @@ pub struct HistoryService<R> {
     pub repo: R,
 }
 
+#[derive(Debug, Default)]
 pub struct DbHistoryRepo {}
 
 impl HistoryRepo for DbHistoryRepo {
