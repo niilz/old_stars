@@ -21,6 +21,7 @@ pub trait HistoryRepo {
         conn: &mut Self::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError>;
     fn reset_drinks(&mut self, conn: &mut Self::Conn) -> Result<(), OldStarsServiceError>;
+    fn get_histories(&self, conn: &mut Self::Conn) -> Result<Vec<History>, OldStarsServiceError>;
 }
 
 #[derive(Debug, Default)]
@@ -66,6 +67,12 @@ impl HistoryRepo for DbHistoryRepo {
             .execute(conn)?;
         Ok(())
     }
+
+    fn get_histories(&self, conn: &mut Self::Conn) -> Result<Vec<History>, OldStarsServiceError> {
+        use crate::schema::history::dsl::*;
+        let histories = history.load::<History>(conn)?;
+        Ok(histories)
+    }
 }
 
 impl<HR: HistoryRepo> HistoryService<HR> {
@@ -81,5 +88,12 @@ impl<HR: HistoryRepo> HistoryService<HR> {
         let written_history = self.repo.historize_drinks(histories, conn)?;
         self.repo.reset_drinks(conn)?;
         Ok(written_history)
+    }
+
+    pub fn load_histories(
+        &self,
+        conn: &mut HR::Conn,
+    ) -> Result<Vec<History>, OldStarsServiceError> {
+        self.repo.get_histories(conn)
     }
 }

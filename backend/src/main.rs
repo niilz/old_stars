@@ -189,6 +189,21 @@ fn historize(
     }
 }
 
+#[get("/histories")]
+fn histories(
+    db_conn: &State<OldStarDb>,
+    history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
+) -> Json<Result<Vec<History>, String>> {
+    match history_service
+        .read()
+        .unwrap()
+        .load_histories(&mut db_conn.connection())
+    {
+        Ok(histories) => Json(Ok(histories)),
+        Err(e) => Json(Err(format!("Could not load drink histories: {e}"))),
+    }
+}
+
 #[rocket::main]
 async fn main() {
     let cert_chain = env::var("CERT_CHAIN");
@@ -252,7 +267,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     all_users,
                     delete_user,
                     add_drink,
-                    historize
+                    historize,
+                    histories
                 ],
             )
             .manage(Arc::clone(&user_service))

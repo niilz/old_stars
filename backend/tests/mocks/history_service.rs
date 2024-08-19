@@ -54,6 +54,14 @@ impl HistoryRepo for HistoryTestRepo {
         }
         Ok(())
     }
+
+    fn get_histories(
+        &self,
+        _conn: &mut Self::Conn,
+    ) -> Result<Vec<History>, backend::service::error::OldStarsServiceError> {
+        let histories = self.histories.iter().map(History::from).collect();
+        Ok(histories)
+    }
 }
 
 pub fn history_service_mock(user_count: u32) -> HistoryService<HistoryTestRepo> {
