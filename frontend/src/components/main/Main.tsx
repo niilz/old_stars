@@ -1,5 +1,4 @@
 import React from 'react';
-import { Login } from '../login/Login';
 import { useContext, useEffect, useState } from 'react';
 import { AppCtx } from '../../App';
 import { User } from '../../model/User';
@@ -11,8 +10,6 @@ import {
 } from '../../services/user-service';
 import { AdminConsole } from '../admin/AdminConsole';
 import { Button } from '../button/Button';
-import { Header } from '../header/Header';
-import { AppLogo } from '../logo/Logo';
 import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
 import {
@@ -20,24 +17,18 @@ import {
   LoginType,
   SESSION_TOKEN_HEADER_NAME,
 } from '../../Constants';
-
-export const UserContext = React.createContext({
-  addUser: (_user: User) => {},
-  setSessionUser: (_user: User) => {},
-});
-
-export const LoginContext = React.createContext({
-  loginState: LoginState.LoggedOut,
-  setLoginState: (_: LoginState) => {},
-});
+import { LoginContext, UserContext, ViewContext } from '../../context/Contexts';
+import { View } from '../../views/View';
+import { ClubLoginView } from '../../views/ClubLoginView';
+import { UserLoginView } from '../../views/UserLoginView';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
   const [loginState, setLoginState] = useState(LoginState.LoggedOut);
 
-  const { setLoginType, isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } =
-    useContext(AppCtx);
+  const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
+  const { activeView, setActiveView } = useContext(ViewContext);
 
   const fetchUsers = async () => {
     const userResponse = await getAllUsers();
@@ -88,7 +79,6 @@ export function Main() {
       setLoginState(LoginState.LoggedInClub);
       setLoginType(LoginType.User);
       setSessionUser(null);
-      setAdminViewOpen(false);
     }
   };
 
@@ -112,7 +102,6 @@ export function Main() {
   };
 
   const handleAdminHomeClick = () => {
-    setAdminViewOpen(false);
     setLoginType(sessionUser ? LoginType.None : LoginType.User);
     setLoginState(
       sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
@@ -125,44 +114,20 @@ export function Main() {
   };
 
   return (
-    <LoginContext.Provider value={{ loginState, setLoginState }}>
-      <div className={styles.Main}>
-        {!isAdminViewOpen ? (
-          <>
-            {showBigHeaderAndStar(isAdminViewOpen, loginState) && (
-              <>
-                <Header
-                  showLogo={false}
-                  styles={{
-                    headerStripes: styles.headerStripes,
-                    title: styles.title,
-                  }}
-                />
-                <AppLogo styles={styles.logo} />
-              </>
-            )}
-            <UserContext.Provider value={{ addUser, setSessionUser }}>
-              {sessionUser && showPlayground(loginState, sessionUser) ? (
-                <Playground
-                  user={sessionUser}
-                  users={users}
-                  logout={handleLogout}
-                  onUserUpdate={handleUpdateUserList}
-                  onRefresh={handleRefresh}
-                />
-              ) : (
-                <Login onLogin={setLoginState} />
-              )}
-            </UserContext.Provider>
-            {!isAdminViewOpen && (
-              <Button
-                text="admin"
-                styles={styles.Btn}
-                callback={handleOpenAdminLogin}
-              />
-            )}
-          </>
-        ) : (
+    <div className={styles.Main}>
+      <UserContext.Provider value={{ addUser, setSessionUser }}>
+        {activeView === View.ClubLogin && <ClubLoginView />}
+        {activeView === View.UserLogin && <UserLoginView />}
+        {activeView === View.Playground && sessionUser && (
+          <Playground
+            user={sessionUser}
+            users={users}
+            logout={handleLogout}
+            onUserUpdate={handleUpdateUserList}
+            onRefresh={handleRefresh}
+          />
+        )}
+        {activeView === View.AdminConsole && (
           <AdminConsole
             navToHome={handleAdminHomeClick}
             users={users}
@@ -170,15 +135,40 @@ export function Main() {
             onHistorize={handleHistorize}
           />
         )}
-      </div>
-    </LoginContext.Provider>
+      </UserContext.Provider>
+    </div>
+    /*
+    <ViewContext.Provider value={{ activeView, setActiveView }}>
+      <LoginContext.Provider value={{ loginState, setLoginState }}>
+        <div className={styles.Main}>
+      <UserContext.Provider value={{ addUser, setSessionUser }}>
+        {sessionUser && showPlayground(loginState, sessionUser) ? (
+          <Playground
+            user={sessionUser}
+            users={users}
+            logout={handleLogout}
+            onUserUpdate={handleUpdateUserList}
+            onRefresh={handleRefresh}
+          />
+        }
+      </UserContext.Provider>
+          )}
+        </div>
+      {!isAdminViewOpen && (
+        <Button
+          text="admin"
+          styles={styles.Btn}
+          callback={handleOpenAdminLogin}
+        />
+      )}
+      </LoginContext.Provider>
+    </ViewContext.Provider>
   );
-}
-
-function showBigHeaderAndStar(isAdminView: boolean, ls: LoginState) {
-  return !isAdminView && ls !== LoginState.LoggedInUser;
+     */
+  );
 }
 
 function showPlayground(ls: LoginState, sessionUser: User) {
   return ls === LoginState.LoggedInUser && sessionUser;
 }
+export { UserContext };

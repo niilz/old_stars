@@ -6,6 +6,9 @@ import { Button } from '../button/Button';
 import { UserView } from '../user/UserView';
 import { Modal } from '../modal/Modal';
 import { WaterRoundWarning } from '../waterround-warning/WaterRoundWarning';
+import { useContext } from 'react';
+import { ViewContext } from '../../context/Contexts';
+import { View } from '../../views/View';
 
 interface PlaygroundProps {
   logout: () => void;
@@ -16,6 +19,7 @@ interface PlaygroundProps {
 }
 
 export function Playground(props: PlaygroundProps) {
+  const { setActiveView } = useContext(ViewContext);
   const oldstar = new OldStar(props.user);
   return (
     <>
@@ -34,13 +38,23 @@ export function Playground(props: PlaygroundProps) {
         <UserView user={props.user} onUserUpdate={props.onUserUpdate} />
         <UserList users={props.users} isEditable={false} />
         <div className={styles.buttons}>
-          <Button text="logout" styles={styles.Btn} callback={props.logout} />
+          <Button
+            text="logout"
+            styles={styles.Btn}
+            callback={() => setActiveView(View.UserLogin)}
+          />
           <Button
             text="🔄"
             styles={styles.refresh}
             callback={props.onRefresh}
           />
         </div>
+
+        <Button
+          text="admin"
+          styles={styles.Btn}
+          callback={() => setActiveView(View.AdminLogin)}
+        />
       </div>
     </>
   );
