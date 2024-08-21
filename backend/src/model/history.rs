@@ -3,7 +3,7 @@ use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 
-use crate::schema::history;
+use crate::schema::history::{self, user_name};
 
 use super::user::User;
 
@@ -17,6 +17,8 @@ pub struct History {
     pub history_id: i32,
     #[serde(rename = "userId")]
     pub user_id: i32,
+    #[serde(rename = "userName")]
+    pub user_name: String,
     pub timestamp: SystemTime,
     #[serde(rename = "beerCount")]
     pub beer_count: i32,
@@ -32,6 +34,7 @@ pub struct History {
 #[table_name = "history"]
 pub struct InsertHistory {
     pub user_id: i32,
+    pub user_name: String,
     pub timestamp: SystemTime,
     pub beer_count: i32,
     pub shot_count: i32,
@@ -43,6 +46,7 @@ impl From<&User> for InsertHistory {
     fn from(user: &User) -> Self {
         Self {
             user_id: user.user_id,
+            user_name: user.name.to_string(),
             beer_count: user.beer_count,
             shot_count: user.shot_count,
             other_count: user.other_count,
@@ -58,6 +62,7 @@ impl From<(&i32, &InsertHistory)> for History {
         Self {
             history_id: *id,
             user_id: history.user_id,
+            user_name: history.user_name.to_string(),
             timestamp: history.timestamp,
             beer_count: history.beer_count,
             shot_count: history.shot_count,
@@ -72,6 +77,7 @@ impl Default for History {
         Self {
             history_id: Default::default(),
             user_id: Default::default(),
+            user_name: Default::default(),
             timestamp: SystemTime::now(),
             beer_count: Default::default(),
             shot_count: Default::default(),
