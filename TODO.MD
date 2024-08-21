@@ -1,0 +1,11 @@
+- Fix spacing on playground with (buttons to large and too far up)
+- Add back button not just home in histories
+- Rename to Archive
+- add other-drinks button (maybe also cigarets?)
+- fix initial water round
+- get rid of all the diesel warnings
+- Check for valid Session on every request
+- Store session in DB or at least remove it at some point
+- Check water-ratio in backend as well
+- Manage admin-login via role not via secret user-name (requires bigger rewrite of, e.g. LoginState)
+- Check that niilz.de is available via 443 over https
