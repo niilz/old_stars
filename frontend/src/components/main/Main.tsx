@@ -16,10 +16,14 @@ import { ClubLoginView } from '../../views/ClubLoginView';
 import { UserLoginView } from '../../views/UserLoginView';
 import { Playground } from '../../views/Playground';
 import { AdminConsole } from '../../views/AdminConsole';
+import { HistoryView } from '../../views/HistoryView';
+import { fetchHistories } from '../../services/history-service';
+import { DrinkHistory } from '../../model/DrinkHistory';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
+  const [histories, setHistories] = useState(new Array<DrinkHistory>());
 
   const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
   const { activeView, setActiveView } = useContext(ViewContext);
@@ -112,6 +116,13 @@ export function Main() {
     console.log(`Histories: ${result}`);
   };
 
+  const handleFetchHistories = async () => {
+    const historyRes = await fetchHistories();
+    const histories = handleResponse(historyRes);
+    setHistories(histories as DrinkHistory[]);
+    setActiveView(View.Histories);
+  };
+
   return (
     <div className={styles.Main}>
       <UserContext.Provider value={{ addUser, setSessionUser }}>
@@ -124,6 +135,7 @@ export function Main() {
             logout={handleLogout}
             openAdminLogin={handleAdminLogin}
             onUserUpdate={handleUpdateUserList}
+            onHistories={handleFetchHistories}
             onRefresh={handleRefresh}
           />
         )}
@@ -134,7 +146,27 @@ export function Main() {
             onHistorize={handleHistorize}
           />
         )}
+        {activeView === View.Histories && (
+          <HistoryView historyDays={groupByDates(histories)} />
+        )}
       </UserContext.Provider>
     </div>
   );
+}
+
+// TODO: First only fetch the days from backend
+//   then (lazy) load the single hisories (user states)
+//   for that date
+function groupByDates(histories: DrinkHistory[]) {
+  return histories.reduce((dates, history) => {
+    const timeStampAsMillis = history.timestamp.secs_since_epoch * 1000;
+    const date = new Date(timeStampAsMillis);
+    const maybeHistories = dates.get(date);
+    if (maybeHistories) {
+      maybeHistories.push(history);
+    } else {
+      dates.set(date, [history]);
+    }
+    return dates;
+  }, new Map<Date, DrinkHistory[]>());
 }

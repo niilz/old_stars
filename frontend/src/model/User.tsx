@@ -5,6 +5,7 @@ export interface User {
   pwd: string;
   beerCount: number;
   shotCount: number;
+  otherCount: number;
   waterCount: number;
 }
 
@@ -25,6 +26,7 @@ export class OldStar implements User {
   pwd: string;
   beerCount: number;
   shotCount: number;
+  otherCount: number;
   waterCount: number;
 
   static MAX_ALC_TO_WATER_RATIO = 3;
@@ -36,6 +38,7 @@ export class OldStar implements User {
     this.pwd = user.pwd;
     this.beerCount = user.beerCount;
     this.shotCount = user.shotCount;
+    this.otherCount = user.otherCount;
     this.waterCount = user.waterCount;
   }
 

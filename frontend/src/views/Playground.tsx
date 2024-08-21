@@ -13,6 +13,7 @@ interface PlaygroundProps {
   user: User;
   users: User[];
   onUserUpdate: (user: User) => void;
+  onHistories: () => void;
   onRefresh: () => void;
 }
 
@@ -42,6 +43,12 @@ export function Playground(props: PlaygroundProps) {
             callback={props.onRefresh}
           />
         </div>
+
+        <Button
+          text="Histories"
+          styles={styles.Btn}
+          callback={props.onHistories}
+        />
 
         <Button
           text="admin"
