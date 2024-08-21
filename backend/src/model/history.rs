@@ -13,12 +13,18 @@ use super::user::User;
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(primary_key(history_id))]
 pub struct History {
+    #[serde(rename = "historyId")]
     pub history_id: i32,
+    #[serde(rename = "userId")]
     pub user_id: i32,
     pub timestamp: SystemTime,
+    #[serde(rename = "beerCount")]
     pub beer_count: i32,
+    #[serde(rename = "shotCount")]
     pub shot_count: i32,
+    #[serde(rename = "otherCount")]
     pub other_count: i32,
+    #[serde(rename = "waterCount")]
     pub water_count: i32,
 }
 
