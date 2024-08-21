@@ -5,7 +5,6 @@ import { Message, MsgType } from '../message/Message';
 import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
 import styles from './Login.module.css';
 import { UserContext } from '../../context/Contexts';
-import { View } from '../../views/View';
 
 type LoginProps = {
   onLogin: (loginState: LoginState) => void;

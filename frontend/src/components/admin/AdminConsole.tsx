@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { User } from '../../model/User';
 import { ApiResponse } from '../../services/fetch-service';
 import { historizeDrinks } from '../../services/history-service';
@@ -6,15 +7,18 @@ import { Button } from '../button/Button';
 import { Header } from '../header/Header';
 import { UserList } from '../user-list/UserList';
 import styles from './AdminConsole.module.css';
+import { View } from '../../views/View';
+import { ViewContext } from '../../context/Contexts';
 
 interface AdminConsoleProps {
-  navToHome: () => void;
   users: User[];
   onDelete: (voidResult: Promise<ApiResponse>) => void;
   onHistorize: (histories: Promise<ApiResponse>) => void;
 }
 
 export function AdminConsole(props: AdminConsoleProps) {
+  const { setActiveView } = useContext(ViewContext);
+
   const deleteUserFromList = (id: number) => {
     const voidResult = deleteUser(id);
     props.onDelete(voidResult);
@@ -38,7 +42,11 @@ export function AdminConsole(props: AdminConsoleProps) {
         styles={styles.Btn}
         callback={handleHistorizeDrinks}
       />
-      <Button text="Home" styles={styles.Btn} callback={props.navToHome} />
+      <Button
+        text="Home"
+        styles={styles.Btn}
+        callback={() => setActiveView(View.Playground)}
+      />
     </div>
   );
 }

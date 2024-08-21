@@ -9,9 +9,9 @@ import { SessionData, User } from '../../model/User';
 import AuthService from '../../services/auth-service';
 import { insertUser } from '../../services/user-service';
 import { Button } from '../button/Button';
-import { UserContext } from '../main/Main';
 import { MsgType } from '../message/Message';
 import styles from './RegisterLoginForm.module.css';
+import { UserContext } from '../../context/Contexts';
 
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void;

@@ -9,7 +9,6 @@ import {
   removeSession,
 } from '../../services/user-service';
 import { AdminConsole } from '../admin/AdminConsole';
-import { Button } from '../button/Button';
 import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
 import {
@@ -17,7 +16,7 @@ import {
   LoginType,
   SESSION_TOKEN_HEADER_NAME,
 } from '../../Constants';
-import { LoginContext, UserContext, ViewContext } from '../../context/Contexts';
+import { ErrorContext, UserContext, ViewContext } from '../../context/Contexts';
 import { View } from '../../views/View';
 import { ClubLoginView } from '../../views/ClubLoginView';
 import { UserLoginView } from '../../views/UserLoginView';
@@ -29,11 +28,18 @@ export function Main() {
 
   const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
   const { activeView, setActiveView } = useContext(ViewContext);
+  const { setCurrentError } = useContext(ErrorContext);
 
   const fetchUsers = async () => {
-    const userResponse = await getAllUsers();
-    const users = handleResponse(userResponse);
-    setUsers(users as User[]);
+    try {
+      const userResponse = await getAllUsers();
+      const users = handleResponse(userResponse);
+      setUsers(users as User[]);
+    } catch (e) {
+      setActiveView(View.ClubLogin);
+      console.error(`Loading users failed: ${e}`);
+      setCurrentError(`loading users failed`);
+    }
   };
 
   useEffect(() => {
@@ -53,13 +59,16 @@ export function Main() {
         const user = handleResponse(attachResponse);
         if (user) {
           setSessionUser(user as User);
-          setLoginState(LoginState.LoggedInUser);
+          setActiveView(View.Playground);
         }
       }
     };
     const sessionId = window.localStorage.getItem(SESSION_TOKEN_HEADER_NAME);
     if (sessionId) {
-      tryAttachSession(sessionId);
+      tryAttachSession(sessionId).catch((e) => {
+        console.error(`Could not attach session: ${e}`);
+        setCurrentError(`Attaching session failed`);
+      });
     }
   }, []);
 
@@ -67,8 +76,9 @@ export function Main() {
     const updatedUsers = [...users, user];
     setUsers(updatedUsers);
   };
+
   const deleteUser = async (res: Promise<ApiResponse>) => {
-    let result = await res;
+    const result = await res;
     handleResponse(result);
     fetchUsers();
   };
@@ -76,10 +86,16 @@ export function Main() {
   const handleLogout = async () => {
     const removeSessionRes = await removeSession();
     if (removeSessionRes) {
-      setLoginState(LoginState.LoggedInClub);
+      setActiveView(View.UserLogin);
       setLoginType(LoginType.User);
       setSessionUser(null);
+      window.localStorage.removeItem(SESSION_TOKEN_HEADER_NAME);
     }
+  };
+
+  const handleAdminLogin = () => {
+    setLoginType(LoginType.Admin);
+    setAdminLoginOpen(true);
   };
 
   const handleUpdateUserList = (updatedUser: User) => {
@@ -94,18 +110,6 @@ export function Main() {
     const allUsersResponse = await getAllUsers();
     const allUsers = handleResponse(allUsersResponse);
     setUsers(allUsers as User[]);
-  };
-
-  const handleOpenAdminLogin = () => {
-    setAdminLoginOpen(true);
-    setLoginType(LoginType.Admin);
-  };
-
-  const handleAdminHomeClick = () => {
-    setLoginType(sessionUser ? LoginType.None : LoginType.User);
-    setLoginState(
-      sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
-    );
   };
 
   const handleHistorize = async (historyResult: Promise<ApiResponse>) => {
@@ -123,13 +127,13 @@ export function Main() {
             user={sessionUser}
             users={users}
             logout={handleLogout}
+            openAdminLogin={handleAdminLogin}
             onUserUpdate={handleUpdateUserList}
             onRefresh={handleRefresh}
           />
         )}
         {activeView === View.AdminConsole && (
           <AdminConsole
-            navToHome={handleAdminHomeClick}
             users={users}
             onDelete={deleteUser}
             onHistorize={handleHistorize}
@@ -137,38 +141,5 @@ export function Main() {
         )}
       </UserContext.Provider>
     </div>
-    /*
-    <ViewContext.Provider value={{ activeView, setActiveView }}>
-      <LoginContext.Provider value={{ loginState, setLoginState }}>
-        <div className={styles.Main}>
-      <UserContext.Provider value={{ addUser, setSessionUser }}>
-        {sessionUser && showPlayground(loginState, sessionUser) ? (
-          <Playground
-            user={sessionUser}
-            users={users}
-            logout={handleLogout}
-            onUserUpdate={handleUpdateUserList}
-            onRefresh={handleRefresh}
-          />
-        }
-      </UserContext.Provider>
-          )}
-        </div>
-      {!isAdminViewOpen && (
-        <Button
-          text="admin"
-          styles={styles.Btn}
-          callback={handleOpenAdminLogin}
-        />
-      )}
-      </LoginContext.Provider>
-    </ViewContext.Provider>
-  );
-     */
   );
 }
-
-function showPlayground(ls: LoginState, sessionUser: User) {
-  return ls === LoginState.LoggedInUser && sessionUser;
-}
-export { UserContext };

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Login } from './components/login/Login';
 import { Main } from './components/main/Main';
 import './global.css';
 import { Modal } from './components/modal/Modal';
 import { LoginState, LoginType } from './Constants';
-import { ViewContext } from './context/Contexts';
 import { View } from './views/View';
+import { ErrorContext, ViewContext } from './context/Contexts';
+import { GlobalError } from './components/error/GlobalError';
 
 export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
@@ -20,12 +21,14 @@ function App() {
   const [loginType, setLoginType] = useState(LoginType.Club);
   const [appHeight, _setAppHeight] = useState(window.innerHeight);
   const [activeView, setActiveView] = useState(View.ClubLogin);
+  const [currentError, setCurrentError] = useState('');
 
   const handleAdminLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoggedInAdmin) {
       throw 'Only Admin should be able to log in as admin';
     }
-    setActiveView(View.Playground);
+    setActiveView(View.AdminConsole);
+    setAdminLoginOpen(false);
   };
 
   return (
@@ -38,14 +41,17 @@ function App() {
         appHeight,
       }}
     >
-      <ViewContext.Provider value={{ activeView, setActiveView }}>
-        <div className="App" style={{ height: appHeight }}>
-          <Main />
-          {activeView === View.AdminLogin && (
-            <Modal children={<Login onLogin={handleAdminLogin} />} />
-          )}
-        </div>
-      </ViewContext.Provider>
+      <ErrorContext.Provider value={{ currentError, setCurrentError }}>
+        <ViewContext.Provider value={{ activeView, setActiveView }}>
+          <div className="App" style={{ height: appHeight }}>
+            <Main />
+            <GlobalError />
+            {isAdminLoginOpen && (
+              <Modal children={<Login onLogin={handleAdminLogin} />} />
+            )}
+          </div>
+        </ViewContext.Provider>
+      </ErrorContext.Provider>
     </AppCtx.Provider>
   );
 }

@@ -15,5 +15,10 @@ export const LoginContext = React.createContext({
 
 export const ViewContext = React.createContext({
   activeView: View.ClubLogin,
-  setActiveView: (view: View) => {},
+  setActiveView: (_view: View) => {},
+});
+
+export const ErrorContext = React.createContext({
+  currentError: '',
+  setCurrentError: (_error: string) => {},
 });
