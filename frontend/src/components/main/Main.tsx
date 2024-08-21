@@ -10,20 +10,27 @@ import {
 } from '../../services/user-service';
 import styles from './Main.module.css';
 import { LoginType, SESSION_TOKEN_HEADER_NAME } from '../../Constants';
-import { ErrorContext, UserContext, ViewContext } from '../../context/Contexts';
+import {
+  ErrorContext,
+  HistoryContext,
+  UserContext,
+  ViewContext,
+} from '../../context/Contexts';
 import { View } from '../../views/View';
 import { ClubLoginView } from '../../views/ClubLoginView';
 import { UserLoginView } from '../../views/UserLoginView';
 import { Playground } from '../../views/Playground';
 import { AdminConsole } from '../../views/AdminConsole';
-import { HistoryView } from '../../views/HistoryView';
+import { DateAndTime, HistoryView } from '../../views/HistoryView';
 import { fetchHistories } from '../../services/history-service';
-import { DrinkHistory } from '../../model/DrinkHistory';
+import { DrinkHistory, mapToUser } from '../../model/DrinkHistory';
+import { OneHistoryView } from '../../views/OneHistoryView';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
-  const [histories, setHistories] = useState(new Array<DrinkHistory>());
+  const [allHistories, setAllHistories] = useState(new Array<DrinkHistory>());
+  const [selectedHistory, setSelectedHistory] = useState<DrinkHistory[]>([]);
 
   const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
   const { activeView, setActiveView } = useContext(ViewContext);
@@ -119,7 +126,7 @@ export function Main() {
   const handleFetchHistories = async () => {
     const historyRes = await fetchHistories();
     const histories = handleResponse(historyRes);
-    setHistories(histories as DrinkHistory[]);
+    setAllHistories(histories as DrinkHistory[]);
     setActiveView(View.Histories);
   };
 
@@ -146,10 +153,18 @@ export function Main() {
             onHistorize={handleHistorize}
           />
         )}
-        {activeView === View.Histories && (
-          <HistoryView historyDays={groupByDates(histories)} />
-        )}
-        {activeView === View.OneHistory && <OneHistoryView users={/*TODO  create OneHistoryView and mapper from selectedHistory-list to users*/}}
+        <HistoryContext.Provider
+          value={{ selectedHistory, setSelectedHistory }}
+        >
+          {activeView === View.Histories && (
+            <HistoryView historyDays={groupByDates(allHistories)} />
+          )}
+          {activeView === View.OneHistory && (
+            <OneHistoryView
+              users={selectedHistory.map((hist) => mapToUser(hist))}
+            />
+          )}
+        </HistoryContext.Provider>
       </UserContext.Provider>
     </div>
   );
@@ -162,12 +177,16 @@ function groupByDates(histories: DrinkHistory[]) {
   return histories.reduce((dates, history) => {
     const timeStampAsMillis = history.timestamp.secs_since_epoch * 1000;
     const date = new Date(timeStampAsMillis);
-    const maybeHistories = dates.get(date);
+    const dateAndTime = JSON.stringify({
+      date: date.toLocaleDateString(),
+      time: date.toLocaleTimeString(),
+    });
+    const maybeHistories = dates.get(dateAndTime);
     if (maybeHistories) {
       maybeHistories.push(history);
     } else {
-      dates.set(date, [history]);
+      dates.set(dateAndTime, [history]);
     }
     return dates;
-  }, new Map<Date, DrinkHistory[]>());
+  }, new Map<string, DrinkHistory[]>());
 }
