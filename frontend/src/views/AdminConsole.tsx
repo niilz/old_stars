@@ -1,14 +1,14 @@
 import { useContext } from 'react';
-import { User } from '../../model/User';
-import { ApiResponse } from '../../services/fetch-service';
-import { historizeDrinks } from '../../services/history-service';
-import { deleteUser } from '../../services/user-service';
-import { Button } from '../button/Button';
-import { Header } from '../header/Header';
-import { UserList } from '../user-list/UserList';
 import styles from './AdminConsole.module.css';
-import { View } from '../../views/View';
-import { ViewContext } from '../../context/Contexts';
+import { User } from '../model/User';
+import { ApiResponse } from '../services/fetch-service';
+import { ViewContext } from '../context/Contexts';
+import { deleteUser } from '../services/user-service';
+import { historizeDrinks } from '../services/history-service';
+import { Header } from '../components/header/Header';
+import { UserList } from '../components/user-list/UserList';
+import { Button } from '../components/button/Button';
+import { View } from './View';
 
 interface AdminConsoleProps {
   users: User[];

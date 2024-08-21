@@ -1,11 +1,11 @@
-import { Header } from '../header/Header';
+import { Button } from '../components/button/Button';
+import { Header } from '../components/header/Header';
+import { Modal } from '../components/modal/Modal';
+import { UserList } from '../components/user-list/UserList';
+import { UserView } from '../components/user/UserView';
+import { WaterRoundWarning } from '../components/waterround-warning/WaterRoundWarning';
+import { OldStar, User } from '../model/User';
 import styles from './Playground.module.css';
-import { OldStar, User } from '../../model/User';
-import { UserList } from '../user-list/UserList';
-import { Button } from '../button/Button';
-import { UserView } from '../user/UserView';
-import { Modal } from '../modal/Modal';
-import { WaterRoundWarning } from '../waterround-warning/WaterRoundWarning';
 
 interface PlaygroundProps {
   logout: () => void;

@@ -8,23 +8,18 @@ import {
   getAllUsers,
   removeSession,
 } from '../../services/user-service';
-import { AdminConsole } from '../admin/AdminConsole';
-import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
-import {
-  LoginState,
-  LoginType,
-  SESSION_TOKEN_HEADER_NAME,
-} from '../../Constants';
+import { LoginType, SESSION_TOKEN_HEADER_NAME } from '../../Constants';
 import { ErrorContext, UserContext, ViewContext } from '../../context/Contexts';
 import { View } from '../../views/View';
 import { ClubLoginView } from '../../views/ClubLoginView';
 import { UserLoginView } from '../../views/UserLoginView';
+import { Playground } from '../../views/Playground';
+import { AdminConsole } from '../../views/AdminConsole';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
-  const [loginState, setLoginState] = useState(LoginState.LoggedOut);
 
   const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
   const { activeView, setActiveView } = useContext(ViewContext);
