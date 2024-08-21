@@ -149,6 +149,7 @@ export function Main() {
         {activeView === View.Histories && (
           <HistoryView historyDays={groupByDates(histories)} />
         )}
+        {activeView === View.OneHistory && <OneHistoryView users={/*TODO  create OneHistoryView and mapper from selectedHistory-list to users*/}}
       </UserContext.Provider>
     </div>
   );

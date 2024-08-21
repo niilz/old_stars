@@ -2,6 +2,7 @@ import React from 'react';
 import { User } from '../model/User';
 import { LoginState } from '../Constants';
 import { View } from '../views/View';
+import { DrinkHistory } from '../model/DrinkHistory';
 
 export const UserContext = React.createContext({
   addUser: (_user: User) => {},
@@ -21,4 +22,9 @@ export const ViewContext = React.createContext({
 export const ErrorContext = React.createContext({
   currentError: '',
   setCurrentError: (_error: string) => {},
+});
+
+export const HistoryContext = React.createContext({
+  selectedHistory: [],
+  setSelectedHistory: (_history: DrinkHistory[]) => {},
 });
