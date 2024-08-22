@@ -44,6 +44,12 @@ export class OldStar implements User {
 
   needsWaterRound(): boolean {
     const consumedAlcohols = this.beerCount + this.shotCount;
+    if (consumedAlcohols === 0) {
+      return false;
+    }
+    if (this.waterCount === 0) {
+      return consumedAlcohols > OldStar.MAX_ALC_TO_WATER_RATIO;
+    }
     const waterAlcoholRatio = consumedAlcohols / this.waterCount;
     return waterAlcoholRatio > OldStar.MAX_ALC_TO_WATER_RATIO;
   }
