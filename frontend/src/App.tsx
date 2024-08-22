@@ -7,6 +7,7 @@ import { LoginState, LoginType } from './Constants';
 import { View } from './views/View';
 import { ErrorContext, ViewContext } from './context/Contexts';
 import { GlobalError } from './components/error/GlobalError';
+import { Button } from './components/button/Button';
 
 export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
@@ -47,7 +48,18 @@ function App() {
             <Main />
             <GlobalError />
             {isAdminLoginOpen && (
-              <Modal children={<Login onLogin={handleAdminLogin} />} />
+              <Modal
+                children={
+                  <>
+                    <Login onLogin={handleAdminLogin} />
+                    <Button
+                      text={'cancel'}
+                      callback={() => setAdminLoginOpen(false)}
+                      styles={''}
+                    />
+                  </>
+                }
+              />
             )}
           </div>
         </ViewContext.Provider>
