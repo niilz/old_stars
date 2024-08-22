@@ -24,6 +24,11 @@ export function OneHistoryView(props: OneHistoryViewProps) {
       <h2>{`${date} / ${time}`}</h2>
       <UserList users={props.users} isEditable={false} />
       <Button
+        text="back"
+        styles={styles.Btn}
+        callback={() => setActiveView(View.Histories)}
+      />
+      <Button
         text="Home"
         styles={styles.Btn}
         callback={() => setActiveView(View.Playground)}
