@@ -1,8 +1,6 @@
-- Fix spacing on playground with (buttons to large and too far up)
-- Add back button not just home in histories
-- Rename to Archive
-- add other-drinks button (maybe also cigarets?)
-- fix initial water round
+- make histories scrollable
+- Add cigarets
+- allow for exporting
 - get rid of all the diesel warnings
 - Check for valid Session on every request
 - Store session in DB or at least remove it at some point
