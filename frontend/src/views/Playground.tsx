@@ -45,7 +45,7 @@ export function Playground(props: PlaygroundProps) {
         </div>
 
         <Button
-          text="Histories"
+          text="archive"
           styles={styles.Btn}
           callback={props.onHistories}
         />
