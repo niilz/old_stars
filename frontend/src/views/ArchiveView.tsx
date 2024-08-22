@@ -33,7 +33,7 @@ export function ArchiveView(props: ArchiveViewProps) {
           return (
             <li key={`history-${idx}`} id={`history-${idx}`}>
               <Button
-                styles=""
+                styles={styles.archiveButton}
                 text={`Beendet am ${date} um ${time}`}
                 callback={() => handleChooseHistory(dateAndTime)}
               />
