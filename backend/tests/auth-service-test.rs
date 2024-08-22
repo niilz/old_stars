@@ -168,6 +168,7 @@ fn get_dummy_user(user_name: &str) -> AppUser {
         name: user_name.to_string(),
         beer_count: 2,
         shot_count: 2,
+        other_count: 42,
         water_count: 1,
     }
 }

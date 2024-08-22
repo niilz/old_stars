@@ -39,6 +39,7 @@ mod test {
             name: "dummy-user".to_string(),
             beer_count: 2,
             shot_count: 2,
+            other_count: 42,
             water_count: 1,
         };
         let session = Session::new(dummy_user);

@@ -63,6 +63,7 @@ impl<R: DrinkRepository> DrinkService<R> {
         match drink {
             "beer" => update_user.beer_count += 1,
             "shot" => update_user.shot_count += 1,
+            "other" => update_user.other_count += 1,
             "water" => update_user.water_count += 1,
             _ => unimplemented!("Other drinks are not supported"),
         };
