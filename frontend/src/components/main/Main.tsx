@@ -21,10 +21,10 @@ import { ClubLoginView } from '../../views/ClubLoginView';
 import { UserLoginView } from '../../views/UserLoginView';
 import { Playground } from '../../views/Playground';
 import { AdminConsole } from '../../views/AdminConsole';
-import { DateAndTime, HistoryView } from '../../views/HistoryView';
 import { fetchHistories } from '../../services/history-service';
 import { DrinkHistory, mapToUser } from '../../model/DrinkHistory';
 import { OneHistoryView } from '../../views/OneHistoryView';
+import { ArchiveView } from '../../views/ArchiveView';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
@@ -157,7 +157,7 @@ export function Main() {
           value={{ selectedHistory, setSelectedHistory }}
         >
           {activeView === View.Histories && (
-            <HistoryView historyDays={groupByDates(allHistories)} />
+            <ArchiveView historyDays={groupByDates(allHistories)} />
           )}
           {activeView === View.OneHistory && (
             <OneHistoryView

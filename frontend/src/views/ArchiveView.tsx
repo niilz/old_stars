@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Header } from '../components/header/Header';
 import { DrinkHistory } from '../model/DrinkHistory';
 import { Button } from '../components/button/Button';
 import { View } from './View';
 import { HistoryContext, ViewContext } from '../context/Contexts';
-import styles from './HistoryView.module.css';
+import styles from './ArchiveView.module.css';
 
-interface HistoryViewProps {
+interface ArchiveViewProps {
   historyDays: Map<string, DrinkHistory[]>;
 }
 
@@ -15,7 +15,7 @@ export interface DateAndTime {
   time: string;
 }
 
-export function HistoryView(props: HistoryViewProps) {
+export function ArchiveView(props: ArchiveViewProps) {
   const { setActiveView } = useContext(ViewContext);
   const { setSelectedHistory } = useContext(HistoryContext);
 
@@ -25,9 +25,9 @@ export function HistoryView(props: HistoryViewProps) {
   };
 
   return (
-    <div className={styles.HistoryView}>
+    <div className={styles.ArchiveView}>
       <Header showLogo={true} />
-      <ol className={styles.HistoryList}>
+      <ol className={styles.ArchiveList}>
         {Array.from(props.historyDays.keys()).map((dateAndTime, idx) => {
           const { date, time } = JSON.parse(dateAndTime);
           return (

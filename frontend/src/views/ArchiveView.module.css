@@ -1,4 +1,4 @@
-.HistoryView {
+.ArchiveView {
   height: 80vh;
   display: flex;
   flex-direction: column;
@@ -7,7 +7,7 @@
   font-size: 2rem;
 }
 
-.HistoryList {
+.ArchiveList {
   width: 100vw;
   display: flex;
   flex-direction: column;
