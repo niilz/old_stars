@@ -17,6 +17,7 @@ export function UserList(props: UserListProps) {
             <th></th>
             <th>🍺</th>
             <th>🥃</th>
+            <th>🥤</th>
             <th>🚰</th>
           </tr>
         </thead>
