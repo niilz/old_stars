@@ -28,3 +28,12 @@ export function mapToUser(history: DrinkHistory): User {
     waterCount: history.waterCount,
   };
 }
+
+export function mapToDateAndTime(timestamp: TimeStamp) {
+  const timeStampAsMillis = timestamp.secs_since_epoch * 1000;
+  const date = new Date(timeStampAsMillis);
+  return {
+    date: date.toLocaleDateString(),
+    time: date.toLocaleTimeString(),
+  };
+}

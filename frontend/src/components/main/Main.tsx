@@ -22,7 +22,11 @@ import { UserLoginView } from '../../views/UserLoginView';
 import { Playground } from '../../views/Playground';
 import { AdminConsole } from '../../views/AdminConsole';
 import { fetchHistories } from '../../services/history-service';
-import { DrinkHistory, mapToUser } from '../../model/DrinkHistory';
+import {
+  DrinkHistory,
+  mapToDateAndTime,
+  mapToUser,
+} from '../../model/DrinkHistory';
 import { OneHistoryView } from '../../views/OneHistoryView';
 import { ArchiveView } from '../../views/ArchiveView';
 
@@ -161,6 +165,7 @@ export function Main() {
           )}
           {activeView === View.OneHistory && (
             <OneHistoryView
+              dateAndTime={mapToDateAndTime(selectedHistory[0].timestamp)}
               users={selectedHistory.map((hist) => mapToUser(hist))}
             />
           )}
@@ -175,17 +180,13 @@ export function Main() {
 //   for that date
 function groupByDates(histories: DrinkHistory[]) {
   return histories.reduce((dates, history) => {
-    const timeStampAsMillis = history.timestamp.secs_since_epoch * 1000;
-    const date = new Date(timeStampAsMillis);
-    const dateAndTime = JSON.stringify({
-      date: date.toLocaleDateString(),
-      time: date.toLocaleTimeString(),
-    });
-    const maybeHistories = dates.get(dateAndTime);
+    const dateAndTime = mapToDateAndTime(history.timestamp);
+    const dateTimeString = JSON.stringify(dateAndTime);
+    const maybeHistories = dates.get(dateTimeString);
     if (maybeHistories) {
       maybeHistories.push(history);
     } else {
-      dates.set(dateAndTime, [history]);
+      dates.set(dateTimeString, [history]);
     }
     return dates;
   }, new Map<string, DrinkHistory[]>());

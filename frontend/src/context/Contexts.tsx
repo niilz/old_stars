@@ -26,5 +26,5 @@ export const ErrorContext = React.createContext({
 
 export const HistoryContext = React.createContext({
   selectedHistory: new Array(),
-  setSelectedHistory: (_history: DrinkHistory[]) => {},
+  setSelectedHistory: (_selectedHistory: DrinkHistory[]) => {},
 });
