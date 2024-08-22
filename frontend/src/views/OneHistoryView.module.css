@@ -1,0 +1,25 @@
+.OneHistory {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+ul {
+  max-height: 50%;
+  overflow: scroll;
+  padding-left: 0;
+  width: 80vw;
+}

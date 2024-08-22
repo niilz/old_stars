@@ -1,5 +1,4 @@
 import React from 'react';
-import { Login } from '../login/Login';
 import { useContext, useEffect, useState } from 'react';
 import { AppCtx } from '../../App';
 import { User } from '../../model/User';
@@ -9,40 +8,48 @@ import {
   getAllUsers,
   removeSession,
 } from '../../services/user-service';
-import { AdminConsole } from '../admin/AdminConsole';
-import { Button } from '../button/Button';
-import { Header } from '../header/Header';
-import { AppLogo } from '../logo/Logo';
-import { Playground } from '../playground/Playground';
 import styles from './Main.module.css';
+import { LoginType, SESSION_TOKEN_HEADER_NAME } from '../../Constants';
 import {
-  LoginState,
-  LoginType,
-  SESSION_TOKEN_HEADER_NAME,
-} from '../../Constants';
-
-export const UserContext = React.createContext({
-  addUser: (_user: User) => {},
-  setSessionUser: (_user: User) => {},
-});
-
-export const LoginContext = React.createContext({
-  loginState: LoginState.LoggedOut,
-  setLoginState: (_: LoginState) => {},
-});
+  ErrorContext,
+  HistoryContext,
+  UserContext,
+  ViewContext,
+} from '../../context/Contexts';
+import { View } from '../../views/View';
+import { ClubLoginView } from '../../views/ClubLoginView';
+import { UserLoginView } from '../../views/UserLoginView';
+import { Playground } from '../../views/Playground';
+import { AdminConsole } from '../../views/AdminConsole';
+import { fetchHistories } from '../../services/history-service';
+import {
+  DrinkHistory,
+  mapToDateAndTime,
+  mapToUser,
+} from '../../model/DrinkHistory';
+import { OneHistoryView } from '../../views/OneHistoryView';
+import { ArchiveView } from '../../views/ArchiveView';
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>());
   const [sessionUser, setSessionUser] = useState<User | null>(null);
-  const [loginState, setLoginState] = useState(LoginState.LoggedOut);
+  const [allHistories, setAllHistories] = useState(new Array<DrinkHistory>());
+  const [selectedHistory, setSelectedHistory] = useState<DrinkHistory[]>([]);
 
-  const { setLoginType, isAdminViewOpen, setAdminViewOpen, setAdminLoginOpen } =
-    useContext(AppCtx);
+  const { setLoginType, setAdminLoginOpen } = useContext(AppCtx);
+  const { activeView, setActiveView } = useContext(ViewContext);
+  const { setCurrentError } = useContext(ErrorContext);
 
   const fetchUsers = async () => {
-    const userResponse = await getAllUsers();
-    const users = handleResponse(userResponse);
-    setUsers(users as User[]);
+    try {
+      const userResponse = await getAllUsers();
+      const users = handleResponse(userResponse);
+      setUsers(users as User[]);
+    } catch (e) {
+      setActiveView(View.ClubLogin);
+      console.error(`Loading users failed: ${e}`);
+      setCurrentError(`loading users failed`);
+    }
   };
 
   useEffect(() => {
@@ -62,13 +69,16 @@ export function Main() {
         const user = handleResponse(attachResponse);
         if (user) {
           setSessionUser(user as User);
-          setLoginState(LoginState.LoggedInUser);
+          setActiveView(View.Playground);
         }
       }
     };
     const sessionId = window.localStorage.getItem(SESSION_TOKEN_HEADER_NAME);
     if (sessionId) {
-      tryAttachSession(sessionId);
+      tryAttachSession(sessionId).catch((e) => {
+        console.error(`Could not attach session: ${e}`);
+        setCurrentError(`Attaching session failed`);
+      });
     }
   }, []);
 
@@ -76,8 +86,9 @@ export function Main() {
     const updatedUsers = [...users, user];
     setUsers(updatedUsers);
   };
+
   const deleteUser = async (res: Promise<ApiResponse>) => {
-    let result = await res;
+    const result = await res;
     handleResponse(result);
     fetchUsers();
   };
@@ -85,11 +96,16 @@ export function Main() {
   const handleLogout = async () => {
     const removeSessionRes = await removeSession();
     if (removeSessionRes) {
-      setLoginState(LoginState.LoggedInClub);
+      setActiveView(View.UserLogin);
       setLoginType(LoginType.User);
       setSessionUser(null);
-      setAdminViewOpen(false);
+      window.localStorage.removeItem(SESSION_TOKEN_HEADER_NAME);
     }
+  };
+
+  const handleAdminLogin = () => {
+    setLoginType(LoginType.Admin);
+    setAdminLoginOpen(true);
   };
 
   const handleUpdateUserList = (updatedUser: User) => {
@@ -104,19 +120,12 @@ export function Main() {
     const allUsersResponse = await getAllUsers();
     const allUsers = handleResponse(allUsersResponse);
     setUsers(allUsers as User[]);
-  };
-
-  const handleOpenAdminLogin = () => {
-    setAdminLoginOpen(true);
-    setLoginType(LoginType.Admin);
-  };
-
-  const handleAdminHomeClick = () => {
-    setAdminViewOpen(false);
-    setLoginType(sessionUser ? LoginType.None : LoginType.User);
-    setLoginState(
-      sessionUser ? LoginState.LoggedInUser : LoginState.LoggedInClub
-    );
+    if (sessionUser) {
+      const currentUser = (allUsers as User[]).filter(
+        (user) => user.id === sessionUser.id
+      )[0];
+      setSessionUser(currentUser);
+    }
   };
 
   const handleHistorize = async (historyResult: Promise<ApiResponse>) => {
@@ -124,61 +133,67 @@ export function Main() {
     console.log(`Histories: ${result}`);
   };
 
+  const handleFetchHistories = async () => {
+    const historyRes = await fetchHistories();
+    const histories = handleResponse(historyRes);
+    setAllHistories(histories as DrinkHistory[]);
+    setActiveView(View.Histories);
+  };
+
   return (
-    <LoginContext.Provider value={{ loginState, setLoginState }}>
-      <div className={styles.Main}>
-        {!isAdminViewOpen ? (
-          <>
-            {showBigHeaderAndStar(isAdminViewOpen, loginState) && (
-              <>
-                <Header
-                  showLogo={false}
-                  styles={{
-                    headerStripes: styles.headerStripes,
-                    title: styles.title,
-                  }}
-                />
-                <AppLogo styles={styles.logo} />
-              </>
-            )}
-            <UserContext.Provider value={{ addUser, setSessionUser }}>
-              {sessionUser && showPlayground(loginState, sessionUser) ? (
-                <Playground
-                  user={sessionUser}
-                  users={users}
-                  logout={handleLogout}
-                  onUserUpdate={handleUpdateUserList}
-                  onRefresh={handleRefresh}
-                />
-              ) : (
-                <Login onLogin={setLoginState} />
-              )}
-            </UserContext.Provider>
-            {!isAdminViewOpen && (
-              <Button
-                text="admin"
-                styles={styles.Btn}
-                callback={handleOpenAdminLogin}
-              />
-            )}
-          </>
-        ) : (
+    <div className={styles.Main}>
+      <UserContext.Provider value={{ addUser, setSessionUser }}>
+        {activeView === View.ClubLogin && <ClubLoginView />}
+        {activeView === View.UserLogin && <UserLoginView />}
+        {activeView === View.Playground && sessionUser && (
+          <Playground
+            user={sessionUser}
+            users={users}
+            logout={handleLogout}
+            openAdminLogin={handleAdminLogin}
+            onUserUpdate={handleUpdateUserList}
+            onHistories={handleFetchHistories}
+            onRefresh={handleRefresh}
+          />
+        )}
+        {activeView === View.AdminConsole && (
           <AdminConsole
-            navToHome={handleAdminHomeClick}
             users={users}
             onDelete={deleteUser}
             onHistorize={handleHistorize}
           />
         )}
-      </div>
-    </LoginContext.Provider>
+        <HistoryContext.Provider
+          value={{ selectedHistory, setSelectedHistory }}
+        >
+          {activeView === View.Histories && (
+            <ArchiveView historyDays={groupByDates(allHistories)} />
+          )}
+          {activeView === View.OneHistory && (
+            <OneHistoryView
+              dateAndTime={mapToDateAndTime(selectedHistory[0].timestamp)}
+              users={selectedHistory.map((hist) => mapToUser(hist))}
+            />
+          )}
+        </HistoryContext.Provider>
+      </UserContext.Provider>
+    </div>
   );
 }
 
-function showBigHeaderAndStar(isAdminView: boolean, ls: LoginState) {
-  return !isAdminView && ls !== LoginState.LoggedInUser;
-}
-
-function showPlayground(ls: LoginState, sessionUser: User) {
-  return ls === LoginState.LoggedInUser && sessionUser;
+// TODO: First only fetch the days from backend
+//   then (lazy) load the single hisories (user states)
+//   for that date
+function groupByDates(histories: DrinkHistory[]) {
+  return histories.reduce((dates, history) => {
+    const dateAndTime = mapToDateAndTime(history.timestamp);
+    const dateTimeString = JSON.stringify(dateAndTime);
+    const maybeHistories = dates.get(dateTimeString);
+    if (maybeHistories) {
+      maybeHistories.push(history);
+    } else {
+      dates.set(dateTimeString, [history]);
+    }
+    return dates;
+  }, new Map<string, DrinkHistory[]>());
 }

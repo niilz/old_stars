@@ -49,11 +49,13 @@ fn add_all_the_drinks() {
     let mut drink_service_mock = drink_service_mock();
     let _ = drink_service_mock.add_drink_to_user(1, "beer", &mut ());
     let _ = drink_service_mock.add_drink_to_user(1, "shot", &mut ());
+    let _ = drink_service_mock.add_drink_to_user(1, "other", &mut ());
     let _ = drink_service_mock.add_drink_to_user(1, "water", &mut ());
 
     let updated_user = drink_service_mock.repo.read_user(1, &mut ()).unwrap();
     assert_eq!(1, updated_user.beer_count);
     assert_eq!(1, updated_user.shot_count);
+    assert_eq!(1, updated_user.other_count);
     assert_eq!(1, updated_user.water_count);
 }
 

@@ -1,9 +1,9 @@
-import { ReactChild, useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import { AppCtx } from '../../App';
 import styles from './Modal.module.css';
 
 interface ModalProps {
-  children: ReactChild;
+  children: ReactNode;
 }
 export function Modal(props: ModalProps) {
   let { appHeight } = useContext(AppCtx);

@@ -1,12 +1,21 @@
 .User {
+  margin-top: 5vh;
   font-size: 3rem;
   text-align: center;
 }
 
+.statsPanel {
+  width: 100vw;
+}
+
 .icons {
-  width: 80vw;
   display: flex;
   justify-content: space-around;
+}
+
+.icons button {
+  min-width: max-content;
+  padding: 1vw 3vw;
 }
 
 .stats {
@@ -17,5 +26,9 @@
 }
 
 .beer {
-  font-size: 3.3rem;
+  font-size: 2rem;
+}
+
+.other {
+  font-size: 2rem;
 }

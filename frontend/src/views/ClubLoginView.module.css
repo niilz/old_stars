@@ -1,0 +1,24 @@
+.Main {
+  display: flex;
+  width: 90%;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  transition: 2s;
+}
+
+.headerStripes {
+  transform: rotate(-20deg);
+  height: 100%;
+  margin-bottom: 3vh;
+}
+
+.title {
+  font-size: 4.4rem;
+  margin-top: 2%;
+}
+
+.logo {
+  font-size: 8rem;
+  margin-bottom: 3vh;
+}

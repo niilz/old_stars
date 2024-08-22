@@ -16,5 +16,3 @@ Rocket.toml
 certs
 certs.letsencrypt
 
-# Exclude TODOs
-TODO.MD

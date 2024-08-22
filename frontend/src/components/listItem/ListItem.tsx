@@ -16,6 +16,7 @@ export function ListItem(props: ListItemProps) {
       </td>
       <td className={styles.count}>{props.user.beerCount}</td>
       <td className={styles.count}>{props.user.shotCount}</td>
+      <td className={styles.count}>{props.user.otherCount}</td>
       <td className={styles.count}>{props.user.waterCount}</td>
       {props.isEditable ? (
         <td>

@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Login } from './components/login/Login';
 import { Main } from './components/main/Main';
 import './global.css';
 import { Modal } from './components/modal/Modal';
 import { LoginState, LoginType } from './Constants';
+import { View } from './views/View';
+import { ErrorContext, ViewContext } from './context/Contexts';
+import { GlobalError } from './components/error/GlobalError';
+import { Button } from './components/button/Button';
 
 export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
   setAdminLoginOpen: (_flag: boolean) => {},
-  isAdminViewOpen: false,
-  setAdminViewOpen: (_flag: boolean) => {},
   loginType: LoginType.Club,
   setLoginType: (_lg: LoginType) => {},
   appHeight: 0,
@@ -17,16 +19,17 @@ export const AppCtx = React.createContext({
 
 function App() {
   const [isAdminLoginOpen, setAdminLoginOpen] = useState(false);
-  const [isAdminViewOpen, setAdminViewOpen] = useState(false);
   const [loginType, setLoginType] = useState(LoginType.Club);
   const [appHeight, _setAppHeight] = useState(window.innerHeight);
+  const [activeView, setActiveView] = useState(View.ClubLogin);
+  const [currentError, setCurrentError] = useState('');
 
   const handleAdminLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoggedInAdmin) {
       throw 'Only Admin should be able to log in as admin';
     }
+    setActiveView(View.AdminConsole);
     setAdminLoginOpen(false);
-    setAdminViewOpen(true);
   };
 
   return (
@@ -34,19 +37,33 @@ function App() {
       value={{
         isAdminLoginOpen,
         setAdminLoginOpen,
-        isAdminViewOpen,
-        setAdminViewOpen,
         loginType,
         setLoginType,
         appHeight,
       }}
     >
-      <div className="App" style={{ height: appHeight }}>
-        <Main />
-        {isAdminLoginOpen && (
-          <Modal children={<Login onLogin={handleAdminLogin} />} />
-        )}
-      </div>
+      <ErrorContext.Provider value={{ currentError, setCurrentError }}>
+        <ViewContext.Provider value={{ activeView, setActiveView }}>
+          <div className="App" style={{ height: appHeight }}>
+            <Main />
+            <GlobalError />
+            {isAdminLoginOpen && (
+              <Modal
+                children={
+                  <>
+                    <Login onLogin={handleAdminLogin} />
+                    <Button
+                      text={'cancel'}
+                      callback={() => setAdminLoginOpen(false)}
+                      styles={''}
+                    />
+                  </>
+                }
+              />
+            )}
+          </div>
+        </ViewContext.Provider>
+      </ErrorContext.Provider>
     </AppCtx.Provider>
   );
 }
