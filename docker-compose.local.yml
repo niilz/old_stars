@@ -31,4 +31,4 @@ services:
       - CLUB_USER=${CLUB_USER}
       - CLUB_PWD=${CLUB_PWD}
         #command: bash -c "bash ./wait_for_it.sh db:5432 -- /usr/local/bin/backend"
-    command: bash -c "./wait_for_it.sh db:5432 -- && /usr/local/bin/configurator -u ${ADMIN_USER} -p ${ADMIN_PWD} -r admin && /usr/local/bin/configurator -u ${CLUB_USER} -p ${CLUB_PWD} -r club && /usr/local/bin/backend"
+    command: bash -c "./wait_for_it.sh db:5432 -- && /usr/local/bin/configurator -u ${ADMIN_USER} -p ${ADMIN_PWD} -r admin && /usr/local/bin/configurator -u ${CLUB_USER} -p ${CLUB_PWD} -r club && /usr/local/bin/old_stars_api"

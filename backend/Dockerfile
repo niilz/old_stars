@@ -15,14 +15,14 @@ WORKDIR backend
 COPY . .
 COPY --from=cacher /backend/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
-RUN cargo build --release --bin backend
+RUN cargo build --release --bin old_stars_api
 RUN cargo build --release --bin configurator
 
 FROM rust:latest AS runtime
 WORKDIR /backend
 COPY ./.env /usr/local/bin
 COPY ./wait_for_it.sh .
-COPY --from=builder /backend/target/release/backend /usr/local/bin
+COPY --from=builder /backend/target/release/old_stars_api /usr/local/bin
 COPY --from=builder /backend/target/release/configurator /usr/local/bin
 #ENTRYPOINT ["/usr/local/bin/backend"]
 #CMD ["bash"]
