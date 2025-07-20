@@ -30,8 +30,8 @@ Example for aws-url (make sure DB-Port accepts connections from this IP)
 
 ### Launch the configuration binary
 
-`cargo run --bin configurator some-user some-password`
-`cargo run --bin configurator mega_admin top-secret`
+`cargo run --bin configurator --user some-user --password some-password --role some-role`
+`cargo run --bin configurator --user mega_admin --password top-secret --role admin`
 
 ### Disable Database
 
