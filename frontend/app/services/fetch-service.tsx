@@ -4,21 +4,21 @@ import {
   API_URL_LOCAL_NET,
   METHOD,
   SESSION_TOKEN_HEADER_NAME,
-} from '../Constants';
+} from '../Constants'
 
-const baseHeaders = new Headers();
-baseHeaders.set('Accept', 'application/json');
-baseHeaders.set('Content-Type', 'application/json');
+const baseHeaders = new Headers()
+baseHeaders.set('Accept', 'application/json')
+baseHeaders.set('Content-Type', 'application/json')
 
 interface OkRes {
-  Ok: Object;
-  Err?: never;
+  Ok: Object
+  Err?: never
 }
 interface ErrRes {
-  Ok?: never;
-  Err: Object;
+  Ok?: never
+  Err: Object
 }
-export type ApiResponse = OkRes | ErrRes;
+export type ApiResponse = OkRes | ErrRes
 
 export async function fetchWrapper(
   method: METHOD,
@@ -26,9 +26,9 @@ export async function fetchWrapper(
   body: string,
   token?: string
 ) {
-  const headers = baseHeaders;
+  const headers = baseHeaders
   if (token) {
-    headers.set(`${SESSION_TOKEN_HEADER_NAME}`, token);
+    headers.set(`${SESSION_TOKEN_HEADER_NAME}`, token)
   }
 
   const options: RequestInit = {
@@ -37,24 +37,24 @@ export async function fetchWrapper(
     mode: 'cors',
     cache: 'default',
     credentials: 'include',
-  };
+  }
   if (method === METHOD.POST) {
-    options.body = body;
+    options.body = body
   }
 
-  const apiRes = await fetch(`${API_URL_DEV}/${endpoint}`, options);
-  const resJson = await apiRes.json();
-  return resJson;
+  const apiRes = await fetch(`${API_URL}/${endpoint}`, options)
+  const resJson = await apiRes.json()
+  return resJson
 }
 
 export function handleResponse(res: ApiResponse) {
-  const { Ok } = res;
-  const { Err } = res;
+  const { Ok } = res
+  const { Err } = res
   if (Err) {
-    const errMessage = Err;
-    throw `Ooops... ${errMessage}`;
+    const errMessage = Err
+    throw `Ooops... ${errMessage}`
   }
   // response can be Ok(null)
-  const response = Ok;
-  return response;
+  const response = Ok
+  return response
 }
