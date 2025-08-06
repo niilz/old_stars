@@ -1,8 +1,8 @@
-import '../index.css';
+import './index.css'
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
@@ -17,5 +17,5 @@ export default function RootLayout({
         <div id="root">{children}</div>
       </body>
     </html>
-  );
+  )
 }
