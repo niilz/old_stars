@@ -3,7 +3,6 @@
 diesel::table! {
     history (history_id) {
         history_id -> Int4,
-        user_id -> Int4,
         user_name -> Varchar,
         timestamp -> Timestamp,
         beer_count -> Int4,
@@ -43,7 +42,6 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(history -> old_users (user_id));
 diesel::joinable!(roles -> old_users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(history, old_users, roles, sessions,);

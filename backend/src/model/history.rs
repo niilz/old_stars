@@ -15,8 +15,6 @@ use super::user::User;
 pub struct History {
     #[serde(rename = "historyId")]
     pub history_id: i32,
-    #[serde(rename = "userId")]
-    pub user_id: i32,
     #[serde(rename = "userName")]
     pub user_name: String,
     pub timestamp: SystemTime,
@@ -33,7 +31,6 @@ pub struct History {
 #[derive(Insertable, Eq, PartialEq, Debug, Clone)]
 #[table_name = "history"]
 pub struct InsertHistory {
-    pub user_id: i32,
     pub user_name: String,
     pub timestamp: SystemTime,
     pub beer_count: i32,
@@ -45,7 +42,6 @@ pub struct InsertHistory {
 impl From<&User> for InsertHistory {
     fn from(user: &User) -> Self {
         Self {
-            user_id: user.user_id,
             user_name: user.name.to_string(),
             beer_count: user.beer_count,
             shot_count: user.shot_count,
@@ -61,7 +57,6 @@ impl From<(&i32, &InsertHistory)> for History {
         let (id, history) = entry;
         Self {
             history_id: *id,
-            user_id: history.user_id,
             user_name: history.user_name.to_string(),
             timestamp: history.timestamp,
             beer_count: history.beer_count,
@@ -76,7 +71,6 @@ impl Default for History {
     fn default() -> Self {
         Self {
             history_id: Default::default(),
-            user_id: Default::default(),
             user_name: Default::default(),
             timestamp: SystemTime::now(),
             beer_count: Default::default(),
