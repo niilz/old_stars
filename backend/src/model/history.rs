@@ -3,7 +3,7 @@ use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 
-use crate::schema::history::{self, user_name};
+use crate::schema::history;
 
 use super::user::User;
 
