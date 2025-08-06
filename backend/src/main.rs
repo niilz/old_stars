@@ -2,6 +2,7 @@
 extern crate rocket;
 
 use backend::{
+    SessionResponse,
     model::{app_user::AppUser, history::History, login_data::LoginData, role::OldStarsRole},
     repository::connection::OldStarDb,
     service::{
@@ -10,16 +11,15 @@ use backend::{
         history_service::{DbHistoryRepo, HistoryService},
         user_service::{DbUserService, UserService},
     },
-    SessionResponse,
 };
 use rocket::{
+    Build, Request, Response, Rocket, State,
     config::Config,
     fairing::{Fairing, Info, Kind},
     figment::Figment,
     http::{Header, Status},
     request::{FromRequest, Outcome},
     serde::json::Json,
-    Build, Request, Response, Rocket, State,
 };
 
 use std::{

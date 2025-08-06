@@ -11,11 +11,10 @@ use crate::{
     },
 };
 use argon2::{
-    password_hash::{self, SaltString},
     Argon2, PasswordHasher,
+    password_hash::{self, SaltString, rand_core::OsRng},
 };
 use diesel::{insert_into, prelude::*};
-use rand_core::OsRng;
 
 use super::error::OldStarsServiceError;
 
@@ -23,7 +22,7 @@ pub trait UserService: Send + Sync {
     /// Required Methods
     fn get_users(&mut self) -> Result<Vec<(User, String)>, OldStarsServiceError>;
     fn get_user_by_name(&mut self, user_name: &str)
-        -> Result<(User, String), OldStarsServiceError>;
+    -> Result<(User, String), OldStarsServiceError>;
     fn insert_into_repo(
         &mut self,
         new_user: InsertUser,
