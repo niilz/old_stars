@@ -9,7 +9,6 @@ use super::user::User;
 
 #[derive(Deserialize, Serialize, Queryable, Selectable, Eq, PartialEq, Debug, Clone)]
 #[diesel(table_name = history)]
-#[diesel(belongs_to(User))]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[diesel(primary_key(history_id))]
 pub struct History {
