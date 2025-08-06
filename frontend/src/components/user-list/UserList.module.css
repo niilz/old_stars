@@ -7,12 +7,12 @@
   overflow: scroll;
 }
 
-.DrinkTableHeader .DrinkTableRow .DrinkHeader {
+thead tr th {
   top: 0;
   font-size: 2rem;
   position: sticky;
 }
 
-.DrinkHeader {
+th {
   background-color: var(--primary);
 }
