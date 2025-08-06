@@ -7,12 +7,12 @@
   overflow: scroll;
 }
 
-thead tr th {
+.Thead .Tr .Th {
   top: 0;
   font-size: 2rem;
   position: sticky;
 }
 
-th {
+.Th {
   background-color: var(--primary);
 }
