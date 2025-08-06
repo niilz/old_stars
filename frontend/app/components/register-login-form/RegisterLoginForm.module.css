@@ -1,5 +1,3 @@
-@import '../../vars.css';
-
 .RegisterLoginForm {
   display: flex;
   flex-direction: column;
