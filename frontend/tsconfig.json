@@ -27,8 +27,9 @@
     ]
   },
   "include": [
-    "src",
-    "build/types/**/*.ts"
+    "app",
+    "build/types/**/*.ts",
+    "next-env.d.ts"
   ],
   "exclude": [
     "node_modules"
