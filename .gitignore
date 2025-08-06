@@ -16,3 +16,5 @@ Rocket.toml
 certs
 certs.letsencrypt
 
+# Dev-Env
+env.vars
