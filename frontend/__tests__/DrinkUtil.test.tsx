@@ -29,6 +29,21 @@ describe('User', () => {
   })
 })
 
+describe('User', () => {
+  const threeTimesMax = MAX_ALC_TO_WATER_RATIO * 3
+  it(`3 waters allow for ${threeTimesMax} drinks`, () => {
+    const userDummy = createUserDummy()
+    userDummy.beerCount = threeTimesMax
+    expect(needsWaterRound(userDummy)).toBe(true)
+    userDummy.waterCount = 1
+    expect(needsWaterRound(userDummy)).toBe(true)
+    userDummy.waterCount = 2
+    expect(needsWaterRound(userDummy)).toBe(true)
+    userDummy.waterCount = 3
+    expect(needsWaterRound(userDummy)).toBe(false)
+  })
+})
+
 function createUserDummy(): User {
   return {
     name: 'Test User',
