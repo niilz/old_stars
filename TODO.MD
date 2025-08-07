@@ -1,9 +1,13 @@
-- make histories scrollable
-- Add cigarets
-- allow for exporting
-- get rid of all the diesel warnings
-- Check for valid Session on every request
-- Store session in DB or at least remove it at some point
 - Check water-ratio in backend as well
+- Add cigarets
+- validate drink-count-ratio
+- Check for valid Session on every request
+- just check role not role-name for admin-login (might already be the case)
 - Manage admin-login via role not via secret user-name (requires bigger rewrite of, e.g. LoginState)
+- make histories scrollable
+- allow for exporting
+- allow admin to yank all sessions
+- get rid of all the diesel warnings
+- Store session in DB or at least remove it at some point
 - Check that niilz.de is available via 443 over https
+- Allow sending history as CSV per email
