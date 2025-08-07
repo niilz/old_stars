@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { User } from '../app/model/User'
 import { needsWaterRound } from '../app/util/DrinkUtil'
+import { MAX_ALC_TO_WATER_RATIO } from '../app/Constants'
 
 describe('User', () => {
   it('User does not have to drink water if max-count is not reached', () => {
@@ -15,6 +16,16 @@ describe('User', () => {
     userDummy.beerCount = 3
     userDummy.shotCount = 1
     expect(needsWaterRound(userDummy)).toBe(true)
+  })
+})
+
+describe('User', () => {
+  it(`1 water allows for ${MAX_ALC_TO_WATER_RATIO} more drinks`, () => {
+    const userDummy = createUserDummy()
+    userDummy.beerCount = 4
+    expect(needsWaterRound(userDummy)).toBe(true)
+    userDummy.waterCount = 1
+    expect(needsWaterRound(userDummy)).toBe(false)
   })
 })
 
