@@ -29,8 +29,6 @@ export class OldStar implements User {
   otherCount: number
   waterCount: number
 
-  static MAX_ALC_TO_WATER_RATIO = 3
-
   constructor(user: User) {
     this.id = user.id
     this.name = user.name
@@ -40,17 +38,5 @@ export class OldStar implements User {
     this.shotCount = user.shotCount
     this.otherCount = user.otherCount
     this.waterCount = user.waterCount
-  }
-
-  needsWaterRound(): boolean {
-    const consumedAlcohols = this.beerCount + this.shotCount
-    if (consumedAlcohols === 0) {
-      return false
-    }
-    if (this.waterCount === 0) {
-      return consumedAlcohols > OldStar.MAX_ALC_TO_WATER_RATIO
-    }
-    const waterAlcoholRatio = consumedAlcohols / this.waterCount
-    return waterAlcoholRatio > OldStar.MAX_ALC_TO_WATER_RATIO
   }
 }

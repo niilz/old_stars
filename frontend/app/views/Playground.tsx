@@ -1,27 +1,28 @@
-import { Button } from '../components/button/Button';
-import { Header } from '../components/header/Header';
-import { Modal } from '../components/modal/Modal';
-import { UserList } from '../components/user-list/UserList';
-import { UserView } from '../components/user/UserView';
-import { WaterRoundWarning } from '../components/waterround-warning/WaterRoundWarning';
-import { OldStar, User } from '../model/User';
-import styles from './Playground.module.css';
+import { Button } from '../components/button/Button'
+import { Header } from '../components/header/Header'
+import { Modal } from '../components/modal/Modal'
+import { UserList } from '../components/user-list/UserList'
+import { UserView } from '../components/user/UserView'
+import { WaterRoundWarning } from '../components/waterround-warning/WaterRoundWarning'
+import { OldStar, User } from '../model/User'
+import { needsWaterRound } from '../util/DrinkUtil'
+import styles from './Playground.module.css'
 
 interface PlaygroundProps {
-  logout: () => void;
-  openAdminLogin: () => void;
-  user: User;
-  users: User[];
-  onUserUpdate: (user: User) => void;
-  onHistories: () => void;
-  onRefresh: () => void;
+  logout: () => void
+  openAdminLogin: () => void
+  user: User
+  users: User[]
+  onUserUpdate: (user: User) => void
+  onHistories: () => void
+  onRefresh: () => void
 }
 
 export function Playground(props: PlaygroundProps) {
-  const oldstar = new OldStar(props.user);
+  const oldstar = new OldStar(props.user)
   return (
     <>
-      {oldstar.needsWaterRound() && (
+      {needsWaterRound(oldstar) && (
         <Modal
           children={
             <WaterRoundWarning
@@ -57,5 +58,5 @@ export function Playground(props: PlaygroundProps) {
         />
       </div>
     </>
-  );
+  )
 }
