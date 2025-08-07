@@ -9,6 +9,7 @@ use backend::{
         auth_service::LoginService,
         drink_service::{DbDrinkRepo, DrinkService},
         history_service::{DbHistoryRepo, HistoryService},
+        token_service::TokenServiceImpl,
         user_service::{DbUserService, UserService},
     },
 };
@@ -30,7 +31,28 @@ use std::{
 
 const FRONT_END_URL_DEV: &str = "http://localhost:3000";
 const FRONT_END_URL: &str = "https://www.niilz.com";
+const CLUB_TOKEN_HEADER_NAME: &str = "oldstars-club-token";
 const SESSION_TOKEN_HEADER_NAME: &str = "old-star-user-session";
+
+struct ClubToken<'a>(&'a str);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for ClubToken<'r> {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        match request.headers().get_one(CLUB_TOKEN_HEADER_NAME) {
+            Some(token) => {
+                println!("Yeah got a club-token: {}", token);
+                Outcome::Success(ClubToken(token))
+            }
+            None => {
+                println!("No Session-Token was in the request");
+                Outcome::Error((Status::Unauthorized, ()))
+            }
+        }
+    }
+}
 
 struct SessionToken<'a>(&'a str);
 
@@ -41,7 +63,7 @@ impl<'r> FromRequest<'r> for SessionToken<'r> {
     async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         match request.headers().get_one(SESSION_TOKEN_HEADER_NAME) {
             Some(token) => {
-                println!("Yeah got a token: {}", token);
+                println!("Yeah got a session-token: {}", token);
                 Outcome::Success(SessionToken(token))
             }
             None => {
@@ -68,17 +90,7 @@ async fn options() -> Json<&'static str> {
     Json("Options Response")
 }
 
-#[get("/start")]
-fn start(
-    login_service: &State<RwLock<LoginService>>,
-    token: SessionToken,
-) -> Json<Result<AppUser, &'static str>> {
-    match login_service.read().unwrap().get_session_user(token.0) {
-        Some(user) => Json(Ok(user)),
-        None => Json(Err("No Session found")),
-    }
-}
-
+// Unauthorized (everyone can try to get a club-token)
 #[post("/club/login", format = "json", data = "<password>")]
 fn club_login(
     password: &str,
@@ -93,11 +105,16 @@ fn club_login(
     }
 }
 
+// Club-Authorization required
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
+    club_token: ClubToken,
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
+    token_service: &State<TokenServiceImpl>,
 ) -> Json<Result<SessionResponse, &'static str>> {
+    // TODO: actually validate the token
+    let _ = &token_service.validate_token(&club_token.0);
     match login_service
         .write()
         .unwrap()
@@ -108,6 +125,18 @@ fn login(
             Json(Ok(SessionResponse::new(session.user, session.uuid)))
         }
         None => Json(Err("Login failed")),
+    }
+}
+
+// TODO: Session-Token required
+#[get("/start")]
+fn start(
+    login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
+) -> Json<Result<AppUser, &'static str>> {
+    match login_service.read().unwrap().get_session_user(token.0) {
+        Some(user) => Json(Ok(user)),
+        None => Json(Err("No Session found")),
     }
 }
 
@@ -267,6 +296,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
         let db_conn = OldStarDb::new();
         let drink_service = DrinkService::new(DbDrinkRepo::default());
         let history_service = HistoryService::new(DbHistoryRepo::default());
+        let token_service = TokenServiceImpl;
         rocket::custom(config_figment)
             .mount(
                 "/",
@@ -287,6 +317,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                 ],
             )
             .manage(Arc::clone(&user_service))
+            .manage(token_service)
             .manage(RwLock::new(login_service))
             .manage(RwLock::new(drink_service))
             .manage(RwLock::new(history_service))
