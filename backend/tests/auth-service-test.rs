@@ -22,6 +22,34 @@ const DUMMY_USER_NAME: &str = "dummy-user";
 const DUMMY_ID: i32 = 1;
 
 #[test]
+fn club_login_works() {
+    let dummy_club_user = LoginData {
+        name: "club".to_string(),
+        pwd: "club_pwd".to_string(),
+    };
+    let mut user_service_mock = UserServiceMock::new();
+    let Ok(_user) = user_service_mock.insert_user(&dummy_club_user) else {
+        panic!("test failed: mock-insert did not work");
+    };
+
+    let mut login_service = LoginService {
+        user_service: Arc::new(Mutex::new(user_service_mock)),
+        sessions: HashMap::new(),
+    };
+
+    let Some(club_token) = login_service.login_club(&dummy_club_user.pwd) else {
+        panic!(
+            "test fails: Login for '{dummy_club_user:?}' failed. Used PWD: '{}'",
+            dummy_club_user.pwd
+        );
+    };
+
+    assert!(club_token.starts_with("oldstars-club_"));
+    let session_id = club_token.replace("oldstars-club_", "");
+    assert!(Uuid::parse_str(&session_id).is_ok());
+}
+
+#[test]
 fn gets_user_if_login_succeeds() {
     let dummy_user = LoginData {
         name: "dummy-user".to_string(),

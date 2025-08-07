@@ -1,10 +1,12 @@
 use crate::{
-    model::{app_user::AppUser, login_data::LoginData, session::Session},
+    model::{
+        app_user::AppUser, login_data::LoginData, role::OldStarsRole, session::Session, user::User,
+    },
     service::user_service::UserService,
 };
 use argon2::{
-    password_hash::{PasswordHash, PasswordVerifier},
     Argon2,
+    password_hash::{PasswordHash, PasswordVerifier},
 };
 use std::{
     collections::HashMap,
@@ -12,37 +14,29 @@ use std::{
     time::SystemTime,
 };
 
+use super::error::OldStarsServiceError;
+
 pub struct LoginService {
     pub user_service: Arc<Mutex<dyn UserService + Sync + Send>>,
     pub sessions: HashMap<String, Session>,
 }
 
 impl LoginService {
+    pub fn login_club(&mut self, password: &str) -> Option<String> {
+        let club_user = self.user_service.lock().unwrap().get_user_and_role("club");
+        self.verify_user_and_role(club_user, password)
+            .map(|session| format!("oldstars-club_{}", session.uuid.to_string()))
+    }
+
     pub fn login_user(&mut self, login_data: &LoginData) -> Option<Session> {
         let user_and_role = self
             .user_service
             .lock()
             .unwrap()
             .get_user_and_role(&login_data.name);
-        match user_and_role {
-            Ok((db_user, role)) => {
-                let stored_hash = &db_user.pwd;
-                if is_password_valid(&login_data.pwd, stored_hash) {
-                    let app_user = AppUser::from((db_user, role));
-                    let session = Session::new(app_user);
-                    self.sessions
-                        .insert(session.uuid.to_string(), session.clone());
-                    Some(session)
-                } else {
-                    None
-                }
-            }
-            Err(e) => {
-                eprintln!("Could not login user: {}, Err: {}", login_data.name, e);
-                None
-            }
-        }
+        self.verify_user_and_role(user_and_role, &login_data.pwd)
     }
+
     pub fn get_session_user(&self, session_id: &str) -> Option<AppUser> {
         match self.sessions.get(session_id) {
             Some(session) if session.exp > SystemTime::now() => Some(session.user.clone()),
@@ -81,6 +75,31 @@ impl LoginService {
             Ok(())
         } else {
             Err("No session to remove")
+        }
+    }
+
+    fn verify_user_and_role(
+        &mut self,
+        user_and_role: Result<(User, OldStarsRole), OldStarsServiceError>,
+        login_password: &str,
+    ) -> Option<Session> {
+        match user_and_role {
+            Ok((db_user, role)) => {
+                let stored_hash = &db_user.pwd;
+                if is_password_valid(&login_password, stored_hash) {
+                    let app_user = AppUser::from((db_user, role));
+                    let session = Session::new(app_user);
+                    self.sessions
+                        .insert(session.uuid.to_string(), session.clone());
+                    Some(session)
+                } else {
+                    None
+                }
+            }
+            Err(e) => {
+                eprintln!("Login failed, Err: {}", e);
+                None
+            }
         }
     }
 }

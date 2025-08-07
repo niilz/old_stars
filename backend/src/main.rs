@@ -79,6 +79,20 @@ fn start(
     }
 }
 
+#[post("/club/login", format = "json", data = "<password>")]
+fn club_login(
+    password: &str,
+    login_service: &State<RwLock<LoginService>>,
+) -> Json<Result<String, &'static str>> {
+    match login_service.write().unwrap().login_club(password) {
+        Some(club_token) => {
+            println!("Issueing club token");
+            Json(Ok(club_token))
+        }
+        None => Json(Err("Login failed")),
+    }
+}
+
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
     login_data: Json<LoginData>,
@@ -261,6 +275,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     head,
                     options,
                     start,
+                    club_login,
                     login,
                     logout,
                     register,
