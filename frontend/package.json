@@ -20,7 +20,7 @@
     "deploy": "gh-pages -d build --nojekyll",
     "dev": "next dev --turbopack",
     "build": "next build",
-    "test": "echo \"No tests specified\" && exit 0",
+    "test": "jest",
     "start": "npx serve@latest build"
   },
   "browserslist": {
