@@ -1,10 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { AppCtx } from '../../App'
-import {
-  LoginState,
-  LoginType,
-  SESSION_TOKEN_HEADER_NAME,
-} from '../../Constants'
+import { LoginState, SESSION_TOKEN_HEADER_NAME } from '../../Constants'
 import { SessionData, User } from '../../model/User'
 import AuthService from '../../services/auth-service'
 import { insertUser } from '../../services/user-service'
@@ -21,7 +16,6 @@ interface RegisterLoginFormProps {
 }
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
-  const { loginType, setLoginType } = useContext(AppCtx)
   const { setSessionUser } = useContext(UserContext)
 
   const [userName, setUserName] = useState('')
@@ -40,16 +34,12 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
 
   const login = () => {
     AuthService.loginUser({
-      name: userName || evalLoginName(loginType),
+      name: userName,
       pwd: pwd,
     })
       .then((sessionData) => {
-        const loginState = evalLoginState(loginType)
-        props.onLogin(loginState)
         setUserName('')
         setPwd('')
-        setLoginType(evalLoginType(loginType))
-        if (loginType !== LoginType.User) return
         const sessionDataCasted = sessionData as SessionData
         setSessionUser(sessionDataCasted.user)
         window.localStorage.setItem(
@@ -64,32 +54,26 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
     <>
       <form
         onSubmit={preventFormSubmission}
-        className={`${styles.RegisterLoginForm} ${
-          loginType === LoginType.User ? props.styles : ''
-        }`}
+        className={`${styles.RegisterLoginForm}`}
       >
-        {loginType === LoginType.User && (
-          <input
-            type="text"
-            placeholder="user-name"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-          />
-        )}
+        <input
+          type="text"
+          placeholder="user-name"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+        />
         <input
           type="password"
           value={pwd}
-          placeholder={getPwdPlaceholder(loginType)}
+          placeholder={'password'}
           onChange={(e) => setPwd(e.target.value)}
         />
         <Button text="Login" styles={styles.registerBtn} callback={login} />
-        {loginType === LoginType.User && (
-          <Button
-            text="Register"
-            styles={styles.registerBtn}
-            callback={handleRegister}
-          />
-        )}
+        <Button
+          text="Register"
+          styles={styles.registerBtn}
+          callback={handleRegister}
+        />
       </form>
     </>
   )
@@ -97,45 +81,4 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
 
 function preventFormSubmission(e: React.FormEvent) {
   e.preventDefault()
-}
-
-function evalLoginState(loginType: LoginType) {
-  switch (loginType) {
-    case LoginType.User:
-      return LoginState.LoggedInUser
-    case LoginType.Club:
-      return LoginState.LoggedInClub
-    case LoginType.Admin:
-      return LoginState.LoggedInAdmin
-    default:
-      throw `Unhandled loginTyp: ${loginType}. Cannot evaluate a LoginState`
-  }
-}
-
-function evalLoginName(loginType: LoginType) {
-  switch (loginType) {
-    case LoginType.Club:
-      return 'club'
-    case LoginType.Admin:
-      return 'admin!'
-    default:
-      throw 'Cannot evaluate the Login Name if the userName is undefined'
-  }
-}
-
-function evalLoginType(prevLoginType: LoginType) {
-  switch (prevLoginType) {
-    case LoginType.Club:
-      return LoginType.User
-    case LoginType.User:
-      return LoginType.None
-    case LoginType.Admin:
-      return LoginType.None
-    default:
-      throw 'Unsupported LoginType-State'
-  }
-}
-
-function getPwdPlaceholder(loginType: LoginType) {
-  return `${LoginType[loginType]} Password`
 }

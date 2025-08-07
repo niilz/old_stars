@@ -19,10 +19,3 @@ export enum LoginState {
   LoggedOut,
   LoginError,
 }
-
-export enum LoginType {
-  Club,
-  User,
-  Admin,
-  None,
-}
