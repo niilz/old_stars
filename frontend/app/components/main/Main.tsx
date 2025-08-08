@@ -45,9 +45,7 @@ export function Main() {
   const fetchUsers = async () => {
     try {
       const sessionId = keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
-      if (!sessionId) {
-        setActiveView(View.ClubLogin)
-      } else {
+      if (sessionId) {
         const userResponse = await getAllUsers(sessionId)
         const users = handleResponse(userResponse)
         setUsers(users as User[])
@@ -81,7 +79,7 @@ export function Main() {
       }
     }
 
-    const sessionId = SESSION_TOKEN_HEADER_NAME
+    const sessionId = keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
     if (sessionId) {
       tryAttachSession(sessionId).catch((e) => {
         console.error(`Could not attach session: ${e}`)

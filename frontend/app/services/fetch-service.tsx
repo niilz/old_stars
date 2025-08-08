@@ -55,6 +55,7 @@ export async function fetchWrapper(
 
   const apiRes = await fetch(`${API_URL_DEV}/${endpoint}`, options)
   const resJson = await apiRes.json()
+  console.log({ resJson })
   return resJson
 }
 
