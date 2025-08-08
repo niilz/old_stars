@@ -11,7 +11,6 @@ import {
 import styles from './Main.module.css'
 import {
   CLUB_TOKEN_HEADER_NAME,
-  LoginState,
   SESSION_TOKEN_HEADER_NAME,
 } from '../../Constants'
 import {
@@ -105,10 +104,9 @@ export function Main() {
       } else {
         console.log(`got attachResponse: ${attachResponse}`)
         const user = handleResponse(attachResponse)
-        if (user) {
-          setSessionUser(user as User)
-          setActiveView(View.Playground)
-        }
+        setSessionUser(user as User)
+        setActiveView(View.Playground)
+        fetchUsers()
       }
     }
 
@@ -186,6 +184,11 @@ export function Main() {
     setActiveView(View.Histories)
   }
 
+  const handleOnAdminLogin = (view: View) => {
+    setActiveView(view)
+    setAdminLoginOpen(false)
+  }
+
   return (
     <div className={styles.Main}>
       <UserContext.Provider value={{ addUser, setSessionUser }}>
@@ -226,7 +229,7 @@ export function Main() {
               children={
                 <>
                   <AdminLoginForm
-                    onLogin={setActiveView}
+                    onLogin={handleOnAdminLogin}
                     onError={(err) =>
                       setCurrentError(`Admin Login failed: ${err}`)
                     }
