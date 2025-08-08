@@ -97,6 +97,22 @@ impl LoginService {
             Err("No session to remove")
         }
     }
+
+    pub fn is_admin(&self, session_id: &str) -> bool {
+        match self.sessions.get(session_id) {
+            Some(session) if session.exp > SystemTime::now() => {
+                session.user.role == OldStarsRole::Admin
+            }
+            Some(_) => {
+                println!("Session expired, login required");
+                false
+            }
+            None => {
+                println!("No session found, login required");
+                false
+            }
+        }
+    }
 }
 
 fn issue_session(

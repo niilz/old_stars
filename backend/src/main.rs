@@ -210,6 +210,12 @@ fn all_users(
     }
 }
 
+#[post("/admin", format = "json")]
+fn is_admin(token: SessionToken, login_service: &State<RwLock<LoginService>>) -> Json<bool> {
+    println!("is-admin got called");
+    Json(login_service.read().unwrap().is_admin(&token.0))
+}
+
 #[delete("/delete/<id>")]
 fn delete_user(
     id: i32,
@@ -387,6 +393,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     start,
                     club_login,
                     has_club_access,
+                    is_admin,
                     login,
                     logout,
                     register,
