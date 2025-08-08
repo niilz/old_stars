@@ -1,6 +1,6 @@
-import { METHOD } from '../Constants';
-import { fetchWrapper, handleResponse } from './fetch-service';
-import { UserCredentials } from '../model/User';
+import { METHOD } from '../Constants'
+import { fetchWrapper, handleResponse } from './fetch-service'
+import { UserCredentials } from '../model/User'
 
 class AuthService {
   static async loginUser(user: UserCredentials) {
@@ -8,11 +8,23 @@ class AuthService {
       METHOD.POST,
       'login',
       JSON.stringify(user)
-    );
+    )
 
-    const sessionData = handleResponse(loginResponse);
-    return sessionData;
+    const sessionData = handleResponse(loginResponse)
+    return sessionData
+  }
+
+  static async clubLogin(pwd: string) {
+    const clubLogin = { name: 'club', pwd }
+    const loginResponse = await fetchWrapper(
+      METHOD.POST,
+      'club/login',
+      JSON.stringify(clubLogin)
+    )
+
+    const sessionData = handleResponse(loginResponse)
+    return sessionData
   }
 }
 
-export default AuthService;
+export default AuthService

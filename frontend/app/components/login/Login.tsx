@@ -1,39 +1,39 @@
-import { useContext, useState } from 'react';
-import { LoginState } from '../../Constants';
-import { User } from '../../model/User';
-import { Message, MsgType } from '../message/Message';
-import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm';
-import styles from './Login.module.css';
-import { UserContext } from '../../context/Contexts';
+import { useContext, useState } from 'react'
+import { LoginState } from '../../Constants'
+import { User } from '../../model/User'
+import { Message, MsgType } from '../message/Message'
+import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm'
+import styles from './Login.module.css'
+import { UserContext } from '../../context/Contexts'
 
 type LoginProps = {
-  onLogin: (loginState: LoginState) => void;
-};
+  onLogin: (loginState: LoginState) => void
+}
 
 export function Login(props: LoginProps) {
-  const [message, setMessage] = useState('');
-  const [msgType, setMsgType] = useState(MsgType.NONE);
+  const [message, setMessage] = useState('')
+  const [msgType, setMsgType] = useState(MsgType.NONE)
 
-  const { addUser } = useContext(UserContext);
+  const { addUser } = useContext(UserContext)
 
   const handleError = (msgType: MsgType, msg: string) => {
-    setMessage(msg);
-    setMsgType(msgType);
-  };
+    setMessage(msg)
+    setMsgType(msgType)
+  }
 
   const handleLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoginError) {
-      setMessage('');
-      setMsgType(MsgType.NONE);
+      setMessage('')
+      setMsgType(MsgType.NONE)
     }
-    props.onLogin(loginState);
-  };
+    props.onLogin(loginState)
+  }
 
   const handleRegister = (user: User) => {
-    setMessage('Registration was successful');
-    setMsgType(MsgType.INFO);
-    addUser(user);
-  };
+    setMessage('Registration was successful')
+    setMsgType(MsgType.INFO)
+    addUser(user)
+  }
 
   return (
     <>
@@ -46,5 +46,5 @@ export function Login(props: LoginProps) {
         styles={styles.LoginForm}
       />
     </>
-  );
+  )
 }
