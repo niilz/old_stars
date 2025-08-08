@@ -369,7 +369,7 @@ impl Fairing for Cors {
         response.set_header(Header::new(
             "Access-Control-Allow-Headers",
             format!(
-                "Accept, Content-Type, Access-Control-Allow-Origin, {SESSION_TOKEN_HEADER_NAME}"
+                "Accept, Content-Type, Access-Control-Allow-Origin, {SESSION_TOKEN_HEADER_NAME}, {CLUB_TOKEN_HEADER_NAME}"
             ),
         ));
     }
