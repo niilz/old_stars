@@ -1,9 +1,11 @@
+- Maybe move modal back into App again (might be cleaner) otherwise clean App
 - Check water-ratio in backend as well
+- add favicon
 - Add cigarets
-- validate drink-count-ratio
-- Check for valid Session on every request
+- Do not filter in user-view for admin-roles
+- Insert main user with role: Admin
 - just check role not role-name for admin-login (might already be the case)
-- Manage admin-login via role not via secret user-name (requires bigger rewrite of, e.g. LoginState)
+- Get rid of LoginState (I think it is not needed anymore)
 - make histories scrollable
 - allow for exporting
 - allow admin to yank all sessions
