@@ -69,7 +69,7 @@ export function Main() {
     if (activeView === View.Playground) {
       fetchUsers()
     }
-  }, [])
+  }, [activeView])
 
   useEffect(() => {
     const tryAttachClubToken = async (clubToken: string) => {
@@ -100,7 +100,7 @@ export function Main() {
         console.log(
           `Session login did not work. Err: ${attachResponse.Err}. Clearing token`
         )
-        keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
+        keyValueStore.removeItem(SESSION_TOKEN_HEADER_NAME)
       } else {
         console.log(`got attachResponse: ${attachResponse}`)
         const user = handleResponse(attachResponse)
