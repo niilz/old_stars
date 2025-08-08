@@ -9,7 +9,6 @@ use backend::{
         auth_service::LoginService,
         drink_service::{DbDrinkRepo, DrinkService},
         history_service::{DbHistoryRepo, HistoryService},
-        token_service::TokenServiceImpl,
         user_service::{DbUserService, UserService},
     },
 };
@@ -91,12 +90,12 @@ async fn options() -> Json<&'static str> {
 }
 
 // Unauthorized (everyone can try to get a club-token)
-#[post("/club/login", format = "json", data = "<password>")]
+#[post("/club/login", format = "json", data = "<club_pwd>")]
 fn club_login(
-    password: &str,
+    club_pwd: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<String, &'static str>> {
-    match login_service.write().unwrap().login_club(password) {
+    match login_service.write().unwrap().login_club(&club_pwd.pwd) {
         Some(club_session) => {
             println!("Issueing club token");
             Json(Ok(club_session.uuid))
@@ -111,10 +110,10 @@ fn login(
     club_token: ClubToken,
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
-    token_service: &State<TokenServiceImpl>,
 ) -> Json<Result<SessionResponse, &'static str>> {
-    // TODO: actually validate the token
-    let _ = &token_service.validate_token(&club_token.0);
+    if !login_service.read().unwrap().has_club_access(&club_token.0) {
+        return Json(Err("club-acces missing"));
+    }
     match login_service
         .write()
         .unwrap()
@@ -297,7 +296,6 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
         let db_conn = OldStarDb::new();
         let drink_service = DrinkService::new(DbDrinkRepo::default());
         let history_service = HistoryService::new(DbHistoryRepo::default());
-        let token_service = TokenServiceImpl;
         rocket::custom(config_figment)
             .mount(
                 "/",
@@ -318,7 +316,6 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                 ],
             )
             .manage(Arc::clone(&user_service))
-            .manage(token_service)
             .manage(RwLock::new(login_service))
             .manage(RwLock::new(drink_service))
             .manage(RwLock::new(history_service))
@@ -341,8 +338,8 @@ impl Fairing for Cors {
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            //FRONT_END_URL_DEV,
-            FRONT_END_URL,
+            FRONT_END_URL_DEV,
+            //FRONT_END_URL,
             // This machines IP to allow acces from frontend on local network
             //env::var("LOCAL_IP").unwrap(),
             //"*",
