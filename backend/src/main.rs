@@ -127,7 +127,6 @@ fn login(
     }
 }
 
-// TODO: Session-Token required
 #[get("/start")]
 fn start(
     login_service: &State<RwLock<LoginService>>,
@@ -148,11 +147,17 @@ fn logout(
     Json(session_removed)
 }
 
+// TODO: Session-Token required to access it
 #[post("/register", format = "json", data = "<user>")]
 fn register(
+    club_token: ClubToken,
     user: Json<LoginData>,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
+    login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<AppUser, String>> {
+    if !login_service.read().unwrap().has_club_access(club_token.0) {
+        return Json(Err("Registering requires club access".to_string()));
+    }
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
@@ -165,8 +170,19 @@ fn register(
 
 #[get("/all", format = "json")]
 fn all_users(
+    token: SessionToken,
+    login_service: &State<RwLock<LoginService>>,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<Vec<AppUser>, String>> {
+    // TODO: Extract into fn
+    if !login_service
+        .read()
+        .unwrap()
+        .get_session_user(token.0)
+        .is_some()
+    {
+        return Json(Err("Na valid session".to_string()));
+    }
     println!("Getting all users");
     match user_service.lock().unwrap().get_users_and_roles() {
         Ok(users_with_roles) => Json(Ok(users_with_roles
@@ -177,6 +193,7 @@ fn all_users(
     }
 }
 
+// TODO: guard the rest of the functions with session check
 #[delete("/delete/<id>")]
 fn delete_user(
     id: i32,
