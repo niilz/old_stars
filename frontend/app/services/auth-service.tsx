@@ -27,6 +27,16 @@ class AuthService {
     const sessionData = handleResponse(loginResponse)
     return sessionData
   }
+
+  static async hasClubAccess(clubToken: string) {
+    return fetchWrapper(
+      METHOD.GET,
+      'club/access',
+      '',
+      CLUB_TOKEN_HEADER_NAME,
+      clubToken
+    )
+  }
 }
 
 export default AuthService

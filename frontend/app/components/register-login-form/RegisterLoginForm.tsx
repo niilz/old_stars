@@ -56,6 +56,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           SESSION_TOKEN_HEADER_NAME,
           sessionDataCasted.sessionId
         )
+        props.onLogin(LoginState.LoggedInUser)
       })
       .catch((e) => props.onError(MsgType.ERR, e))
   }

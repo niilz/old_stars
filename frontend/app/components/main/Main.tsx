@@ -9,7 +9,10 @@ import {
   removeSession,
 } from '../../services/user-service'
 import styles from './Main.module.css'
-import { SESSION_TOKEN_HEADER_NAME } from '../../Constants'
+import {
+  CLUB_TOKEN_HEADER_NAME,
+  SESSION_TOKEN_HEADER_NAME,
+} from '../../Constants'
 import {
   ErrorContext,
   GlobalKeyValueStoreContext,
@@ -30,6 +33,7 @@ import {
 } from '../../model/DrinkHistory'
 import { OneHistoryView } from '../../views/OneHistoryView'
 import { ArchiveView } from '../../views/ArchiveView'
+import AuthService from '../../services/auth-service'
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>())
@@ -44,6 +48,7 @@ export function Main() {
 
   const fetchUsers = async () => {
     try {
+      console.log('trying to fetch all users')
       const sessionId = keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
       if (sessionId) {
         const userResponse = await getAllUsers(sessionId)
@@ -63,6 +68,18 @@ export function Main() {
 
   useEffect(() => {
     const tryAttachSession = async (sessionId: string) => {
+      console.log('trying to attach session')
+      const clubToken = keyValueStore.readFromStorage(CLUB_TOKEN_HEADER_NAME)
+      if (clubToken) {
+        console.log('Checking if club-token is still valid')
+        const hasClubAccess = await AuthService.hasClubAccess(clubToken)
+        if (hasClubAccess) {
+          setActiveView(View.UserLogin)
+        } else {
+          console.log('Club token is not valid, removing club-token')
+          keyValueStore.removeItem(CLUB_TOKEN_HEADER_NAME)
+        }
+      }
       const attachResponse = await attachSession(sessionId)
       if (attachResponse.Err) {
         console.log(
