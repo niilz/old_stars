@@ -1,5 +1,9 @@
 import { CLUB_TOKEN_HEADER_NAME, METHOD } from '../Constants'
-import { fetchWrapper, handleResponse } from './fetch-service'
+import {
+  fetchWrapper,
+  fetchWrapperUserSession,
+  handleResponse,
+} from './fetch-service'
 import { UserCredentials } from '../model/User'
 
 class AuthService {
@@ -36,6 +40,10 @@ class AuthService {
       CLUB_TOKEN_HEADER_NAME,
       clubToken
     )
+  }
+
+  static async isAdmin(sessionId: string) {
+    return fetchWrapperUserSession(METHOD.GET, 'admin', '', sessionId)
   }
 }
 
