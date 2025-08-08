@@ -1,12 +1,16 @@
 import React, { useContext, useState } from 'react'
-import { LoginState, SESSION_TOKEN_HEADER_NAME } from '../../Constants'
+import {
+  CLUB_TOKEN_HEADER_NAME,
+  LoginState,
+  SESSION_TOKEN_HEADER_NAME,
+} from '../../Constants'
 import { SessionData, User } from '../../model/User'
 import AuthService from '../../services/auth-service'
 import { insertUser } from '../../services/user-service'
 import { Button } from '../button/Button'
 import { MsgType } from '../message/Message'
 import styles from './RegisterLoginForm.module.css'
-import { UserContext } from '../../context/Contexts'
+import { GlobalKeyValueStoreContext, UserContext } from '../../context/Contexts'
 
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void
@@ -17,13 +21,15 @@ interface RegisterLoginFormProps {
 
 export function RegisterLoginForm(props: RegisterLoginFormProps) {
   const { setSessionUser } = useContext(UserContext)
+  const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
 
   const [userName, setUserName] = useState('')
   const [pwd, setPwd] = useState('')
 
   const handleRegister = async () => {
     try {
-      const newUser = await insertUser({ name: userName, pwd })
+      const clubToken = keyValueStore.tryReadFromStorage(CLUB_TOKEN_HEADER_NAME)
+      const newUser = await insertUser({ name: userName, pwd }, clubToken)
       props.onRegister(newUser as User)
       setUserName('')
       setPwd('')
@@ -33,16 +39,20 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
   }
 
   const login = () => {
-    AuthService.loginUser({
-      name: userName,
-      pwd: pwd,
-    })
+    const clubToken = keyValueStore.tryReadFromStorage(CLUB_TOKEN_HEADER_NAME)
+    AuthService.loginUser(
+      {
+        name: userName,
+        pwd: pwd,
+      },
+      clubToken
+    )
       .then((sessionData) => {
         setUserName('')
         setPwd('')
         const sessionDataCasted = sessionData as SessionData
         setSessionUser(sessionDataCasted.user)
-        window.localStorage.setItem(
+        keyValueStore.storeItem(
           SESSION_TOKEN_HEADER_NAME,
           sessionDataCasted.sessionId
         )

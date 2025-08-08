@@ -12,6 +12,7 @@ import styles from './Main.module.css'
 import { SESSION_TOKEN_HEADER_NAME } from '../../Constants'
 import {
   ErrorContext,
+  GlobalKeyValueStoreContext,
   HistoryContext,
   UserContext,
   ViewContext,
@@ -39,12 +40,18 @@ export function Main() {
   const { setAdminLoginOpen } = useContext(AppCtx)
   const { activeView, setActiveView } = useContext(ViewContext)
   const { setCurrentError } = useContext(ErrorContext)
+  const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
 
   const fetchUsers = async () => {
     try {
-      const userResponse = await getAllUsers()
-      const users = handleResponse(userResponse)
-      setUsers(users as User[])
+      const sessionId = keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
+      if (!sessionId) {
+        setActiveView(View.ClubLogin)
+      } else {
+        const userResponse = await getAllUsers(sessionId)
+        const users = handleResponse(userResponse)
+        setUsers(users as User[])
+      }
     } catch (e) {
       setActiveView(View.ClubLogin)
       console.error(`Loading users failed: ${e}`)
@@ -63,7 +70,7 @@ export function Main() {
         console.log(
           `Session login did not work. Err: ${attachResponse.Err}. Clearing token`
         )
-        window.localStorage.removeItem(SESSION_TOKEN_HEADER_NAME)
+        keyValueStore.readFromStorage(SESSION_TOKEN_HEADER_NAME)
       } else {
         console.log(`got attachResponse: ${attachResponse}`)
         const user = handleResponse(attachResponse)
@@ -73,7 +80,8 @@ export function Main() {
         }
       }
     }
-    const sessionId = window.localStorage.getItem(SESSION_TOKEN_HEADER_NAME)
+
+    const sessionId = SESSION_TOKEN_HEADER_NAME
     if (sessionId) {
       tryAttachSession(sessionId).catch((e) => {
         console.error(`Could not attach session: ${e}`)
@@ -94,11 +102,14 @@ export function Main() {
   }
 
   const handleLogout = async () => {
-    const removeSessionRes = await removeSession()
+    const sessionId = keyValueStore.tryReadFromStorage(
+      SESSION_TOKEN_HEADER_NAME
+    )
+    const removeSessionRes = await removeSession(sessionId)
     if (removeSessionRes) {
       setActiveView(View.UserLogin)
       setSessionUser(null)
-      window.localStorage.removeItem(SESSION_TOKEN_HEADER_NAME)
+      keyValueStore.removeItem(SESSION_TOKEN_HEADER_NAME)
     }
   }
 
@@ -115,7 +126,10 @@ export function Main() {
   }
 
   const handleRefresh = async () => {
-    const allUsersResponse = await getAllUsers()
+    const sessionId = keyValueStore.tryReadFromStorage(
+      SESSION_TOKEN_HEADER_NAME
+    )
+    const allUsersResponse = await getAllUsers(sessionId)
     const allUsers = handleResponse(allUsersResponse)
     setUsers(allUsers as User[])
     if (sessionUser) {
@@ -132,7 +146,10 @@ export function Main() {
   }
 
   const handleFetchHistories = async () => {
-    const historyRes = await fetchHistories()
+    const sessionId = keyValueStore.tryReadFromStorage(
+      SESSION_TOKEN_HEADER_NAME
+    )
+    const historyRes = await fetchHistories(sessionId)
     const histories = handleResponse(historyRes)
     setAllHistories(histories as DrinkHistory[])
     setActiveView(View.Histories)

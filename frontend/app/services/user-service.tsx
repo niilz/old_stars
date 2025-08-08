@@ -1,29 +1,35 @@
-import { METHOD } from '../Constants'
+import { CLUB_TOKEN_HEADER_NAME, METHOD } from '../Constants'
 import { UserCredentials } from '../model/User'
-import { fetchWrapper, handleResponse } from './fetch-service'
+import {
+  fetchWrapper,
+  fetchWrapperUserSession,
+  handleResponse,
+} from './fetch-service'
 
-export async function insertUser(user: UserCredentials) {
+export async function insertUser(user: UserCredentials, clubToken: string) {
   const insertResponse = await fetchWrapper(
     METHOD.POST,
     'register',
-    JSON.stringify(user)
+    JSON.stringify(user),
+    CLUB_TOKEN_HEADER_NAME,
+    clubToken
   )
   const insertedUser = handleResponse(insertResponse)
   return insertedUser
 }
 
-export function deleteUser(id: Number) {
-  return fetchWrapper(METHOD.DELETE, `delete/${id}`, '')
+export function deleteUser(id: Number, sessionId: string) {
+  return fetchWrapperUserSession(METHOD.DELETE, `delete/${id}`, '', sessionId)
 }
 
-export async function getAllUsers() {
-  return fetchWrapper(METHOD.GET, 'all', '')
+export async function getAllUsers(sessionId: string) {
+  return fetchWrapperUserSession(METHOD.GET, 'all', '', sessionId)
 }
 
 export async function attachSession(sessionId: string) {
-  return fetchWrapper(METHOD.GET, 'start', '', sessionId)
+  return fetchWrapperUserSession(METHOD.GET, 'start', '', sessionId)
 }
 
-export async function removeSession() {
-  return fetchWrapper(METHOD.GET, 'logout', '')
+export async function removeSession(sessionId: string) {
+  return fetchWrapperUserSession(METHOD.GET, 'logout', '', sessionId)
 }

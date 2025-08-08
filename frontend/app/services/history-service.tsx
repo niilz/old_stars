@@ -1,10 +1,10 @@
-import { METHOD } from '../Constants';
-import { fetchWrapper } from './fetch-service';
+import { METHOD } from '../Constants'
+import { fetchWrapperUserSession } from './fetch-service'
 
-export function historizeDrinks() {
-  return fetchWrapper(METHOD.GET, `historize`, '');
+export function historizeDrinks(sessionToken: string) {
+  return fetchWrapperUserSession(METHOD.GET, `historize`, '', sessionToken)
 }
 
-export function fetchHistories() {
-  return fetchWrapper(METHOD.GET, `histories`, '');
+export function fetchHistories(sessionToken: string) {
+  return fetchWrapperUserSession(METHOD.GET, `histories`, '', sessionToken)
 }

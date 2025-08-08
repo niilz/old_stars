@@ -1,18 +1,27 @@
-import { METHOD } from '../../Constants';
-import { User } from '../../model/User';
-import { fetchWrapper, handleResponse } from '../../services/fetch-service';
-import styles from './UserView.module.css';
+import { METHOD } from '../../Constants'
+import { User } from '../../model/User'
+import {
+  fetchWrapperUserSession,
+  handleResponse,
+} from '../../services/fetch-service'
+import styles from './UserView.module.css'
 
 interface UserProps {
-  user: User;
-  onUserUpdate: (user: User) => void;
+  user: User
+  onUserUpdate: (user: User) => void
+  userSession: string
 }
 export function UserView(props: UserProps) {
   const handleUpdate = async (drink: string) => {
-    const res = await fetchWrapper(METHOD.GET, `${drink}/${props.user.id}`, '');
-    const updatedUser = handleResponse(res);
-    props.onUserUpdate(updatedUser as User);
-  };
+    const res = await fetchWrapperUserSession(
+      METHOD.GET,
+      `${drink}/${props.user.id}`,
+      '',
+      props.userSession
+    )
+    const updatedUser = handleResponse(res)
+    props.onUserUpdate(updatedUser as User)
+  }
   return (
     <div className={styles.User}>
       <p className={styles.name}>{props.user.name}</p>
@@ -45,5 +54,5 @@ export function UserView(props: UserProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

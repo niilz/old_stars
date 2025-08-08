@@ -2,6 +2,7 @@ import {
   API_URL,
   API_URL_DEV,
   API_URL_LOCAL_NET,
+  CLUB_TOKEN_HEADER_NAME,
   METHOD,
   SESSION_TOKEN_HEADER_NAME,
 } from '../Constants'
@@ -20,15 +21,25 @@ interface ErrRes {
 }
 export type ApiResponse = OkRes | ErrRes
 
+export async function fetchWrapperUserSession(
+  method: METHOD,
+  endpoint: String,
+  body: string,
+  token: string
+) {
+  return fetchWrapper(method, endpoint, body, SESSION_TOKEN_HEADER_NAME, token)
+}
+
 export async function fetchWrapper(
   method: METHOD,
   endpoint: String,
   body: string,
+  tokenHeader?: string,
   token?: string
 ) {
   const headers = baseHeaders
-  if (token) {
-    headers.set(`${SESSION_TOKEN_HEADER_NAME}`, token)
+  if (tokenHeader && token) {
+    headers.set(tokenHeader, token)
   }
 
   const options: RequestInit = {
