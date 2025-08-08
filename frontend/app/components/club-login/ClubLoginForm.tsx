@@ -1,37 +1,28 @@
 import React, { useContext, useState } from 'react'
-import {
-  CLUB_TOKEN_HEADER_NAME,
-  SESSION_TOKEN_HEADER_NAME,
-} from '../../Constants'
 import AuthService from '../../services/auth-service'
 import { Button } from '../button/Button'
 import { MsgType } from '../message/Message'
 import styles from './ClubLoginForm.module.css'
 import { GlobalKeyValueStoreContext } from '../../context/Contexts'
+import { CLUB_TOKEN_HEADER_NAME, LoginState } from '../../Constants'
 
-interface AdminLoginFormProps {
+interface ClubLoginFormProps {
   onLogin: () => void
   styles?: string
   onError: (type: MsgType, msg: string) => void
 }
 
-export function ClubLoginForm(props: AdminLoginFormProps) {
+export function ClubLoginForm(props: ClubLoginFormProps) {
   const [pwd, setPwd] = useState('')
   const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
 
   const login = () => {
-    const sessionId = keyValueStore.tryReadFromStorage(
-      SESSION_TOKEN_HEADER_NAME
-    )
-    AuthService.isAdmin(pwd, sessionId)
-      .then((isAdmin) => {
+    AuthService.clubLogin(pwd)
+      .then((clubToken) => {
         setPwd('')
-        if (isAdmin === true) {
-          console.log('user is admin')
-          return true
-        } else {
-          console.log('user is no admin')
-          return false
+        if (typeof clubToken === 'string') {
+          keyValueStore.storeItem(CLUB_TOKEN_HEADER_NAME, clubToken)
+          props.onLogin()
         }
       })
       .catch((e) => props.onError(MsgType.ERR, e))

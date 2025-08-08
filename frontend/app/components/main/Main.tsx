@@ -71,11 +71,13 @@ export function Main() {
       if (clubToken) {
         console.log('Checking if club-token is still valid')
         const hasClubAccess = await AuthService.hasClubAccess(clubToken)
-        if (hasClubAccess) {
+        if (hasClubAccess === 'true') {
+          console.log('Has club access')
           setActiveView(View.UserLogin)
         } else {
           console.log('Club token is not valid, removing club-token')
           keyValueStore.removeItem(CLUB_TOKEN_HEADER_NAME)
+          setActiveView(View.ClubLogin)
         }
       }
     }
