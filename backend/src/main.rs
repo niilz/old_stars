@@ -28,7 +28,7 @@ use std::{
     sync::{Arc, Mutex, RwLock},
 };
 
-const FRONT_END_URL_DEV: &str = "http://localhost:3000";
+const _FRONT_END_URL_DEV: &str = "http://localhost:3000";
 const FRONT_END_URL: &str = "https://www.niilz.com";
 const CLUB_TOKEN_HEADER_NAME: &str = "oldstars-club-token";
 const SESSION_TOKEN_HEADER_NAME: &str = "old-star-user-session";
@@ -95,6 +95,7 @@ fn club_login(
     club_pwd: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<String, &'static str>> {
+    println!("club-login got called");
     match login_service.write().unwrap().login_club(&club_pwd.pwd) {
         Some(club_session) => {
             println!("Issueing club token");
@@ -104,21 +105,23 @@ fn club_login(
     }
 }
 
+// Club-Authorization required
 #[post("/club/access", format = "json")]
 fn has_club_access(
     club_token: ClubToken,
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<bool> {
+    println!("has_club_access got called");
     Json(login_service.read().unwrap().has_club_access(&club_token.0))
 }
 
-// Club-Authorization required
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
     club_token: ClubToken,
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<SessionResponse, &'static str>> {
+    println!("login got called");
     if !login_service.read().unwrap().has_club_access(&club_token.0) {
         return Json(Err("club-acces missing"));
     }
@@ -136,11 +139,13 @@ fn login(
     }
 }
 
+// User-Authorization required
 #[get("/start")]
 fn start(
     login_service: &State<RwLock<LoginService>>,
     token: SessionToken,
 ) -> Json<Result<AppUser, &'static str>> {
+    println!("start got called");
     match login_service.read().unwrap().get_session_user(token.0) {
         Some(user) => Json(Ok(user)),
         None => Json(Err("No Session found")),
@@ -152,11 +157,12 @@ fn logout(
     login_service: &State<RwLock<LoginService>>,
     token: SessionToken,
 ) -> Json<Result<(), &'static str>> {
+    // Would be better to check that the token actually belongs to the person who wants it's
+    // deletion
     let session_removed = login_service.write().unwrap().remove_session(token.0);
     Json(session_removed)
 }
 
-// TODO: Session-Token required to access it
 #[post("/register", format = "json", data = "<user>")]
 fn register(
     club_token: ClubToken,
@@ -164,6 +170,7 @@ fn register(
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<AppUser, String>> {
+    println!("register got called");
     if !login_service.read().unwrap().has_club_access(club_token.0) {
         return Json(Err("Registering requires club access".to_string()));
     }
@@ -184,14 +191,14 @@ fn all_users(
     login_service: &State<RwLock<LoginService>>,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<Vec<AppUser>, String>> {
-    // TODO: Extract into fn
+    println!("all_users got called");
     if !login_service
         .read()
         .unwrap()
         .get_session_user(token.0)
         .is_some()
     {
-        return Json(Err("Na valid session".to_string()));
+        return Json(Err("No valid session".to_string()));
     }
     println!("Getting all users");
     match user_service.lock().unwrap().get_users_and_roles() {
@@ -203,13 +210,24 @@ fn all_users(
     }
 }
 
-// TODO: guard the rest of the functions with session check
 #[delete("/delete/<id>")]
 fn delete_user(
     id: i32,
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
     login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
 ) -> Json<Result<(), String>> {
+    println!("delete-user got called");
+
+    // Check that user is admin
+    match login_service.read().unwrap().get_session_user(token.0) {
+        Some(user) if user.role == OldStarsRole::Admin => user,
+        Some(_) => return Json(Err("Only Admins are allowed to delete".to_string())),
+        _ => {
+            return Json(Err("No valid session".to_string()));
+        }
+    };
+
     match user_service.lock().unwrap().delete_user(id) {
         Ok(_user) => {
             let _session_delete_result = login_service.write().unwrap().remove_user_session(id);
@@ -222,23 +240,35 @@ fn delete_user(
     }
 }
 
-#[get("/<drink>/<id>")]
+#[get("/<drink>/<user_id>")]
 fn add_drink(
     drink: String,
-    id: i32,
+    user_id: i32,
     db_conn: &State<OldStarDb>,
     drink_service: &State<RwLock<DrinkService<DbDrinkRepo>>>,
+    login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
 ) -> Json<Result<AppUser, String>> {
+    println!("add-drink got called");
+    if !login_service
+        .read()
+        .unwrap()
+        .get_session_user(token.0)
+        .is_some()
+    {
+        return Json(Err("No valid session".to_string()));
+    }
+
     let drink_clone = drink.clone();
     match drink_service.write().unwrap().add_drink_to_user(
-        id,
+        user_id,
         &drink_clone,
         &mut db_conn.connection(),
     ) {
         Ok(updated_user) => Json(Ok(AppUser::from((updated_user, OldStarsRole::User)))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
-            drink, id, e
+            drink, user_id, e
         ))),
     }
 }
@@ -247,7 +277,19 @@ fn add_drink(
 fn historize(
     db_conn: &State<OldStarDb>,
     history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
+    login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
 ) -> Json<Result<Vec<History>, String>> {
+    println!("historize got called");
+    // Check that user is admin
+    match login_service.read().unwrap().get_session_user(token.0) {
+        Some(user) if user.role == OldStarsRole::Admin => user,
+        Some(_) => return Json(Err("Only Admins are allowed to delete".to_string())),
+        _ => {
+            return Json(Err("No valid session".to_string()));
+        }
+    };
+
     match history_service
         .write()
         .unwrap()
@@ -262,7 +304,19 @@ fn historize(
 fn histories(
     db_conn: &State<OldStarDb>,
     history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
+    login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
 ) -> Json<Result<Vec<History>, String>> {
+    println!("histories got called");
+    if !login_service
+        .read()
+        .unwrap()
+        .get_session_user(token.0)
+        .is_some()
+    {
+        return Json(Err("No valid session".to_string()));
+    }
+
     match history_service
         .read()
         .unwrap()
