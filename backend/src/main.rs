@@ -97,9 +97,9 @@ fn club_login(
     login_service: &State<RwLock<LoginService>>,
 ) -> Json<Result<String, &'static str>> {
     match login_service.write().unwrap().login_club(password) {
-        Some(club_token) => {
+        Some(club_session) => {
             println!("Issueing club token");
-            Json(Ok(club_token))
+            Json(Ok(club_session.uuid))
         }
         None => Json(Err("Login failed")),
     }
@@ -292,6 +292,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
         let login_service = LoginService {
             user_service: Arc::clone(&user_service),
             sessions: HashMap::new(),
+            club_sessions: HashMap::new(),
         };
         let db_conn = OldStarDb::new();
         let drink_service = DrinkService::new(DbDrinkRepo::default());

@@ -19,13 +19,16 @@ use super::error::OldStarsServiceError;
 pub struct LoginService {
     pub user_service: Arc<Mutex<dyn UserService + Sync + Send>>,
     pub sessions: HashMap<String, Session>,
+    pub club_sessions: HashMap<String, Session>,
 }
 
 impl LoginService {
-    pub fn login_club(&mut self, password: &str) -> Option<String> {
+    pub fn login_club(&mut self, password: &str) -> Option<Session> {
         let club_user = self.user_service.lock().unwrap().get_user_and_role("club");
-        self.verify_user_and_role(club_user, password)
-            .map(|session| format!("oldstars-club_{}", session.uuid.to_string()))
+        let session = issue_session(club_user, password)?;
+        self.club_sessions
+            .insert(session.uuid.to_string(), session.clone());
+        Some(session)
     }
 
     pub fn login_user(&mut self, login_data: &LoginData) -> Option<Session> {
@@ -34,7 +37,24 @@ impl LoginService {
             .lock()
             .unwrap()
             .get_user_and_role(&login_data.name);
-        self.verify_user_and_role(user_and_role, &login_data.pwd)
+        let session = issue_session(user_and_role, &login_data.pwd)?;
+        self.sessions
+            .insert(session.uuid.to_string(), session.clone());
+        Some(session)
+    }
+
+    pub fn has_club_access(&self, session_id: &str) -> bool {
+        match self.club_sessions.get(session_id) {
+            Some(session) if session.exp > SystemTime::now() => true,
+            Some(_) => {
+                println!("Club Session expired, login required");
+                false
+            }
+            None => {
+                println!("No session found, login required");
+                false
+            }
+        }
     }
 
     pub fn get_session_user(&self, session_id: &str) -> Option<AppUser> {
@@ -77,29 +97,26 @@ impl LoginService {
             Err("No session to remove")
         }
     }
+}
 
-    fn verify_user_and_role(
-        &mut self,
-        user_and_role: Result<(User, OldStarsRole), OldStarsServiceError>,
-        login_password: &str,
-    ) -> Option<Session> {
-        match user_and_role {
-            Ok((db_user, role)) => {
-                let stored_hash = &db_user.pwd;
-                if is_password_valid(&login_password, stored_hash) {
-                    let app_user = AppUser::from((db_user, role));
-                    let session = Session::new(app_user);
-                    self.sessions
-                        .insert(session.uuid.to_string(), session.clone());
-                    Some(session)
-                } else {
-                    None
-                }
-            }
-            Err(e) => {
-                eprintln!("Login failed, Err: {}", e);
+fn issue_session(
+    user_and_role: Result<(User, OldStarsRole), OldStarsServiceError>,
+    login_password: &str,
+) -> Option<Session> {
+    match user_and_role {
+        Ok((db_user, role)) => {
+            let stored_hash = &db_user.pwd;
+            if is_password_valid(&login_password, stored_hash) {
+                let app_user = AppUser::from((db_user, role));
+                let session = Session::new(app_user);
+                Some(session)
+            } else {
                 None
             }
+        }
+        Err(e) => {
+            eprintln!("Login failed, Err: {}", e);
+            None
         }
     }
 }
