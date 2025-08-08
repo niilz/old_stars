@@ -38,8 +38,19 @@ describe('User', () => {
     userDummy.waterCount = 1
     expect(needsWaterRound(userDummy)).toBe(true)
     userDummy.waterCount = 2
+    expect(needsWaterRound(userDummy)).toBe(false)
+  })
+})
+
+describe('User', () => {
+  const twoTimesPlus1 = MAX_ALC_TO_WATER_RATIO * 2 + 1
+  it(`${twoTimesPlus1} drinks cleared by the sedond water`, () => {
+    const userDummy = createUserDummy()
+    userDummy.beerCount = twoTimesPlus1
     expect(needsWaterRound(userDummy)).toBe(true)
-    userDummy.waterCount = 3
+    userDummy.waterCount = 1
+    expect(needsWaterRound(userDummy)).toBe(true)
+    userDummy.waterCount = 2
     expect(needsWaterRound(userDummy)).toBe(false)
   })
 })
