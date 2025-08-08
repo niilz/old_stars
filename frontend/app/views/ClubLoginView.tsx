@@ -4,8 +4,8 @@ import { AppLogo } from '../components/logo/Logo'
 import { ViewContext } from '../context/Contexts'
 import styles from './ClubLoginView.module.css'
 import { View } from './View'
-import { ClubLoginForm } from '../components/club-form/ClubLoginForm'
 import { Message, MsgType } from '../components/message/Message'
+import { ClubLoginForm } from '../components/club-login/ClubLoginForm'
 
 export function ClubLoginView() {
   const { setActiveView } = useContext(ViewContext)

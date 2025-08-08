@@ -46,7 +46,7 @@ function App() {
               <Modal
                 children={
                   <>
-                    <Login onLogin={handleAdminLogin} />
+                    <AdminLogin onLogin={handleAdminLogin} />
                     <Button
                       text={'cancel'}
                       callback={() => setAdminLoginOpen(false)}
