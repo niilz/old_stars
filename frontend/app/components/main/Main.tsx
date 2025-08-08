@@ -67,9 +67,7 @@ export function Main() {
   }, [])
 
   useEffect(() => {
-    const tryAttachSession = async (sessionId: string) => {
-      console.log('trying to attach session')
-      const clubToken = keyValueStore.readFromStorage(CLUB_TOKEN_HEADER_NAME)
+    const tryAttachClubToken = async (clubToken: string) => {
       if (clubToken) {
         console.log('Checking if club-token is still valid')
         const hasClubAccess = await AuthService.hasClubAccess(clubToken)
@@ -80,6 +78,16 @@ export function Main() {
           keyValueStore.removeItem(CLUB_TOKEN_HEADER_NAME)
         }
       }
+    }
+    const clubToken = keyValueStore.readFromStorage(CLUB_TOKEN_HEADER_NAME)
+    if (clubToken) {
+      tryAttachClubToken(clubToken)
+    }
+  }, [])
+
+  useEffect(() => {
+    const tryAttachSession = async (sessionId: string) => {
+      console.log('trying to attach session')
       const attachResponse = await attachSession(sessionId)
       if (attachResponse.Err) {
         console.log(
