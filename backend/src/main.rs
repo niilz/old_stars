@@ -104,6 +104,14 @@ fn club_login(
     }
 }
 
+#[post("/club/access", format = "json")]
+fn has_club_access(
+    club_token: ClubToken,
+    login_service: &State<RwLock<LoginService>>,
+) -> Json<bool> {
+    Json(login_service.read().unwrap().has_club_access(&club_token.0))
+}
+
 // Club-Authorization required
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
@@ -114,6 +122,7 @@ fn login(
     if !login_service.read().unwrap().has_club_access(&club_token.0) {
         return Json(Err("club-acces missing"));
     }
+    println!("Has Club-Access");
     match login_service
         .write()
         .unwrap()
@@ -158,6 +167,7 @@ fn register(
     if !login_service.read().unwrap().has_club_access(club_token.0) {
         return Json(Err("Registering requires club access".to_string()));
     }
+    println!("Has Club-Access");
     let user = user.into_inner();
     if user.name.is_empty() || user.pwd.is_empty() {
         return Json(Err("'name' and 'pwd' must not be empty".to_string()));
@@ -322,6 +332,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     options,
                     start,
                     club_login,
+                    has_club_access,
                     login,
                     logout,
                     register,

@@ -51,7 +51,7 @@ impl LoginService {
                 false
             }
             None => {
-                println!("No session found, login required");
+                println!("No club session found, login required");
                 false
             }
         }
