@@ -106,7 +106,7 @@ fn club_login(
 }
 
 // Club-Authorization required
-#[post("/club/access", format = "json")]
+#[get("/club/access", format = "json")]
 fn has_club_access(
     club_token: ClubToken,
     login_service: &State<RwLock<LoginService>>,
@@ -210,7 +210,7 @@ fn all_users(
     }
 }
 
-#[post("/admin", format = "json")]
+#[get("/admin", format = "json")]
 fn is_admin(token: SessionToken, login_service: &State<RwLock<LoginService>>) -> Json<bool> {
     println!("is-admin got called");
     Json(login_service.read().unwrap().is_admin(&token.0))
