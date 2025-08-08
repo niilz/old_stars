@@ -11,6 +11,7 @@ import {
 import styles from './Main.module.css'
 import {
   CLUB_TOKEN_HEADER_NAME,
+  LoginState,
   SESSION_TOKEN_HEADER_NAME,
 } from '../../Constants'
 import {
@@ -34,6 +35,9 @@ import {
 import { OneHistoryView } from '../../views/OneHistoryView'
 import { ArchiveView } from '../../views/ArchiveView'
 import AuthService from '../../services/auth-service'
+import { Modal } from '../modal/Modal'
+import { AdminLoginForm } from '../admin-login/AdminLoginForm'
+import { Button } from '../button/Button'
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>())
@@ -41,7 +45,7 @@ export function Main() {
   const [allHistories, setAllHistories] = useState(new Array<DrinkHistory>())
   const [selectedHistory, setSelectedHistory] = useState<DrinkHistory[]>([])
 
-  const { setAdminLoginOpen } = useContext(AppCtx)
+  const { isAdminLoginOpen, setAdminLoginOpen } = useContext(AppCtx)
   const { activeView, setActiveView } = useContext(ViewContext)
   const { setCurrentError } = useContext(ErrorContext)
   const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
@@ -58,12 +62,14 @@ export function Main() {
     } catch (e) {
       setActiveView(View.ClubLogin)
       console.error(`Loading users failed: ${e}`)
-      setCurrentError(`loading users failed`)
+      setCurrentError(`loading users failed ${e}`)
     }
   }
 
   useEffect(() => {
-    fetchUsers()
+    if (activeView === View.Playground) {
+      fetchUsers()
+    }
   }, [])
 
   useEffect(() => {
@@ -71,7 +77,7 @@ export function Main() {
       if (clubToken) {
         console.log('Checking if club-token is still valid')
         const hasClubAccess = await AuthService.hasClubAccess(clubToken)
-        if (hasClubAccess === 'true') {
+        if (hasClubAccess === true) {
           console.log('Has club access')
           setActiveView(View.UserLogin)
         } else {
@@ -213,6 +219,30 @@ export function Main() {
             <OneHistoryView
               dateAndTime={mapToDateAndTime(selectedHistory[0].timestamp)}
               users={selectedHistory.map((hist) => mapToUser(hist))}
+            />
+          )}
+          {isAdminLoginOpen && (
+            <Modal
+              children={
+                <>
+                  <AdminLoginForm
+                    onLogin={setActiveView}
+                    onError={(err) =>
+                      setCurrentError(`Admin Login failed: ${err}`)
+                    }
+                    // TODO: Fix this non-null-check}
+                    userName={sessionUser!!.name}
+                  />
+                  <Button
+                    text={'cancel'}
+                    callback={() => {
+                      setAdminLoginOpen(false)
+                      setCurrentError('')
+                    }}
+                    styles={''}
+                  />
+                </>
+              }
             />
           )}
         </HistoryContext.Provider>

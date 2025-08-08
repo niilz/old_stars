@@ -8,6 +8,7 @@ import { View } from './views/View'
 import { ErrorContext, ViewContext } from './context/Contexts'
 import { GlobalError } from './components/error/GlobalError'
 import { Button } from './components/button/Button'
+import { AdminLoginForm } from './components/admin-login/AdminLoginForm'
 
 export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
@@ -16,11 +17,11 @@ export const AppCtx = React.createContext({
 })
 
 function App() {
-  const [isAdminLoginOpen, setAdminLoginOpen] = useState(false)
   const [appHeight, _setAppHeight] = useState(window.innerHeight)
   const [activeView, setActiveView] = useState(View.ClubLogin)
   const [currentError, setCurrentError] = useState('')
 
+  const [isAdminLoginOpen, setAdminLoginOpen] = useState(false)
   const handleAdminLogin = (loginState: LoginState) => {
     if (loginState !== LoginState.LoggedInAdmin) {
       throw 'Only Admin should be able to log in as admin'
@@ -42,20 +43,6 @@ function App() {
           <div className="App" style={{ height: appHeight }}>
             <Main />
             <GlobalError />
-            {isAdminLoginOpen && (
-              <Modal
-                children={
-                  <>
-                    <AdminLogin onLogin={handleAdminLogin} />
-                    <Button
-                      text={'cancel'}
-                      callback={() => setAdminLoginOpen(false)}
-                      styles={''}
-                    />
-                  </>
-                }
-              />
-            )}
           </div>
         </ViewContext.Provider>
       </ErrorContext.Provider>
