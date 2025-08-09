@@ -20,9 +20,7 @@ impl UserServiceMock {
             ..Default::default()
         }
     }
-}
 
-impl UserServiceMock {
     pub(crate) fn new() -> Self {
         Self {
             dummy_db: HashMap::new(),
@@ -45,7 +43,7 @@ impl UserService for UserServiceMock {
             .dummy_db
             .values()
             .cloned()
-            .filter(|(_, role)| role == "user")
+            .filter(|(_, role)| role != "club")
             .collect())
     }
 

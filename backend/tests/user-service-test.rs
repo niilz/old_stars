@@ -21,9 +21,11 @@ fn can_verify_pwd_with_hash() {
     let pwd_hashed = user_service_mock.hash(plain_pwd).unwrap();
     let pwd_parsed = PasswordHash::new(&pwd_hashed).unwrap();
     let argon = Argon2::default();
-    assert!(argon
-        .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
-        .is_ok());
+    assert!(
+        argon
+            .verify_password(plain_pwd.as_bytes(), &pwd_parsed)
+            .is_ok()
+    );
 }
 
 #[test]
@@ -51,7 +53,7 @@ fn create_user_assigns_role_user() {
 }
 
 #[test]
-fn admin_and_club_is_not_in_all_users() {
+fn club_is_not_in_all_users() {
     let mut user_service_mock = UserServiceMock::new();
 
     let new_admin_dummy = LoginData {
@@ -81,7 +83,10 @@ fn admin_and_club_is_not_in_all_users() {
 
     let all_users = user_service_mock.get_users_and_roles();
     match all_users {
-        Ok(users) => assert!(users.is_empty()),
+        Ok(users) => {
+            assert_eq!(users.len(), 1);
+            assert_eq!(users[0].1, OldStarsRole::Admin)
+        }
         Err(e) => panic!("test failed: {e:?}"),
     }
 }

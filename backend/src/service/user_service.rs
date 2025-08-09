@@ -108,7 +108,7 @@ impl UserService for DbUserService {
     fn get_users(&mut self) -> Result<Vec<(User, String)>, OldStarsServiceError> {
         let users_and_roles = old_users
             .inner_join(roles)
-            .filter(role.eq(OldStarsRole::User.to_string()))
+            .filter(role.ne(OldStarsRole::Club.to_string()))
             .select((User::as_select(), role))
             .load::<(User, String)>(&mut self.db.connection())?;
         Ok(users_and_roles)
