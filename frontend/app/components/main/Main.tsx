@@ -71,26 +71,20 @@ export function Main() {
     }
   }, [activeView])
 
-  useEffect(() => {
-    const tryAttachClubToken = async (clubToken: string) => {
-      if (clubToken) {
-        console.log('Checking if club-token is still valid')
-        const hasClubAccess = await AuthService.hasClubAccess(clubToken)
-        if (hasClubAccess === true) {
-          console.log('Has club access')
-          setActiveView(View.UserLogin)
-        } else {
-          console.log('Club token is not valid, removing club-token')
-          keyValueStore.removeItem(CLUB_TOKEN_HEADER_NAME)
-          setActiveView(View.ClubLogin)
-        }
+  const tryAttachClubToken = async (clubToken: string) => {
+    if (clubToken) {
+      console.log('Checking if club-token is still valid')
+      const hasClubAccess = await AuthService.hasClubAccess(clubToken)
+      if (hasClubAccess === true) {
+        console.log('Has club access')
+        setActiveView(View.UserLogin)
+      } else {
+        console.log('Club token is not valid, removing club-token')
+        keyValueStore.removeItem(CLUB_TOKEN_HEADER_NAME)
+        setActiveView(View.ClubLogin)
       }
     }
-    const clubToken = keyValueStore.readFromStorage(CLUB_TOKEN_HEADER_NAME)
-    if (clubToken) {
-      tryAttachClubToken(clubToken)
-    }
-  }, [])
+  }
 
   useEffect(() => {
     const tryAttachSession = async (sessionId: string) => {
@@ -101,6 +95,11 @@ export function Main() {
           `Session login did not work. Err: ${attachResponse.Err}. Clearing token`
         )
         keyValueStore.removeItem(SESSION_TOKEN_HEADER_NAME)
+        // If user-session did not work: try club-session
+        const clubToken = keyValueStore.readFromStorage(CLUB_TOKEN_HEADER_NAME)
+        if (clubToken) {
+          tryAttachClubToken(clubToken)
+        }
       } else {
         console.log(`got attachResponse: ${attachResponse}`)
         const user = handleResponse(attachResponse)

@@ -4,7 +4,7 @@ import { Button } from '../button/Button'
 import { MsgType } from '../message/Message'
 import styles from './ClubLoginForm.module.css'
 import { GlobalKeyValueStoreContext } from '../../context/Contexts'
-import { CLUB_TOKEN_HEADER_NAME, LoginState } from '../../Constants'
+import { CLUB_TOKEN_HEADER_NAME } from '../../Constants'
 
 interface ClubLoginFormProps {
   onLogin: () => void
