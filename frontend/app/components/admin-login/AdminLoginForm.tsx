@@ -9,7 +9,8 @@ import { MsgType } from '../message/Message'
 import styles from './AdminLoginForm.module.css'
 import { GlobalKeyValueStoreContext } from '../../context/Contexts'
 import { View } from '../../views/View'
-import { SessionData, UserCredentials } from '../../model/User'
+import { SessionData } from '../../model/User'
+import { readErrorMessage } from '../../model/Error'
 
 interface AdminLoginFormProps {
   onLogin: (nextView: View) => void
@@ -57,7 +58,11 @@ export function AdminLoginForm(props: AdminLoginFormProps) {
         <Button
           text="Login"
           styles={styles.registerBtn}
-          callback={() => login().catch((e) => props.onError(MsgType.ERR, e))}
+          callback={() =>
+            login().catch((err) =>
+              props.onError(MsgType.ERR, readErrorMessage(err).msg)
+            )
+          }
         />
       </form>
     </>

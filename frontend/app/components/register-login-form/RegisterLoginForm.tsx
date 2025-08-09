@@ -34,8 +34,8 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
       props.onRegister(newUser as User)
       setUserName('')
       setPwd('')
-    } catch (e) {
-      props.onError(MsgType.ERR, readErrorMessage(e).msg)
+    } catch (err) {
+      props.onError(MsgType.ERR, readErrorMessage(err).msg)
     }
   }
 
@@ -59,7 +59,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
         )
         props.onLogin(LoginState.LoggedInUser)
       })
-      .catch((e) => props.onError(MsgType.ERR, e))
+      .catch((err) => props.onError(MsgType.ERR, readErrorMessage(err).msg))
   }
 
   return (

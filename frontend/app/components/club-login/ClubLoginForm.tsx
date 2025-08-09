@@ -5,6 +5,7 @@ import { MsgType } from '../message/Message'
 import styles from './ClubLoginForm.module.css'
 import { GlobalKeyValueStoreContext } from '../../context/Contexts'
 import { CLUB_TOKEN_HEADER_NAME } from '../../Constants'
+import { readErrorMessage } from '../../model/Error'
 
 interface ClubLoginFormProps {
   onLogin: () => void
@@ -25,7 +26,9 @@ export function ClubLoginForm(props: ClubLoginFormProps) {
           props.onLogin()
         }
       })
-      .catch((e) => props.onError(MsgType.ERR, e))
+      .catch((err) => {
+        props.onError(MsgType.ERR, readErrorMessage(err).msg)
+      })
   }
 
   return (
