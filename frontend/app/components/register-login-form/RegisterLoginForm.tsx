@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react'
 import {
   CLUB_TOKEN_HEADER_NAME,
-  LoginState,
   SESSION_TOKEN_HEADER_NAME,
 } from '../../Constants'
 import { SessionData, User } from '../../model/User'
@@ -15,7 +14,7 @@ import { readErrorMessage } from '../../model/Error'
 
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void
-  onLogin: (loginGranted: LoginState) => void
+  onLogin: (userName: string) => void
   styles?: string
   onError: (type: MsgType, msg: string) => void
 }
@@ -57,7 +56,7 @@ export function RegisterLoginForm(props: RegisterLoginFormProps) {
           SESSION_TOKEN_HEADER_NAME,
           sessionDataCasted.sessionId
         )
-        props.onLogin(LoginState.LoggedInUser)
+        props.onLogin(sessionDataCasted.user.name)
       })
       .catch((err) => props.onError(MsgType.ERR, readErrorMessage(err).msg))
   }

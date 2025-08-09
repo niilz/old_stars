@@ -7,7 +7,7 @@ export function readErrorMessage(err: unknown): OldStarsError {
     return { msg: 'error is null' }
   }
   if (typeof err !== 'object') {
-    return { msg: `simple type error: ${err}` }
+    return { msg: err.toString() }
   }
   let msg
   if ('msg' in err) {

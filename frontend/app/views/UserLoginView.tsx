@@ -6,8 +6,18 @@ import { ViewContext } from '../context/Contexts'
 import styles from './UserLoginView.module.css'
 import { View } from './View'
 
-export function UserLoginView() {
+interface UserLoginViewProps {
+  onLogin: (userName: string) => void
+}
+
+export function UserLoginView(props: UserLoginViewProps) {
   const { setActiveView } = useContext(ViewContext)
+
+  const handleLogin = (userName: string) => {
+    setActiveView(View.Playground)
+
+    props.onLogin(userName)
+  }
 
   return (
     <>
@@ -19,7 +29,7 @@ export function UserLoginView() {
         }}
       />
       <AppLogo styles={styles.logo} />
-      <Login onLogin={() => setActiveView(View.Playground)} />
+      <Login onLogin={handleLogin} />
     </>
   )
 }

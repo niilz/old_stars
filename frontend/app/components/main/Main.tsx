@@ -34,18 +34,19 @@ import {
 import { OneHistoryView } from '../../views/OneHistoryView'
 import { ArchiveView } from '../../views/ArchiveView'
 import AuthService from '../../services/auth-service'
-import { Modal } from '../modal/Modal'
-import { AdminLoginForm } from '../admin-login/AdminLoginForm'
-import { Button } from '../button/Button'
 import { readErrorMessage } from '../../model/Error'
 
-export function Main() {
+interface MainProps {
+  onUserLogin: (userName: string) => void
+}
+
+export function Main(props: MainProps) {
   const [users, setUsers] = useState(new Array<User>())
   const [sessionUser, setSessionUser] = useState<User | null>(null)
   const [allHistories, setAllHistories] = useState(new Array<DrinkHistory>())
   const [selectedHistory, setSelectedHistory] = useState<DrinkHistory[]>([])
 
-  const { isAdminLoginOpen, setAdminLoginOpen } = useContext(AppCtx)
+  const { setAdminLoginOpen } = useContext(AppCtx)
   const { activeView, setActiveView } = useContext(ViewContext)
   const { setCurrentError } = useContext(ErrorContext)
   const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
@@ -178,11 +179,6 @@ export function Main() {
     setActiveView(View.Histories)
   }
 
-  const handleOnAdminLogin = (view: View) => {
-    setActiveView(view)
-    setAdminLoginOpen(false)
-  }
-
   return (
     <div className={styles.Main}>
       <UserContext.Provider value={{ addUser, setSessionUser }}>
@@ -216,32 +212,6 @@ export function Main() {
             <OneHistoryView
               dateAndTime={mapToDateAndTime(selectedHistory[0].timestamp)}
               users={selectedHistory.map((hist) => mapToUser(hist))}
-            />
-          )}
-          {isAdminLoginOpen && (
-            <Modal
-              children={
-                <>
-                  <AdminLoginForm
-                    onLogin={handleOnAdminLogin}
-                    onError={(err) =>
-                      setCurrentError(
-                        `Admin Login failed: ${readErrorMessage(err).msg}`
-                      )
-                    }
-                    // TODO: Fix this non-null-check}
-                    userName={sessionUser!!.name}
-                  />
-                  <Button
-                    text={'cancel'}
-                    callback={() => {
-                      setAdminLoginOpen(false)
-                      setCurrentError('')
-                    }}
-                    styles={''}
-                  />
-                </>
-              }
             />
           )}
         </HistoryContext.Provider>

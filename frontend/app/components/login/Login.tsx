@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react'
-import { LoginState } from '../../Constants'
 import { User } from '../../model/User'
 import { Message, MsgType } from '../message/Message'
 import { RegisterLoginForm } from '../register-login-form/RegisterLoginForm'
@@ -7,7 +6,7 @@ import styles from './Login.module.css'
 import { UserContext } from '../../context/Contexts'
 
 type LoginProps = {
-  onLogin: (loginState: LoginState) => void
+  onLogin: (userName: string) => void
 }
 
 export function Login(props: LoginProps) {
@@ -19,14 +18,6 @@ export function Login(props: LoginProps) {
   const handleError = (msgType: MsgType, msg: string) => {
     setMessage(msg)
     setMsgType(msgType)
-  }
-
-  const handleLogin = (loginState: LoginState) => {
-    if (loginState !== LoginState.LoginError) {
-      setMessage('')
-      setMsgType(MsgType.NONE)
-    }
-    props.onLogin(loginState)
   }
 
   const handleRegister = (user: User) => {
@@ -41,7 +32,7 @@ export function Login(props: LoginProps) {
       <RegisterLoginForm
         {...props}
         onRegister={handleRegister}
-        onLogin={handleLogin}
+        onLogin={props.onLogin}
         onError={handleError}
         styles={styles.LoginForm}
       />

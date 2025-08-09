@@ -9,6 +9,7 @@ import { ErrorContext, ViewContext } from './context/Contexts'
 import { GlobalError } from './components/error/GlobalError'
 import { Button } from './components/button/Button'
 import { AdminLoginForm } from './components/admin-login/AdminLoginForm'
+import { readErrorMessage } from './model/Error'
 
 export const AppCtx = React.createContext({
   isAdminLoginOpen: false,
@@ -20,13 +21,11 @@ function App() {
   const [appHeight, _setAppHeight] = useState(window.innerHeight)
   const [activeView, setActiveView] = useState(View.ClubLogin)
   const [currentError, setCurrentError] = useState('')
+  const [userName, setUserName] = useState('')
 
   const [isAdminLoginOpen, setAdminLoginOpen] = useState(false)
-  const handleAdminLogin = (loginState: LoginState) => {
-    if (loginState !== LoginState.LoggedInAdmin) {
-      throw 'Only Admin should be able to log in as admin'
-    }
-    setActiveView(View.AdminConsole)
+  const handleOnAdminLogin = (view: View) => {
+    setActiveView(view)
     setAdminLoginOpen(false)
   }
 
@@ -41,7 +40,32 @@ function App() {
       <ErrorContext.Provider value={{ currentError, setCurrentError }}>
         <ViewContext.Provider value={{ activeView, setActiveView }}>
           <div className="App" style={{ height: appHeight }}>
-            <Main />
+            <Main onUserLogin={setUserName} />
+            {isAdminLoginOpen && (
+              <Modal
+                children={
+                  <>
+                    <AdminLoginForm
+                      onLogin={handleOnAdminLogin}
+                      onError={(err) =>
+                        setCurrentError(
+                          `Admin Login failed: ${readErrorMessage(err).msg}`
+                        )
+                      }
+                      userName={userName}
+                    />
+                    <Button
+                      text={'cancel'}
+                      callback={() => {
+                        setAdminLoginOpen(false)
+                        setCurrentError('')
+                      }}
+                      styles={''}
+                    />
+                  </>
+                }
+              />
+            )}
             <GlobalError />
           </div>
         </ViewContext.Provider>

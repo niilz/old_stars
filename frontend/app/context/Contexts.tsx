@@ -1,6 +1,5 @@
 import React from 'react'
 import { User } from '../model/User'
-import { LoginState } from '../Constants'
 import { View } from '../views/View'
 import { DrinkHistory } from '../model/DrinkHistory'
 import { GlobalKeyValueStore, LocalStorage } from '../util/storage-util'
@@ -13,11 +12,6 @@ export const GlobalKeyValueStoreContext = React.createContext({
 export const UserContext = React.createContext({
   addUser: (_user: User) => {},
   setSessionUser: (_user: User) => {},
-})
-
-export const LoginContext = React.createContext({
-  loginState: LoginState.LoggedOut,
-  setLoginState: (_: LoginState) => {},
 })
 
 export const ViewContext = React.createContext({
