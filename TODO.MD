@@ -1,15 +1,10 @@
-- Maybe move modal back into App again (might be cleaner) otherwise clean App
 - Check water-ratio in backend as well
 - add favicon
 - Add cigarets
-- Do not filter in user-view for admin-roles
-- Insert main user with role: Admin
-- just check role not role-name for admin-login (might already be the case)
-- Get rid of LoginState (I think it is not needed anymore)
 - make histories scrollable
 - allow for exporting
 - allow admin to yank all sessions
 - get rid of all the diesel warnings
 - Store session in DB or at least remove it at some point
-- Check that niilz.de is available via 443 over https
+- Check that niilz.de is available via 443 over https (point niilz.github.io to niilz.de not www.niilz.de)
 - Allow sending history as CSV per email
