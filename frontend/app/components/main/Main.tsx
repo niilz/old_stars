@@ -183,7 +183,9 @@ export function Main(props: MainProps) {
     <div className={styles.Main}>
       <UserContext.Provider value={{ addUser, setSessionUser }}>
         {activeView === View.ClubLogin && <ClubLoginView />}
-        {activeView === View.UserLogin && <UserLoginView />}
+        {activeView === View.UserLogin && (
+          <UserLoginView onLogin={props.onUserLogin} />
+        )}
         {activeView === View.Playground && sessionUser && (
           <Playground
             user={sessionUser}
