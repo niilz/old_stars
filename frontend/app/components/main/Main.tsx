@@ -114,7 +114,7 @@ export function Main() {
     if (sessionId) {
       tryAttachSession(sessionId).catch((e) => {
         console.error(`Could not attach session: ${e}`)
-        setCurrentError(`Attaching session failed: ${e}`)
+        setCurrentError(`Attaching session failed`)
       })
     }
   }, [])
