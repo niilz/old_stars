@@ -11,7 +11,7 @@ import { Button } from '../button/Button'
 import { MsgType } from '../message/Message'
 import styles from './RegisterLoginForm.module.css'
 import { GlobalKeyValueStoreContext, UserContext } from '../../context/Contexts'
-import { OldStarsError, readErrorMessage } from '../../model/Error'
+import { readErrorMessage } from '../../model/Error'
 
 interface RegisterLoginFormProps {
   onRegister: (user: User) => void

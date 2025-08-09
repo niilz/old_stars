@@ -37,6 +37,7 @@ import AuthService from '../../services/auth-service'
 import { Modal } from '../modal/Modal'
 import { AdminLoginForm } from '../admin-login/AdminLoginForm'
 import { Button } from '../button/Button'
+import { readErrorMessage } from '../../model/Error'
 
 export function Main() {
   const [users, setUsers] = useState(new Array<User>())
@@ -58,10 +59,10 @@ export function Main() {
         const users = handleResponse(userResponse)
         setUsers(users as User[])
       }
-    } catch (e) {
+    } catch (err) {
       setActiveView(View.ClubLogin)
-      console.error(`Loading users failed: ${e}`)
-      setCurrentError(`loading users failed ${e}`)
+      console.error(`Loading users failed: ${err}`)
+      setCurrentError(`loading users failed ${readErrorMessage(err).msg}`)
     }
   }
 
@@ -113,7 +114,7 @@ export function Main() {
     if (sessionId) {
       tryAttachSession(sessionId).catch((e) => {
         console.error(`Could not attach session: ${e}`)
-        setCurrentError(`Attaching session failed`)
+        setCurrentError(`Attaching session failed: ${e}`)
       })
     }
   }, [])
@@ -230,7 +231,9 @@ export function Main() {
                   <AdminLoginForm
                     onLogin={handleOnAdminLogin}
                     onError={(err) =>
-                      setCurrentError(`Admin Login failed: ${err}`)
+                      setCurrentError(
+                        `Admin Login failed: ${readErrorMessage(err).msg}`
+                      )
                     }
                     // TODO: Fix this non-null-check}
                     userName={sessionUser!!.name}
