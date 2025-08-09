@@ -1,5 +1,12 @@
 import './index.css'
 
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Old Stars',
+  description: 'Web app to accompany the yearly meeting',
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -7,13 +14,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <title>Old Stars</title>
-        <meta
-          name="description"
-          content="Web app to accompany the yearly meeting"
-        />
-      </head>
       <body>
         <div id="root">{children}</div>
       </body>
