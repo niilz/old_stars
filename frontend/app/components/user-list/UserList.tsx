@@ -24,8 +24,8 @@ export function UserList(props: UserListProps) {
         <tbody>
           {props.users.map((user) => (
             <ListItem
-              key={user['id']}
-              id={user['id']}
+              key={user.name}
+              id={user.name}
               user={user}
               isEditable={props.isEditable}
               deleteGotClicked={() =>

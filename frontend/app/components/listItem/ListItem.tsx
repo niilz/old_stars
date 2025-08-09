@@ -1,12 +1,12 @@
-import { User } from '../../model/User';
-import styles from './ListItem.module.css';
+import { User } from '../../model/User'
+import styles from './ListItem.module.css'
 
 type ListItemProps = {
-  id: number;
-  user: User;
-  isEditable: boolean;
-  deleteGotClicked?: () => void;
-};
+  id: string
+  user: User
+  isEditable: boolean
+  deleteGotClicked?: () => void
+}
 
 export function ListItem(props: ListItemProps) {
   return (
@@ -26,5 +26,5 @@ export function ListItem(props: ListItemProps) {
         </td>
       ) : null}
     </tr>
-  );
+  )
 }
