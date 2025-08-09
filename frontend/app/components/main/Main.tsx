@@ -62,7 +62,7 @@ export function Main() {
     } catch (err) {
       setActiveView(View.ClubLogin)
       console.error(`Loading users failed: ${err}`)
-      setCurrentError(`loading users failed ${readErrorMessage(err).msg}`)
+      setCurrentError('loading users failed' + readErrorMessage(err).msg)
     }
   }
 
@@ -161,12 +161,6 @@ export function Main() {
     const allUsersResponse = await getAllUsers(sessionId)
     const allUsers = handleResponse(allUsersResponse)
     setUsers(allUsers as User[])
-    if (sessionUser) {
-      const currentUser = (allUsers as User[]).filter(
-        (user) => user.id === sessionUser.id
-      )[0]
-      setSessionUser(currentUser)
-    }
   }
 
   const handleHistorize = async (historyResult: Promise<ApiResponse>) => {
