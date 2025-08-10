@@ -1,4 +1,4 @@
-use diesel::{insert_into, prelude::*, PgConnection};
+use diesel::{PgConnection, insert_into, prelude::*};
 
 use crate::{
     model::{
@@ -90,10 +90,30 @@ impl<HR: HistoryRepo> HistoryService<HR> {
         Ok(written_history)
     }
 
+    pub fn histories_from_csv(
+        &mut self,
+        csv: &str,
+        conn: &mut HR::Conn,
+    ) -> Result<Vec<History>, OldStarsServiceError> {
+        let insert_histories = csv_to_history(csv)?;
+        self.repo.historize_drinks(insert_histories, conn)
+    }
+
     pub fn load_histories(
         &self,
         conn: &mut HR::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError> {
         self.repo.get_histories(conn)
     }
+}
+
+fn csv_to_history(history_csv: &str) -> Result<Vec<InsertHistory>, OldStarsServiceError> {
+    let has_headings = history_csv.to_lowercase().starts_with("history_id");
+
+    let mut data = history_csv.lines();
+    if has_headings {
+        data.next();
+    }
+
+    data.map(InsertHistory::try_from).collect()
 }

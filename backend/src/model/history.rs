@@ -1,9 +1,10 @@
 use diesel::prelude::*;
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 
 use crate::schema::history;
+use crate::service::error::OldStarsServiceError;
 
 use super::user::User;
 
@@ -83,5 +84,42 @@ impl Default for History {
 impl History {
     pub fn new() -> Self {
         Self::default()
+    }
+}
+
+const HISTORY_FIELD_COUNT: usize = 7;
+
+impl TryFrom<&str> for InsertHistory {
+    type Error = OldStarsServiceError;
+
+    fn try_from(csv_tuple: &str) -> Result<Self, Self::Error> {
+        let context = "TryFrom CSV for History";
+        let values = csv_tuple.split(',').collect::<Vec<_>>();
+        if values.len() != HISTORY_FIELD_COUNT {
+            return Err(OldStarsServiceError::new(
+                context,
+                &format!("csv does not have {HISTORY_FIELD_COUNT} fields"),
+            ));
+        }
+        Ok(InsertHistory {
+            user_name: values[1].to_string(),
+            timestamp: UNIX_EPOCH + Duration::from_millis(parse_number_or_err(values[2])?),
+            beer_count: parse_number_or_err(values[3])? as i32,
+            shot_count: parse_number_or_err(values[4])? as i32,
+            other_count: parse_number_or_err(values[5])? as i32,
+            water_count: parse_number_or_err(values[6])? as i32,
+        })
+    }
+}
+fn parse_number_or_err(s: &str) -> Result<u64, OldStarsServiceError> {
+    match u64::from_str_radix(s, 10) {
+        Ok(num) => Ok(num),
+        Err(e) => {
+            eprint!("Parse-Error: {e}");
+            Err(OldStarsServiceError::new(
+                "Parse-History-Number",
+                &format!("Could not parse {s} as timestamp"),
+            ))
+        }
     }
 }

@@ -17,7 +17,7 @@ pub struct HistoryTestRepo {
 impl HistoryTestRepo {
     fn insert(&mut self, histories: Vec<InsertHistory>) {
         for (idx, history) in histories.into_iter().enumerate() {
-            self.histories.insert(idx as i32, history);
+            self.histories.insert(idx as i32 + 1, history);
         }
     }
 }
