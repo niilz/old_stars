@@ -10,15 +10,17 @@
     {
       "src": "/old_stars/icon1.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "/old_stars/icon2.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/old_stars",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
