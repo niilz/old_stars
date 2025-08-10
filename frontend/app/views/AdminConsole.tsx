@@ -1,10 +1,10 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import styles from './AdminConsole.module.css'
 import { User } from '../model/User'
 import { ApiResponse } from '../services/fetch-service'
 import { GlobalKeyValueStoreContext, ViewContext } from '../context/Contexts'
 import { deleteUser } from '../services/user-service'
-import { historizeDrinks } from '../services/history-service'
+import { historizeDrinks, storeHistories } from '../services/history-service'
 import { Header } from '../components/header/Header'
 import { UserList } from '../components/user-list/UserList'
 import { Button } from '../components/button/Button'
@@ -20,6 +20,7 @@ interface AdminConsoleProps {
 export function AdminConsole(props: AdminConsoleProps) {
   const { setActiveView } = useContext(ViewContext)
   const { keyValueStore } = useContext(GlobalKeyValueStoreContext)
+  const [historyData, setHistoryData] = useState('')
 
   const deleteUserFromList = (userId: number) => {
     const sessionId = keyValueStore.tryReadFromStorage(
@@ -35,6 +36,15 @@ export function AdminConsole(props: AdminConsoleProps) {
     )
     const historiesResult = historizeDrinks(sessionId)
     props.onHistorize(historiesResult)
+  }
+
+  const handleSaveHistory = () => {
+    const sessionId = keyValueStore.tryReadFromStorage(
+      SESSION_TOKEN_HEADER_NAME
+    )
+    const historiesResult = storeHistories(sessionId, historyData)
+    // TODO: Show womething... maybe
+    //props.onHistorize(historiesResult)
   }
 
   return (
@@ -54,6 +64,15 @@ export function AdminConsole(props: AdminConsoleProps) {
         text="Home"
         styles={styles.Btn}
         callback={() => setActiveView(View.Playground)}
+      />
+      <textarea
+        placeholder="paste archive as CSV here"
+        onChange={(e) => setHistoryData(e.target.value)}
+      />
+      <Button
+        text="save history"
+        styles={styles.Btn}
+        callback={handleSaveHistory}
       />
     </div>
   )

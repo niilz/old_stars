@@ -1,10 +1,22 @@
 import { METHOD } from '../Constants'
 import { fetchWrapperUserSession } from './fetch-service'
 
-export function historizeDrinks(sessionToken: string) {
-  return fetchWrapperUserSession(METHOD.GET, `historize`, '', sessionToken)
+export function historizeDrinks(adminSessionToken: string) {
+  return fetchWrapperUserSession(METHOD.GET, `historize`, '', adminSessionToken)
 }
 
 export function fetchHistories(sessionToken: string) {
   return fetchWrapperUserSession(METHOD.GET, `histories`, '', sessionToken)
+}
+
+export function storeHistories(
+  adminSessionToken: string,
+  archiveDataCsv: string
+) {
+  return fetchWrapperUserSession(
+    METHOD.POST,
+    `histories`,
+    archiveDataCsv,
+    adminSessionToken
+  )
 }

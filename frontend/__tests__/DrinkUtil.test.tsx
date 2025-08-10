@@ -4,14 +4,14 @@ import { needsWaterRound } from '../app/util/DrinkUtil'
 import { MAX_ALC_TO_WATER_RATIO } from '../app/Constants'
 
 describe('User', () => {
-  it('User does not have to drink water if max-count is not reached', () => {
+  it('does not have to drink water if max-count is not reached', () => {
     const userDummy = createUserDummy()
     expect(needsWaterRound(userDummy)).toBe(false)
   })
 })
 
 describe('User', () => {
-  it('User must drink water if max-count is reached', () => {
+  it('must drink water if max-count is reached', () => {
     const userDummy = createUserDummy()
     userDummy.beerCount = 3
     userDummy.shotCount = 1
@@ -19,8 +19,8 @@ describe('User', () => {
   })
 })
 
-describe('User', () => {
-  it(`1 water allows for ${MAX_ALC_TO_WATER_RATIO} more drinks`, () => {
+describe(`User is allowed ${MAX_ALC_TO_WATER_RATIO} more drinks`, () => {
+  it(`when 1 more water is consumed `, () => {
     const userDummy = createUserDummy()
     userDummy.beerCount = 4
     expect(needsWaterRound(userDummy)).toBe(true)
