@@ -39,15 +39,16 @@ pub struct InsertHistory {
     pub water_count: i32,
 }
 
-impl From<&User> for InsertHistory {
-    fn from(user: &User) -> Self {
+impl From<(SystemTime, &User)> for InsertHistory {
+    fn from(history_data: (SystemTime, &User)) -> Self {
+        let (timestamp, user) = history_data;
         Self {
             user_name: user.name.to_string(),
             beer_count: user.beer_count,
             shot_count: user.shot_count,
             other_count: user.other_count,
             water_count: user.water_count,
-            timestamp: SystemTime::now(),
+            timestamp,
         }
     }
 }

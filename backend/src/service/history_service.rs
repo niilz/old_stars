@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use diesel::{PgConnection, insert_into, prelude::*};
 
 use crate::{
@@ -84,7 +86,11 @@ impl<HR: HistoryRepo> HistoryService<HR> {
         conn: &mut HR::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError> {
         let all_drinkers = self.repo.get_drinkers(conn)?;
-        let histories = all_drinkers.iter().map(InsertHistory::from).collect();
+        let timestamp = SystemTime::now();
+        let histories = all_drinkers
+            .iter()
+            .map(|user| InsertHistory::from((timestamp, user)))
+            .collect();
         let written_history = self.repo.historize_drinks(histories, conn)?;
         self.repo.reset_drinks(conn)?;
         Ok(written_history)
