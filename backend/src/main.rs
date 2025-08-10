@@ -290,7 +290,7 @@ fn historize(
     // Check that user is admin
     match login_service.read().unwrap().get_session_user(token.0) {
         Some(user) if user.role == OldStarsRole::Admin => user,
-        Some(_) => return Json(Err("Only Admins are allowed to delete".to_string())),
+        Some(_) => return Json(Err("Only Admins are allowed to historize".to_string())),
         _ => {
             return Json(Err("No valid session".to_string()));
         }
@@ -303,6 +303,38 @@ fn historize(
     {
         Ok(histories) => Json(Ok(histories)),
         Err(e) => Json(Err(format!("Could not historize drinks: {e}"))),
+    }
+}
+
+#[post("/histories", data = "<csv>")]
+fn histories_from_csv(
+    db_conn: &State<OldStarDb>,
+    history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
+    login_service: &State<RwLock<LoginService>>,
+    token: SessionToken,
+    csv: &str,
+) -> Json<Result<Vec<History>, String>> {
+    println!("histories from csv got called");
+    // Check that user is admin
+    match login_service.read().unwrap().get_session_user(token.0) {
+        Some(user) if user.role == OldStarsRole::Admin => user,
+        Some(_) => {
+            return Json(Err(
+                "Only Admins are allowed to insert histories".to_string()
+            ));
+        }
+        _ => {
+            return Json(Err("No valid session".to_string()));
+        }
+    };
+
+    match history_service
+        .write()
+        .unwrap()
+        .histories_from_csv(csv, &mut db_conn.connection())
+    {
+        Ok(histories) => Json(Ok(histories)),
+        Err(e) => Json(Err(format!("Could not insert histories from csv: {e}"))),
     }
 }
 
@@ -401,7 +433,8 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     delete_user,
                     add_drink,
                     historize,
-                    histories
+                    histories,
+                    histories_from_csv
                 ],
             )
             .manage(Arc::clone(&user_service))
