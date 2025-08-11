@@ -114,7 +114,11 @@ impl<HR: HistoryRepo> HistoryService<HR> {
 }
 
 fn csv_to_history(history_csv: &str) -> Result<Vec<InsertHistory>, OldStarsServiceError> {
-    let has_headings = history_csv.to_lowercase().starts_with("history_id");
+    static INSERT_HISTORY_FIELDS: &str =
+        "user_name,timestamp,beer_count,shot_count,other_count,water_count\n";
+    let has_headings = history_csv
+        .to_lowercase()
+        .starts_with(INSERT_HISTORY_FIELDS);
 
     let mut data = history_csv.lines();
     if has_headings {
