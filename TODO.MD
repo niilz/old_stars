@@ -1,5 +1,4 @@
 - Check water-ratio in backend as well
-- add favicon
 - Add cigarets
 - make histories scrollable
 - allow for exporting

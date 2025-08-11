@@ -63,7 +63,7 @@ fn saving_history_resets_drink_counts() {
 fn save_history_from_csv() {
     // given
     // 2042_01_01 = 2272143600000;
-    let history_csv = r#"history_id,user_name,timestamp,beer_count,shot_count,other_count,water_count1
+    let history_csv = r#"history_id,user_name,timestamp,beer_count,shot_count,other_count,water_count
     1,some-name,2272143600000,42,43,44,45
     2,other name,2272143600000,24,34,44,54"#;
 
