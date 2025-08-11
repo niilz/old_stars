@@ -58,7 +58,7 @@ button:active {
   color: var(--primary);
 }
 
-input {
+input, textarea {
   text-align: center;
   font-size: 2rem;
   padding: 1px 6px;

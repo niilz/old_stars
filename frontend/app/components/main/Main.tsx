@@ -104,8 +104,9 @@ export function Main(props: MainProps) {
         }
       } else {
         console.log(`got attachResponse: ${attachResponse}`)
-        const user = handleResponse(attachResponse)
-        setSessionUser(user as User)
+        const user = handleResponse(attachResponse) as User
+        setSessionUser(user)
+        props.onUserLogin(user.name)
         setActiveView(View.Playground)
         fetchUsers()
       }

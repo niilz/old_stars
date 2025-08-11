@@ -22,10 +22,10 @@ export function UserList(props: UserListProps) {
           </tr>
         </thead>
         <tbody>
-          {props.users.map((user) => (
+          {props.users.map((user, idx) => (
             <ListItem
-              key={user.name}
-              id={user.name}
+              key={`${user.name}-${idx}`}
+              id={`${user.name}-${idx}`}
               user={user}
               isEditable={props.isEditable}
               deleteGotClicked={() =>
