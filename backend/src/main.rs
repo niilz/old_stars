@@ -306,8 +306,8 @@ fn historize(
     }
 }
 
-#[post("/histories", data = "<csv>")]
-fn histories_from_csv(
+#[post("/history", data = "<csv>")]
+fn history_from_csv(
     db_conn: &State<OldStarDb>,
     history_service: &State<RwLock<HistoryService<DbHistoryRepo>>>,
     login_service: &State<RwLock<LoginService>>,
@@ -434,7 +434,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     add_drink,
                     historize,
                     histories,
-                    histories_from_csv
+                    history_from_csv
                 ],
             )
             .manage(Arc::clone(&user_service))
