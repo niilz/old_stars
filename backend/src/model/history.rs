@@ -88,14 +88,14 @@ impl History {
     }
 }
 
-const HISTORY_FIELD_COUNT: usize = 7;
+const HISTORY_FIELD_COUNT: usize = 6;
 
 impl TryFrom<&str> for InsertHistory {
     type Error = OldStarsServiceError;
 
     fn try_from(csv_tuple: &str) -> Result<Self, Self::Error> {
         let context = "TryFrom CSV for History";
-        let values = csv_tuple.split(',').collect::<Vec<_>>();
+        let values = csv_tuple.split(',').map(&str::trim).collect::<Vec<_>>();
         if values.len() != HISTORY_FIELD_COUNT {
             return Err(OldStarsServiceError::new(
                 context,
@@ -103,12 +103,12 @@ impl TryFrom<&str> for InsertHistory {
             ));
         }
         Ok(InsertHistory {
-            user_name: values[1].to_string(),
-            timestamp: UNIX_EPOCH + Duration::from_millis(parse_number_or_err(values[2])?),
-            beer_count: parse_number_or_err(values[3])? as i32,
-            shot_count: parse_number_or_err(values[4])? as i32,
-            other_count: parse_number_or_err(values[5])? as i32,
-            water_count: parse_number_or_err(values[6])? as i32,
+            user_name: values[0].to_string(),
+            timestamp: UNIX_EPOCH + Duration::from_millis(parse_number_or_err(values[1])?),
+            beer_count: parse_number_or_err(values[2])? as i32,
+            shot_count: parse_number_or_err(values[3])? as i32,
+            other_count: parse_number_or_err(values[4])? as i32,
+            water_count: parse_number_or_err(values[5])? as i32,
         })
     }
 }
