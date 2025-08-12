@@ -18,6 +18,7 @@ export function ListItem(props: ListItemProps) {
       <td className={styles.count}>{props.user.shotCount}</td>
       <td className={styles.count}>{props.user.otherCount}</td>
       <td className={styles.count}>{props.user.waterCount}</td>
+      <td className={styles.count}>{props.user.cigaretteCount}</td>
       {props.isEditable ? (
         <td>
           <button className={styles.delBtn} onClick={props.deleteGotClicked}>
