@@ -8,5 +8,6 @@ CREATE TABLE history (
 	beer_count INT NOT NULL,
 	shot_count INT NOT NULL,
 	other_count INT NOT NULL,
-	water_count INT NOT NULL
+	water_count INT NOT NULL,
+    cigarette_count INT NOT NULL
 );

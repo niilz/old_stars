@@ -1,1 +1,2 @@
-DROP table old_users;
+-- This file should undo anything in `up.sql`
+DROP TABLE old_users;
