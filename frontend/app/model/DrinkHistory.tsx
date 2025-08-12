@@ -8,6 +8,7 @@ export interface DrinkHistory {
   shotCount: number
   otherCount: number
   waterCount: number
+  cigaretteCount: number
 }
 
 interface TimeStamp {
@@ -30,6 +31,7 @@ export function mapToUser(history: DrinkHistory): User {
     shotCount: history.shotCount,
     otherCount: history.otherCount,
     waterCount: history.waterCount,
+    cigaretteCount: history.cigaretteCount,
   }
 }
 
