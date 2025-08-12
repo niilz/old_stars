@@ -19,6 +19,7 @@ export function UserList(props: UserListProps) {
             <th className={styles.Th}>🥃</th>
             <th className={styles.Th}>🥤</th>
             <th className={styles.Th}>🚰</th>
+            <th className={styles.Th}>🚬</th>
           </tr>
         </thead>
         <tbody>

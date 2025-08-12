@@ -45,12 +45,19 @@ export function UserView(props: UserProps) {
           >
             🚰
           </button>
+          <button
+            onClick={() => handleUpdate('cigarette')}
+            className={styles.cigarette}
+          >
+            🚬
+          </button>
         </div>
         <div className={styles.stats}>
           <p className={styles.count}>{props.user.beerCount}</p>
           <p className={styles.count}>{props.user.shotCount}</p>
           <p className={styles.count}>{props.user.otherCount}</p>
           <p className={styles.count}>{props.user.waterCount}</p>
+          <p className={styles.count}>{props.user.cigaretteCount}</p>
         </div>
       </div>
     </div>

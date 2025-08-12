@@ -5,7 +5,7 @@
 }
 
 .statsPanel {
-  width: 100vw;
+  width: 90vw;
 }
 
 .icons {
@@ -15,7 +15,7 @@
 
 .icons button {
   min-width: max-content;
-  padding: 1vw 3vw;
+  padding: 1vw 2vw;
 }
 
 .stats {
@@ -30,5 +30,9 @@
 }
 
 .other {
+  font-size: 2rem;
+}
+
+.cigarette {
   font-size: 2rem;
 }

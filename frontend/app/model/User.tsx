@@ -7,6 +7,7 @@ export interface User {
   shotCount: number
   otherCount: number
   waterCount: number
+  cigaretteCount: number
 }
 
 export interface UserCredentials {
@@ -28,6 +29,7 @@ export class OldStar implements User {
   shotCount: number
   otherCount: number
   waterCount: number
+  cigaretteCount: number
 
   constructor(user: User) {
     this.id = user.id
@@ -38,5 +40,6 @@ export class OldStar implements User {
     this.shotCount = user.shotCount
     this.otherCount = user.otherCount
     this.waterCount = user.waterCount
+    this.cigaretteCount = user.cigaretteCount
   }
 }
