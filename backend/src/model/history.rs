@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::schema::history;
 use crate::service::error::OldStarsServiceError;
+use crate::service::history_service::INSERT_HISTORY_FIELDS;
 
 use super::user::User;
 
@@ -26,6 +27,8 @@ pub struct History {
     pub other_count: i32,
     #[serde(rename = "waterCount")]
     pub water_count: i32,
+    #[serde(rename = "cigaretteCount")]
+    pub cigarette_count: i32,
 }
 
 #[derive(Insertable, Eq, PartialEq, Debug, Clone)]
@@ -37,6 +40,7 @@ pub struct InsertHistory {
     pub shot_count: i32,
     pub other_count: i32,
     pub water_count: i32,
+    pub cigarette_count: i32,
 }
 
 impl From<(SystemTime, &User)> for InsertHistory {
@@ -48,6 +52,7 @@ impl From<(SystemTime, &User)> for InsertHistory {
             shot_count: user.shot_count,
             other_count: user.other_count,
             water_count: user.water_count,
+            cigarette_count: user.cigarette_count,
             timestamp,
         }
     }
@@ -64,6 +69,7 @@ impl From<(&i32, &InsertHistory)> for History {
             shot_count: history.shot_count,
             other_count: history.other_count,
             water_count: history.water_count,
+            cigarette_count: history.cigarette_count,
         }
     }
 }
@@ -78,6 +84,7 @@ impl Default for History {
             shot_count: Default::default(),
             other_count: Default::default(),
             water_count: Default::default(),
+            cigarette_count: Default::default(),
         }
     }
 }
@@ -88,18 +95,16 @@ impl History {
     }
 }
 
-const HISTORY_FIELD_COUNT: usize = 6;
-
 impl TryFrom<&str> for InsertHistory {
     type Error = OldStarsServiceError;
 
     fn try_from(csv_tuple: &str) -> Result<Self, Self::Error> {
         let context = "TryFrom CSV for History";
         let values = csv_tuple.split(',').map(&str::trim).collect::<Vec<_>>();
-        if values.len() != HISTORY_FIELD_COUNT {
+        if values.len() != INSERT_HISTORY_FIELDS.len() {
             return Err(OldStarsServiceError::new(
                 context,
-                &format!("csv does not have {HISTORY_FIELD_COUNT} fields"),
+                &format!("csv does not have {} fields", INSERT_HISTORY_FIELDS.len()),
             ));
         }
         Ok(InsertHistory {
@@ -109,6 +114,7 @@ impl TryFrom<&str> for InsertHistory {
             shot_count: parse_number_or_err(values[3])? as i32,
             other_count: parse_number_or_err(values[4])? as i32,
             water_count: parse_number_or_err(values[5])? as i32,
+            cigarette_count: parse_number_or_err(values[6])? as i32,
         })
     }
 }

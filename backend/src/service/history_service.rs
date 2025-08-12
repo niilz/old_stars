@@ -13,16 +13,29 @@ use crate::{
 
 use super::error::OldStarsServiceError;
 
+pub const INSERT_HISTORY_FIELDS: [&str; 7] = [
+    "user_name",
+    "timestamp",
+    "beer_count",
+    "shot_count",
+    "other_count",
+    "water_count",
+    "cigarette_count",
+];
+pub fn insert_history_fields_csv_headings() -> String {
+    INSERT_HISTORY_FIELDS.join(",") + "\n"
+}
+
 pub trait HistoryRepo {
     type Conn;
     // TODO: replace with user_service
-    fn get_drinkers(&self, conn: &mut Self::Conn) -> Result<Vec<User>, OldStarsServiceError>;
-    fn historize_drinks(
+    fn get_users(&self, conn: &mut Self::Conn) -> Result<Vec<User>, OldStarsServiceError>;
+    fn historize_consumptions(
         &mut self,
         histories: Vec<InsertHistory>,
         conn: &mut Self::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError>;
-    fn reset_drinks(&mut self, conn: &mut Self::Conn) -> Result<(), OldStarsServiceError>;
+    fn reset_consumptions(&mut self, conn: &mut Self::Conn) -> Result<(), OldStarsServiceError>;
     fn get_histories(&self, conn: &mut Self::Conn) -> Result<Vec<History>, OldStarsServiceError>;
 }
 
@@ -37,17 +50,17 @@ pub struct DbHistoryRepo {}
 impl HistoryRepo for DbHistoryRepo {
     type Conn = PgConnection;
 
-    fn get_drinkers(&self, conn: &mut Self::Conn) -> Result<Vec<User>, OldStarsServiceError> {
+    fn get_users(&self, conn: &mut Self::Conn) -> Result<Vec<User>, OldStarsServiceError> {
         use crate::schema::old_users::dsl::*;
-        let drinkers = old_users
+        let users = old_users
             .inner_join(roles)
             .filter(role.eq(OldStarsRole::User.to_string()))
             .select(User::as_select())
             .get_results(conn)?;
-        Ok(drinkers)
+        Ok(users)
     }
 
-    fn historize_drinks(
+    fn historize_consumptions(
         &mut self,
         histories: Vec<InsertHistory>,
         conn: &mut Self::Conn,
@@ -57,7 +70,7 @@ impl HistoryRepo for DbHistoryRepo {
         Ok(histories)
     }
 
-    fn reset_drinks(&mut self, conn: &mut Self::Conn) -> Result<(), OldStarsServiceError> {
+    fn reset_consumptions(&mut self, conn: &mut Self::Conn) -> Result<(), OldStarsServiceError> {
         use crate::schema::old_users::dsl::*;
         diesel::update(old_users)
             .set((
@@ -81,18 +94,18 @@ impl<HR: HistoryRepo> HistoryService<HR> {
     pub fn new(repo: HR) -> Self {
         Self { repo }
     }
-    pub fn historize_drinks(
+    pub fn historize_consumptions(
         &mut self,
         conn: &mut HR::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError> {
-        let all_drinkers = self.repo.get_drinkers(conn)?;
+        let all_users = self.repo.get_users(conn)?;
         let timestamp = SystemTime::now();
-        let histories = all_drinkers
+        let histories = all_users
             .iter()
             .map(|user| InsertHistory::from((timestamp, user)))
             .collect();
-        let written_history = self.repo.historize_drinks(histories, conn)?;
-        self.repo.reset_drinks(conn)?;
+        let written_history = self.repo.historize_consumptions(histories, conn)?;
+        self.repo.reset_consumptions(conn)?;
         Ok(written_history)
     }
 
@@ -102,7 +115,7 @@ impl<HR: HistoryRepo> HistoryService<HR> {
         conn: &mut HR::Conn,
     ) -> Result<Vec<History>, OldStarsServiceError> {
         let insert_histories = csv_to_history(csv)?;
-        self.repo.historize_drinks(insert_histories, conn)
+        self.repo.historize_consumptions(insert_histories, conn)
     }
 
     pub fn load_histories(
@@ -114,11 +127,9 @@ impl<HR: HistoryRepo> HistoryService<HR> {
 }
 
 fn csv_to_history(history_csv: &str) -> Result<Vec<InsertHistory>, OldStarsServiceError> {
-    static INSERT_HISTORY_FIELDS: &str =
-        "user_name,timestamp,beer_count,shot_count,other_count,water_count\n";
     let has_headings = history_csv
         .to_lowercase()
-        .starts_with(INSERT_HISTORY_FIELDS);
+        .starts_with(&insert_history_fields_csv_headings());
 
     let mut data = history_csv.lines();
     if has_headings {

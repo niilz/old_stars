@@ -1,3 +1,4 @@
+-- Your SQL goes here
 create TABLE sessions (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR NOT NULL,

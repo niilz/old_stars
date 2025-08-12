@@ -9,6 +9,7 @@ diesel::table! {
         shot_count -> Int4,
         other_count -> Int4,
         water_count -> Int4,
+        cigarette_count -> Int4,
     }
 }
 
@@ -21,6 +22,7 @@ diesel::table! {
         shot_count -> Int4,
         other_count -> Int4,
         water_count -> Int4,
+        cigarette_count -> Int4,
         fk_icon_id -> Int4,
     }
 }

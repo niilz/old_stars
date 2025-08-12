@@ -29,6 +29,8 @@ pub struct User {
     pub other_count: i32,
     #[serde(rename = "waterCount")]
     pub water_count: i32,
+    #[serde(rename = "cigaretteCount")]
+    pub cigarette_count: i32,
     pub fk_icon_id: i32,
 }
 
@@ -41,6 +43,7 @@ pub struct InsertUser<'a> {
     pub shot_count: i32,
     pub other_count: i32,
     pub water_count: i32,
+    pub cigarette_count: i32,
     pub fk_icon_id: i32,
 }
 

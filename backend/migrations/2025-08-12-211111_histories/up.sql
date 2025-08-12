@@ -1,6 +1,4 @@
 -- Your SQL goes here
-DROP TABLE IF EXISTS history;
-
 CREATE TABLE history (
 	history_id SERIAL PRIMARY KEY,
 	user_name VARCHAR NOT NULL,

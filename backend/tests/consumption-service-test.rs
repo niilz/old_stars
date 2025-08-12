@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use backend::{
     model::user::User,
     service::{
-        drink_service::{DrinkRepository, DrinkService},
+        consumption_service::{ConsumptionRepository, ConsumptionService},
         error::OldStarsServiceError,
     },
 };
@@ -19,7 +19,7 @@ impl TestRepo {
     }
 }
 
-impl DrinkRepository for TestRepo {
+impl ConsumptionRepository for TestRepo {
     type Conn = ();
 
     fn update_user(
@@ -37,7 +37,7 @@ impl DrinkRepository for TestRepo {
         _connection: &mut Self::Conn,
     ) -> Result<User, OldStarsServiceError> {
         let user = self.repo.get(&user_id).ok_or(OldStarsServiceError::new(
-            "Test-Drink-Repo: ",
+            "Test-Consumption-Repo: ",
             &format!("Could not read user with id: {user_id}"),
         ))?;
         Ok(user.clone())
@@ -45,25 +45,26 @@ impl DrinkRepository for TestRepo {
 }
 
 #[test]
-fn add_all_the_drinks() {
-    let mut drink_service_mock = drink_service_mock();
-    let _ = drink_service_mock.add_drink_to_user(1, "beer", &mut ());
-    let _ = drink_service_mock.add_drink_to_user(1, "shot", &mut ());
-    let _ = drink_service_mock.add_drink_to_user(1, "other", &mut ());
-    let _ = drink_service_mock.add_drink_to_user(1, "water", &mut ());
+fn add_all_the_consumptions() {
+    let mut consumption_service_mock = consumption_service_mock();
+    let _ = consumption_service_mock.add_consumption_to_user(1, "beer", &mut ());
+    let _ = consumption_service_mock.add_consumption_to_user(1, "shot", &mut ());
+    let _ = consumption_service_mock.add_consumption_to_user(1, "other", &mut ());
+    let _ = consumption_service_mock.add_consumption_to_user(1, "water", &mut ());
+    let _ = consumption_service_mock.add_consumption_to_user(1, "cigarette", &mut ());
 
-    let updated_user = drink_service_mock.repo.read_user(1, &mut ()).unwrap();
+    let updated_user = consumption_service_mock.repo.read_user(1, &mut ()).unwrap();
     assert_eq!(1, updated_user.beer_count);
     assert_eq!(1, updated_user.shot_count);
     assert_eq!(1, updated_user.other_count);
     assert_eq!(1, updated_user.water_count);
 }
 
-fn drink_service_mock() -> DrinkService<TestRepo> {
-    let mut drink_service = DrinkService::new(TestRepo::default());
+fn consumption_service_mock() -> ConsumptionService<TestRepo> {
+    let mut consumption_service = ConsumptionService::new(TestRepo::default());
     let dummy_user = dummy_user();
-    drink_service.repo.insert(dummy_user);
-    drink_service
+    consumption_service.repo.insert(dummy_user);
+    consumption_service
 }
 
 fn dummy_user() -> User {

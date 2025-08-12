@@ -1,6 +1,4 @@
 -- Your SQL goes here
-DROP TABLE IF EXISTS old_users;
-
 CREATE TABLE old_users (
        user_id SERIAL PRIMARY KEY,
        name VARCHAR NOT NULL,

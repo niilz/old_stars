@@ -25,14 +25,14 @@ impl HistoryTestRepo {
 impl HistoryRepo for HistoryTestRepo {
     type Conn = ();
 
-    fn get_drinkers(
+    fn get_users(
         &self,
         _conn: &mut Self::Conn,
     ) -> Result<Vec<User>, backend::service::error::OldStarsServiceError> {
         Ok(self.users.values().into_iter().map(Clone::clone).collect())
     }
 
-    fn historize_drinks(
+    fn historize_consumptions(
         &mut self,
         histories: Vec<backend::model::history::InsertHistory>,
         _conn: &mut Self::Conn,
@@ -42,7 +42,7 @@ impl HistoryRepo for HistoryTestRepo {
         Ok(histories)
     }
 
-    fn reset_drinks(
+    fn reset_consumptions(
         &mut self,
         _conn: &mut Self::Conn,
     ) -> Result<(), backend::service::error::OldStarsServiceError> {
@@ -51,6 +51,7 @@ impl HistoryRepo for HistoryTestRepo {
             user.shot_count = 0;
             user.other_count = 0;
             user.water_count = 0;
+            user.cigarette_count = 0;
         }
         Ok(())
     }
@@ -73,6 +74,7 @@ pub fn history_service_mock(user_count: u32) -> HistoryService<HistoryTestRepo> 
             shot_count: 43,
             other_count: 44,
             water_count: 45,
+            cigarette_count: 46,
             ..Default::default()
         };
         history_service.repo.users.insert(id as i32, insert_user);

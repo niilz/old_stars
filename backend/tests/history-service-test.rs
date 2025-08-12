@@ -11,7 +11,7 @@ fn saving_history_creates_history_entries() {
     assert_eq!(history_service.repo.users.get(&1).unwrap().beer_count, 42);
 
     // when
-    let histories = history_service.historize_drinks(&mut ());
+    let histories = history_service.historize_consumptions(&mut ());
 
     // then
     assert!(histories.is_ok());
@@ -21,51 +21,66 @@ fn saving_history_creates_history_entries() {
     assert_eq!(histories[0].shot_count, 43);
     assert_eq!(histories[0].other_count, 44);
     assert_eq!(histories[0].water_count, 45);
+    assert_eq!(histories[0].cigarette_count, 46);
 
     assert_eq!(histories[1].beer_count, 42);
     assert_eq!(histories[1].shot_count, 43);
     assert_eq!(histories[1].other_count, 44);
     assert_eq!(histories[1].water_count, 45);
+    assert_eq!(histories[1].cigarette_count, 46);
 
     assert_eq!(histories[2].beer_count, 42);
     assert_eq!(histories[2].shot_count, 43);
     assert_eq!(histories[2].other_count, 44);
     assert_eq!(histories[2].water_count, 45);
+    assert_eq!(histories[2].cigarette_count, 46);
 }
 
 #[test]
-fn saving_history_resets_drink_counts() {
+fn saving_history_resets_consumption_counts() {
     // given
     let mut history_service = history_service_mock(3);
     assert_eq!(history_service.repo.users.get(&1).unwrap().beer_count, 42);
 
     // when
-    let _histories = history_service.historize_drinks(&mut ());
+    let _histories = history_service.historize_consumptions(&mut ());
 
     // then
     assert_eq!(history_service.repo.users.get(&1).unwrap().beer_count, 0);
     assert_eq!(history_service.repo.users.get(&1).unwrap().shot_count, 0);
     assert_eq!(history_service.repo.users.get(&1).unwrap().other_count, 0);
     assert_eq!(history_service.repo.users.get(&1).unwrap().water_count, 0);
+    assert_eq!(
+        history_service.repo.users.get(&1).unwrap().cigarette_count,
+        0
+    );
 
     assert_eq!(history_service.repo.users.get(&2).unwrap().beer_count, 0);
     assert_eq!(history_service.repo.users.get(&2).unwrap().shot_count, 0);
     assert_eq!(history_service.repo.users.get(&2).unwrap().other_count, 0);
     assert_eq!(history_service.repo.users.get(&2).unwrap().water_count, 0);
+    assert_eq!(
+        history_service.repo.users.get(&1).unwrap().cigarette_count,
+        0
+    );
 
     assert_eq!(history_service.repo.users.get(&3).unwrap().beer_count, 0);
     assert_eq!(history_service.repo.users.get(&3).unwrap().shot_count, 0);
     assert_eq!(history_service.repo.users.get(&3).unwrap().other_count, 0);
     assert_eq!(history_service.repo.users.get(&3).unwrap().water_count, 0);
+    assert_eq!(
+        history_service.repo.users.get(&1).unwrap().cigarette_count,
+        0
+    );
 }
 
 #[test]
 fn save_history_from_csv() {
     // given
     // 2042_01_01 = 2272143600000;
-    let history_csv = r#"user_name,timestamp,beer_count,shot_count,other_count,water_count
-    some-name,2272143600000,42,43,44,45
-    other name,2272143600000,24,34,44,54"#;
+    let history_csv = r#"user_name,timestamp,beer_count,shot_count,other_count,water_count,cigarette_count
+    some-name,2272143600000,42,43,44,45,46
+    other name,2272143600000,24,34,44,54,64"#;
 
     // when
     let mut history_service = history_service_mock(0);
@@ -84,6 +99,7 @@ fn save_history_from_csv() {
         shot_count: 43,
         other_count: 44,
         water_count: 45,
+        cigarette_count: 46,
     };
     assert!(histories.contains(&expected_history));
 }

@@ -3,7 +3,7 @@ use crate::model::user::User;
 use crate::schema::old_users::dsl::*;
 use diesel::prelude::*;
 
-pub trait DrinkRepository {
+pub trait ConsumptionRepository {
     type Conn;
     fn update_user(
         &mut self,
@@ -18,9 +18,9 @@ pub trait DrinkRepository {
 }
 
 #[derive(Debug, Default)]
-pub struct DbDrinkRepo {}
+pub struct DbConsumptionRepo {}
 
-impl DrinkRepository for DbDrinkRepo {
+impl ConsumptionRepository for DbConsumptionRepo {
     type Conn = PgConnection;
     fn update_user(
         &mut self,
@@ -41,31 +41,32 @@ impl DrinkRepository for DbDrinkRepo {
     }
 }
 
-pub struct DrinkService<R> {
+pub struct ConsumptionService<R> {
     pub repo: R,
 }
 
-impl<R> DrinkService<R> {
+impl<R> ConsumptionService<R> {
     pub fn new(repo: R) -> Self {
         Self { repo }
     }
 }
 
-impl<R: DrinkRepository> DrinkService<R> {
-    pub fn add_drink_to_user(
+impl<R: ConsumptionRepository> ConsumptionService<R> {
+    pub fn add_consumption_to_user(
         &mut self,
         update_id: i32,
-        drink: &str,
+        consumption: &str,
         conn: &mut R::Conn,
     ) -> Result<User, OldStarsServiceError> {
         // TODO: Check if adding is allowd according to water:alcohol ratio
         let mut update_user = self.repo.read_user(update_id, conn)?;
-        match drink {
+        match consumption {
             "beer" => update_user.beer_count += 1,
             "shot" => update_user.shot_count += 1,
             "other" => update_user.other_count += 1,
             "water" => update_user.water_count += 1,
-            _ => unimplemented!("Other drinks are not supported"),
+            "cigarette" => update_user.cigarette_count += 1,
+            _ => unimplemented!("Other consumption are not supported"),
         };
         self.repo.update_user(&update_user, conn)
     }

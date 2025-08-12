@@ -7,7 +7,7 @@ use backend::{
     repository::connection::OldStarDb,
     service::{
         auth_service::LoginService,
-        drink_service::{DbDrinkRepo, DrinkService},
+        consumption_service::{ConsumptionService, DbConsumptionRepo},
         history_service::{DbHistoryRepo, HistoryService},
         user_service::{DbUserService, UserService},
     },
@@ -246,16 +246,16 @@ fn delete_user(
     }
 }
 
-#[get("/<drink>/<user_id>")]
-fn add_drink(
-    drink: String,
+#[get("/<consumption>/<user_id>")]
+fn add_consumption(
+    consumption: String,
     user_id: i32,
     db_conn: &State<OldStarDb>,
-    drink_service: &State<RwLock<DrinkService<DbDrinkRepo>>>,
+    consumption_service: &State<RwLock<ConsumptionService<DbConsumptionRepo>>>,
     login_service: &State<RwLock<LoginService>>,
     token: SessionToken,
 ) -> Json<Result<AppUser, String>> {
-    println!("add-drink got called");
+    println!("add-consumption got called");
     if !login_service
         .read()
         .unwrap()
@@ -265,16 +265,16 @@ fn add_drink(
         return Json(Err("No valid session".to_string()));
     }
 
-    let drink_clone = drink.clone();
-    match drink_service.write().unwrap().add_drink_to_user(
-        user_id,
-        &drink_clone,
-        &mut db_conn.connection(),
-    ) {
+    let consumption_clone = consumption.clone();
+    match consumption_service
+        .write()
+        .unwrap()
+        .add_consumption_to_user(user_id, &consumption_clone, &mut db_conn.connection())
+    {
         Ok(updated_user) => Json(Ok(AppUser::from((updated_user, OldStarsRole::User)))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
-            drink, user_id, e
+            consumption, user_id, e
         ))),
     }
 }
@@ -299,10 +299,10 @@ fn historize(
     match history_service
         .write()
         .unwrap()
-        .historize_drinks(&mut db_conn.connection())
+        .historize_consumptions(&mut db_conn.connection())
     {
         Ok(histories) => Json(Ok(histories)),
-        Err(e) => Json(Err(format!("Could not historize drinks: {e}"))),
+        Err(e) => Json(Err(format!("Could not historize consumptions: {e}"))),
     }
 }
 
@@ -361,7 +361,7 @@ fn histories(
         .load_histories(&mut db_conn.connection())
     {
         Ok(histories) => Json(Ok(histories)),
-        Err(e) => Json(Err(format!("Could not load drink histories: {e}"))),
+        Err(e) => Json(Err(format!("Could not load consumptions histories: {e}"))),
     }
 }
 
@@ -413,7 +413,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             club_sessions: HashMap::new(),
         };
         let db_conn = OldStarDb::new();
-        let drink_service = DrinkService::new(DbDrinkRepo::default());
+        let consumption_service = ConsumptionService::new(DbConsumptionRepo::default());
         let history_service = HistoryService::new(DbHistoryRepo::default());
         rocket::custom(config_figment)
             .mount(
@@ -431,7 +431,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     register,
                     all_users,
                     delete_user,
-                    add_drink,
+                    add_consumption,
                     historize,
                     histories,
                     history_from_csv
@@ -439,7 +439,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
             )
             .manage(Arc::clone(&user_service))
             .manage(RwLock::new(login_service))
-            .manage(RwLock::new(drink_service))
+            .manage(RwLock::new(consumption_service))
             .manage(RwLock::new(history_service))
             .manage(db_conn)
             .attach(Cors)
