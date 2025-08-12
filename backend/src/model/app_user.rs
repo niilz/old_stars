@@ -16,6 +16,8 @@ pub struct AppUser {
     pub other_count: i32,
     #[serde(rename = "waterCount")]
     pub water_count: i32,
+    #[serde(rename = "cigaretteCount")]
+    pub cigarette_count: i32,
 }
 
 impl From<(User, OldStarsRole)> for AppUser {
@@ -30,6 +32,7 @@ impl From<(User, OldStarsRole)> for AppUser {
             shot_count: user.shot_count,
             other_count: user.other_count,
             water_count: user.water_count,
+            cigarette_count: user.cigarette_count,
         }
     }
 }
