@@ -120,10 +120,11 @@ fn login(
     club_token: ClubToken,
     login_data: Json<LoginData>,
     login_service: &State<RwLock<LoginService>>,
-) -> Json<Result<SessionResponse, &'static str>> {
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
+) -> Json<Result<SessionResponse, String>> {
     println!("login got called");
     if !login_service.read().unwrap().has_club_access(&club_token.0) {
-        return Json(Err("club-acces missing"));
+        return Json(Err("club-acces missing".to_string()));
     }
     println!("Has Club-Access");
     match login_service
@@ -133,9 +134,22 @@ fn login(
     {
         Some(session) => {
             println!("Issueing session token");
-            Json(Ok(SessionResponse::new(session.user, session.uuid)))
+            match user_service
+                .lock()
+                .unwrap()
+                .get_user_and_role(&session.user.name)
+            {
+                Ok(user) => {
+                    let app_user = AppUser::from(user);
+                    Json(Ok(SessionResponse::new(app_user, session.uuid)))
+                }
+                Err(e) => Json(Err(format!(
+                    "no user with name {}, ERR: {e}",
+                    session.user.name
+                ))),
+            }
         }
-        None => Json(Err("Login failed")),
+        None => Json(Err("Login failed".to_string())),
     }
 }
 
@@ -143,12 +157,25 @@ fn login(
 #[get("/start")]
 fn start(
     login_service: &State<RwLock<LoginService>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
     token: SessionToken,
-) -> Json<Result<AppUser, &'static str>> {
+) -> Json<Result<AppUser, String>> {
     println!("start got called");
-    match login_service.read().unwrap().get_session_user(token.0) {
-        Some(user) => Json(Ok(user)),
-        None => Json(Err("No Session found")),
+    match login_service.read().unwrap().get_session(token.0) {
+        Some(session) => {
+            match user_service
+                .lock()
+                .unwrap()
+                .get_user_and_role(&session.user.name)
+            {
+                Ok(user) => Json(Ok(AppUser::from(user))),
+                Err(e) => Json(Err(format!(
+                    "no user with name {}, ERR: {e}",
+                    session.user.name
+                ))),
+            }
+        }
+        None => Json(Err("No Session found".to_string())),
     }
 }
 
@@ -193,12 +220,7 @@ fn user(
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<AppUser, String>> {
     println!("get-user got called");
-    if !login_service
-        .read()
-        .unwrap()
-        .get_session_user(token.0)
-        .is_some()
-    {
+    if !login_service.read().unwrap().get_session(token.0).is_some() {
         return Json(Err("No valid session".to_string()));
     }
     println!("Getting user with id: {name}");
@@ -215,12 +237,7 @@ fn all_users(
     user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
 ) -> Json<Result<Vec<AppUser>, String>> {
     println!("all_users got called");
-    if !login_service
-        .read()
-        .unwrap()
-        .get_session_user(token.0)
-        .is_some()
-    {
+    if !login_service.read().unwrap().get_session(token.0).is_some() {
         return Json(Err("No valid session".to_string()));
     }
     println!("Getting all users");
@@ -249,8 +266,8 @@ fn delete_user(
     println!("delete-user got called");
 
     // Check that user is admin
-    match login_service.read().unwrap().get_session_user(token.0) {
-        Some(user) if user.role == OldStarsRole::Admin => user,
+    match login_service.read().unwrap().get_session(token.0) {
+        Some(session) if session.user.role == OldStarsRole::Admin => user,
         Some(_) => return Json(Err("Only Admins are allowed to delete".to_string())),
         _ => {
             return Json(Err("No valid session".to_string()));
@@ -279,12 +296,7 @@ fn add_consumption(
     token: SessionToken,
 ) -> Json<Result<AppUser, String>> {
     println!("add-consumption '{consumption}' got called");
-    if !login_service
-        .read()
-        .unwrap()
-        .get_session_user(token.0)
-        .is_some()
-    {
+    if !login_service.read().unwrap().get_session(token.0).is_some() {
         return Json(Err("No valid session".to_string()));
     }
 
@@ -294,6 +306,7 @@ fn add_consumption(
         .unwrap()
         .add_consumption_to_user(user_id, &consumption_clone, &mut db_conn.connection())
     {
+        // Role doesn't really matter here (updated-user could have role of admin as well)
         Ok(updated_user) => Json(Ok(AppUser::from((updated_user, OldStarsRole::User)))),
         Err(e) => Json(Err(format!(
             "Could not add a {} to user with id {}. Error: {}",
@@ -311,8 +324,8 @@ fn historize(
 ) -> Json<Result<Vec<History>, String>> {
     println!("historize got called");
     // Check that user is admin
-    match login_service.read().unwrap().get_session_user(token.0) {
-        Some(user) if user.role == OldStarsRole::Admin => user,
+    match login_service.read().unwrap().get_session(token.0) {
+        Some(session) if session.user.role == OldStarsRole::Admin => user,
         Some(_) => return Json(Err("Only Admins are allowed to historize".to_string())),
         _ => {
             return Json(Err("No valid session".to_string()));
@@ -339,8 +352,8 @@ fn history_from_csv(
 ) -> Json<Result<Vec<History>, String>> {
     println!("histories from csv got called");
     // Check that user is admin
-    match login_service.read().unwrap().get_session_user(token.0) {
-        Some(user) if user.role == OldStarsRole::Admin => user,
+    match login_service.read().unwrap().get_session(token.0) {
+        Some(session) if session.user.role == OldStarsRole::Admin => user,
         Some(_) => {
             return Json(Err(
                 "Only Admins are allowed to insert histories".to_string()
@@ -369,12 +382,7 @@ fn histories(
     token: SessionToken,
 ) -> Json<Result<Vec<History>, String>> {
     println!("histories got called");
-    if !login_service
-        .read()
-        .unwrap()
-        .get_session_user(token.0)
-        .is_some()
-    {
+    if !login_service.read().unwrap().get_session(token.0).is_some() {
         return Json(Err("No valid session".to_string()));
     }
 

@@ -1,19 +1,26 @@
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
 
-use crate::model::app_user::AppUser;
+use super::role::OldStarsRole;
 
 pub const TWENTY_FOUR_HOURS: u64 = 60 * 60 * 24;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Session {
-    pub user: AppUser,
+    pub user: SessionUser,
     pub uuid: String,
     pub exp: SystemTime,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SessionUser {
+    pub id: i32,
+    pub name: String,
+    pub role: OldStarsRole,
+}
+
 impl Session {
-    pub fn new(user: AppUser) -> Self {
+    pub fn new(user: SessionUser) -> Self {
         Self {
             user,
             uuid: Uuid::new_v4().to_string(),
@@ -24,26 +31,18 @@ impl Session {
 
 #[cfg(test)]
 mod test {
-    use crate::model::{
-        app_user::AppUser,
-        role::OldStarsRole,
-        session::{Session, TWENTY_FOUR_HOURS},
-    };
+    use crate::model::role::OldStarsRole;
+    use crate::model::session::{Session, SessionUser, TWENTY_FOUR_HOURS};
     use std::time::{Duration, SystemTime};
 
     #[test]
     fn can_construct_session() {
-        let dummy_user = AppUser {
-            id: 1,
-            role: OldStarsRole::User,
+        let dummy_user_name = SessionUser {
             name: "dummy-user".to_string(),
-            beer_count: 2,
-            shot_count: 2,
-            other_count: 42,
-            water_count: 1,
-            cigarette_count: 1,
+            id: 42,
+            role: OldStarsRole::User,
         };
-        let session = Session::new(dummy_user);
+        let session = Session::new(dummy_user_name);
 
         assert_eq!(session.user.name.to_string(), "dummy-user");
         assert_eq!(36, session.uuid.len());

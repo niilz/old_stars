@@ -1,9 +1,8 @@
 use backend::{
     model::{
-        app_user::AppUser,
         login_data::LoginData,
         role::OldStarsRole,
-        session::{Session, TWENTY_FOUR_HOURS},
+        session::{Session, SessionUser, TWENTY_FOUR_HOURS},
     },
     service::{auth_service::LoginService, user_service::UserService},
 };
@@ -66,9 +65,6 @@ fn gets_user_if_login_succeeds() {
 
     assert_eq!(found_user.id, 1);
     assert_eq!(found_user.name, dummy_user.name);
-    assert_eq!(found_user.beer_count, 0);
-    assert_eq!(found_user.water_count, 0);
-    assert_eq!(found_user.shot_count, 0);
     assert_eq!(found_user.role, OldStarsRole::User);
 }
 
@@ -102,10 +98,10 @@ fn gets_user_if_session_exists_and_is_valid() {
     let mut login_service = login_service_mock();
     login_service.sessions = HashMap::from([(session_id.clone(), dummy_session)]);
 
-    let session_user = login_service
-        .get_session_user(&session_id)
+    let session = login_service
+        .get_session(&session_id)
         .expect("User should be present");
-    assert_eq!(session_user, dummy_app_user);
+    assert_eq!(session.user, dummy_app_user);
 }
 
 #[test]
@@ -120,7 +116,7 @@ fn no_user_if_session_expired() {
     let mut login_service = login_service_mock();
     login_service.sessions = HashMap::from([(session_id.clone(), expired_session)]);
 
-    let no_user_found = login_service.get_session_user(&session_id);
+    let no_user_found = login_service.get_session(&session_id);
     assert!(no_user_found.is_none());
 }
 
@@ -128,7 +124,7 @@ fn no_user_if_session_expired() {
 fn no_user_if_no_session_present() {
     let session_id = Uuid::new_v4().to_string();
     let login_service = login_service_mock();
-    let no_user_found = login_service.get_session_user(&session_id);
+    let no_user_found = login_service.get_session(&session_id);
     assert!(no_user_found.is_none());
 }
 
@@ -163,16 +159,11 @@ fn err_if_no_session_to_remove_available() {
 }
 
 // Helper
-fn get_dummy_user(user_name: &str) -> AppUser {
-    AppUser {
+fn get_dummy_user(user_name: &str) -> SessionUser {
+    SessionUser {
         id: DUMMY_ID,
         role: OldStarsRole::User,
         name: user_name.to_string(),
-        beer_count: 2,
-        shot_count: 2,
-        other_count: 42,
-        water_count: 1,
-        cigarette_count: 1,
     }
 }
 

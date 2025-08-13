@@ -1,6 +1,9 @@
 use crate::{
     model::{
-        app_user::AppUser, login_data::LoginData, role::OldStarsRole, session::Session, user::User,
+        login_data::LoginData,
+        role::OldStarsRole,
+        session::{Session, SessionUser},
+        user::User,
     },
     service::user_service::UserService,
 };
@@ -57,9 +60,9 @@ impl LoginService {
         }
     }
 
-    pub fn get_session_user(&self, session_id: &str) -> Option<AppUser> {
+    pub fn get_session(&self, session_id: &str) -> Option<Session> {
         match self.sessions.get(session_id) {
-            Some(session) if session.exp > SystemTime::now() => Some(session.user.clone()),
+            Some(session) if session.exp > SystemTime::now() => Some(session.clone()),
             Some(_) => {
                 println!("Session expired, login required");
                 None
@@ -88,7 +91,7 @@ impl LoginService {
             .ok_or("Session was not removed")?;
         println!(
             "Session_id has been removed for user: {:?}",
-            session_data.user
+            session_data.user.name
         );
         let session_id = session_id.clone();
         if self.sessions.remove(&session_id).is_some() {
@@ -123,8 +126,12 @@ fn issue_session(
         Ok((db_user, role)) => {
             let stored_hash = &db_user.pwd;
             if is_password_valid(&login_password, stored_hash) {
-                let app_user = AppUser::from((db_user, role));
-                let session = Session::new(app_user);
+                let session_user = SessionUser {
+                    name: db_user.name,
+                    id: db_user.user_id,
+                    role,
+                };
+                let session = Session::new(session_user);
                 Some(session)
             } else {
                 None
