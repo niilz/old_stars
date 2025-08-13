@@ -1,6 +1,4 @@
 - Check water-ratio in backend as well
-- Add cigarets
-- make histories scrollable
 - allow for exporting
 - allow admin to yank all sessions
 - get rid of all the diesel warnings
