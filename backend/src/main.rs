@@ -255,7 +255,7 @@ fn add_consumption(
     login_service: &State<RwLock<LoginService>>,
     token: SessionToken,
 ) -> Json<Result<AppUser, String>> {
-    println!("add-consumption for a '{consumption}' got called");
+    println!("add-consumption '{consumption}' got called");
     if !login_service
         .read()
         .unwrap()

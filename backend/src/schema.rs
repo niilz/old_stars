@@ -46,9 +46,4 @@ diesel::table! {
 
 diesel::joinable!(roles -> old_users (user_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    history,
-    old_users,
-    roles,
-    sessions,
-);
+diesel::allow_tables_to_appear_in_same_query!(history, old_users, roles, sessions,);

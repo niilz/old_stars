@@ -41,6 +41,7 @@ mod test {
             shot_count: 2,
             other_count: 42,
             water_count: 1,
+            cigarette_count: 1,
         };
         let session = Session::new(dummy_user);
 

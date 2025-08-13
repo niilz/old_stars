@@ -54,7 +54,7 @@ impl HistoryRepo for DbHistoryRepo {
         use crate::schema::old_users::dsl::*;
         let users = old_users
             .inner_join(roles)
-            .filter(role.eq(OldStarsRole::User.to_string()))
+            .filter(role.ne(OldStarsRole::Club.to_string()))
             .select(User::as_select())
             .get_results(conn)?;
         Ok(users)
@@ -67,6 +67,7 @@ impl HistoryRepo for DbHistoryRepo {
     ) -> Result<Vec<History>, OldStarsServiceError> {
         use crate::schema::history::dsl::*;
         let histories = insert_into(history).values(histories).get_results(conn)?;
+        println!("Historized: {histories:?}");
         Ok(histories)
     }
 
@@ -78,6 +79,7 @@ impl HistoryRepo for DbHistoryRepo {
                 shot_count.eq(0),
                 other_count.eq(0),
                 water_count.eq(0),
+                cigarette_count.eq(0),
             ))
             .execute(conn)?;
         Ok(())
@@ -106,6 +108,7 @@ impl<HR: HistoryRepo> HistoryService<HR> {
             .collect();
         let written_history = self.repo.historize_consumptions(histories, conn)?;
         self.repo.reset_consumptions(conn)?;
+        println!("archive to repo: {written_history:?}");
         Ok(written_history)
     }
 

@@ -48,12 +48,12 @@ impl From<(SystemTime, &User)> for InsertHistory {
         let (timestamp, user) = history_data;
         Self {
             user_name: user.name.to_string(),
+            timestamp,
             beer_count: user.beer_count,
             shot_count: user.shot_count,
             other_count: user.other_count,
             water_count: user.water_count,
             cigarette_count: user.cigarette_count,
-            timestamp,
         }
     }
 }

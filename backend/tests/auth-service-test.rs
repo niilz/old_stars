@@ -172,6 +172,7 @@ fn get_dummy_user(user_name: &str) -> AppUser {
         shot_count: 2,
         other_count: 42,
         water_count: 1,
+        cigarette_count: 1,
     }
 }
 
