@@ -1,5 +1,5 @@
 import { METHOD } from '../Constants'
-import { ApiResponse, fetchWrapperUserSession } from './fetch-service'
+import { fetchWrapperUserSession } from './fetch-service'
 
 export function historizeDrinks(adminSessionToken: string) {
   return fetchWrapperUserSession(METHOD.GET, `historize`, '', adminSessionToken)

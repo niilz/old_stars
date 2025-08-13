@@ -16,10 +16,6 @@ interface TimeStamp {
   secs_since_epoch: number
 }
 
-export function csvToDrinkHistory(csvData: string) {
-  return ''
-}
-
 export function mapToUser(history: DrinkHistory): User {
   // We use the history as the user-id so that the list has different Keys and IDs
   return {
