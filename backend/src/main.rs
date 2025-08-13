@@ -185,6 +185,29 @@ fn register(
     }
 }
 
+#[get("/user/<name>", format = "json")]
+fn user(
+    name: &str,
+    token: SessionToken,
+    login_service: &State<RwLock<LoginService>>,
+    user_service: &State<Arc<Mutex<dyn UserService + Send + Sync>>>,
+) -> Json<Result<AppUser, String>> {
+    println!("get-user got called");
+    if !login_service
+        .read()
+        .unwrap()
+        .get_session_user(token.0)
+        .is_some()
+    {
+        return Json(Err("No valid session".to_string()));
+    }
+    println!("Getting user with id: {name}");
+    match user_service.lock().unwrap().get_user_and_role(name) {
+        Ok(user_and_role) => Json(Ok(AppUser::from(user_and_role))),
+        Err(e) => Json(Err(format!("Could not get user. Error: {}", e))),
+    }
+}
+
 #[get("/all", format = "json")]
 fn all_users(
     token: SessionToken,
@@ -429,6 +452,7 @@ fn rocket(config_figment: Figment) -> Rocket<Build> {
                     login,
                     logout,
                     register,
+                    user,
                     all_users,
                     delete_user,
                     add_consumption,
