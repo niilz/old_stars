@@ -1,15 +1,15 @@
 import { METHOD } from '../Constants'
 import { fetchWrapperUserSession } from './fetch-service'
 
-export function historizeDrinks(adminSessionToken: string) {
+export async function historizeDrinks(adminSessionToken: string) {
   return fetchWrapperUserSession(METHOD.GET, `historize`, '', adminSessionToken)
 }
 
-export function fetchHistories(sessionToken: string) {
+export async function fetchHistories(sessionToken: string) {
   return fetchWrapperUserSession(METHOD.GET, `histories`, '', sessionToken)
 }
 
-export function storeHistory(
+export async function storeHistory(
   adminSessionToken: string,
   archiveDataCsv: string
 ) {

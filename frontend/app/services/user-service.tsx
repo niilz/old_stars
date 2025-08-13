@@ -22,6 +22,10 @@ export function deleteUser(id: Number, sessionId: string) {
   return fetchWrapperUserSession(METHOD.DELETE, `delete/${id}`, '', sessionId)
 }
 
+export async function getUser(sessionId: string, name: string) {
+  return fetchWrapperUserSession(METHOD.GET, `user/${name}`, '', sessionId)
+}
+
 export async function getAllUsers(sessionId: string) {
   return fetchWrapperUserSession(METHOD.GET, 'all', '', sessionId)
 }

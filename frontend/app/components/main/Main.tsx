@@ -6,6 +6,7 @@ import { ApiResponse, handleResponse } from '../../services/fetch-service'
 import {
   attachSession,
   getAllUsers,
+  getUser,
   removeSession,
 } from '../../services/user-service'
 import styles from './Main.module.css'
@@ -103,7 +104,7 @@ export function Main(props: MainProps) {
           tryAttachClubToken(clubToken)
         }
       } else {
-        console.log(`got attachResponse: ${attachResponse}`)
+        console.log(`got attachResponse: ${JSON.stringify(attachResponse)}`)
         const user = handleResponse(attachResponse) as User
         setSessionUser(user)
         props.onUserLogin(user.name)
@@ -163,11 +164,12 @@ export function Main(props: MainProps) {
     const allUsersResponse = await getAllUsers(sessionId)
     const allUsers = handleResponse(allUsersResponse)
     setUsers(allUsers as User[])
-  }
-
-  const handleHistorize = async (historyResult: Promise<ApiResponse>) => {
-    const result = await historyResult
-    console.log(`Histories: ${result}`)
+    if (sessionUser) {
+      console.log(`update sessionUser: ${sessionUser.name}`)
+      const userResponse = await getUser(sessionId, sessionUser.name)
+      const user = handleResponse(userResponse)
+      setSessionUser(user as User)
+    }
   }
 
   const handleFetchHistories = async () => {
@@ -202,7 +204,7 @@ export function Main(props: MainProps) {
           <AdminConsole
             users={users}
             onDelete={deleteUser}
-            onHistorize={handleHistorize}
+            updateUsersOnHistorize={handleRefresh}
           />
         )}
         <HistoryContext.Provider

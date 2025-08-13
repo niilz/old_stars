@@ -8,6 +8,6 @@ export function needsWaterRound(user: User): boolean {
   }
   const maxAlcAllowed =
     user.waterCount * MAX_ALC_TO_WATER_RATIO + MAX_ALC_TO_WATER_RATIO
-  console.log({ maxAlcAllowed })
+  //console.log({ maxAlcAllowed })
   return consumedAlcohols > maxAlcAllowed
 }

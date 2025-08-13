@@ -16,7 +16,7 @@ import { readErrorMessage } from '../model/Error'
 interface AdminConsoleProps {
   users: User[]
   onDelete: (voidResult: Promise<ApiResponse>) => void
-  onHistorize: (histories: Promise<ApiResponse>) => void
+  updateUsersOnHistorize: () => void
 }
 
 export function AdminConsole(props: AdminConsoleProps) {
@@ -36,12 +36,17 @@ export function AdminConsole(props: AdminConsoleProps) {
     props.onDelete(voidResult)
   }
 
-  const handleHistorizeDrinks = () => {
+  const handleHistorizeDrinks = async () => {
     const sessionId = keyValueStore.tryReadFromStorage(
       SESSION_TOKEN_HEADER_NAME
     )
-    const historiesResult = historizeDrinks(sessionId)
-    props.onHistorize(historiesResult)
+    const historiesResult = await historizeDrinks(sessionId)
+    const savedHistoryEntries = handleResponse(historiesResult) as History[]
+    setCurrentMessage({
+      msgType: MsgType.INFO,
+      msg: `saved ${savedHistoryEntries.length} history entries`,
+    })
+    props.updateUsersOnHistorize()
   }
 
   const handleSaveHistory = async () => {
