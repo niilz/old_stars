@@ -1,0 +1,24 @@
+# Setup
+
+## EC2
+
+- Login to EC2
+  ssh -i ~/.ssh/aws/private-access-key.pem ubuntu@ec1-2-42-43-123.eu-central-1.compute.amazonaws.com
+- Install docker (see: [How to install Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/))
+
+## SSL
+
+To access backend-api from Android we also need the api-server to be accessable via https
+
+- Install certbot (ACME-client see: [certbot instructions](https://certbot.eff.org/instructions))
+- Note that ssl-certificates _cannot_ be issued for AWS-Public-DNS-Addresses directly!
+- Use **some-other-url.com** instead and configure the _A-Record_ at the Host-Provider to point to the aws-address
+- Allow inbound traffic on port 80 from anywhere in EC2 security config
+- Use issued certificate in the server
+- Certificate (pk and chain) are placed in `/etc/letsencrypt/live/domain.com/`
+- To renew certificate run `sudo certbot renew`
+- Copy renewed `fullchain.pem` and `privkey.pem` to ~/certs
+- change the owner (if not already the case) to be oldstars with `sudo chown oldstars:oldstars file.pem`
+- Change permissions (if not already the case) to
+  - read/write only by owner on private key `chmod 600 privkey.pem`
+  - and to read by everyone for fullchain `chmod 644 fullchain.pem`
