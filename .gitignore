@@ -21,3 +21,11 @@ env.vars
 
 # application-data
 dumps
+
+# ignore devcontainer stuff
+.devcontainer
+devcontainer.env
+.env
+.gemini/
+.claude/
+*.crt
