@@ -29,3 +29,6 @@ devcontainer.env
 .gemini/
 .claude/
 *.crt
+
+# pnpm
+.pnpm-store
