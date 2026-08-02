@@ -6,7 +6,7 @@ pub struct OldStarsServiceError {
     pub message: String,
 }
 impl OldStarsServiceError {
-    pub fn new(context: &str, error: &(dyn fmt::Display)) -> Self {
+    pub fn new(context: &str, error: &dyn fmt::Display) -> Self {
         OldStarsServiceError {
             message: format!("Error during {}: {}", context, error),
         }
